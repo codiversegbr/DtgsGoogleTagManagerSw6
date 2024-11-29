@@ -212,9 +212,9 @@ export default class DtgsGoogleTagManagerPlugin extends Plugin
      */
     onWishlistAdd(event) {
 
-        //let productId = event.detail.productId;
-        let productBox = event.target.closest('.card-body, .product-detail-buy');
-        let skuField = DomAccessHelper.querySelector(productBox, 'input[name="dtgs-gtm-product-sku"]', false);
+        let productId = event.detail.productId;
+        let siblingHiddenField = DomAccessHelper.querySelector(document, 'input[value="' + productId + '"]');
+        let skuField = DomAccessHelper.querySelector(siblingHiddenField.parentNode, 'input[name="dtgs-gtm-product-sku"]');
         if(skuField !== null) {
             this.fireWishlistEvent(skuField, 'add_to_wishlist');
         }
@@ -226,8 +226,9 @@ export default class DtgsGoogleTagManagerPlugin extends Plugin
      */
     onWishlistRemove(event) {
 
-        let productBox = event.target.closest('.card-body, .product-detail-buy');
-        let skuField = DomAccessHelper.querySelector(productBox, 'input[name="dtgs-gtm-product-sku"]', false);
+        let productId = event.detail.productId;
+        let siblingHiddenField = DomAccessHelper.querySelector(document, 'input[value="' + productId + '"]');
+        let skuField = DomAccessHelper.querySelector(siblingHiddenField.parentNode, 'input[name="dtgs-gtm-product-sku"]');
         if(skuField !== null) {
             this.fireWishlistEvent(skuField, 'remove_from_wishlist');
         }

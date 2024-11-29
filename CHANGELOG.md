@@ -1,5 +1,7 @@
 # 6.3.16
-- Added wishlist events
+- Added wishlist add/remove events
+- Bugfix: Price in listing events (FD-33029)
+- Bugfix: Comments in JS (CDVRS-56)
 
 # 6.3.15
 - Bugfix: Possible Error in Cart when using coupons

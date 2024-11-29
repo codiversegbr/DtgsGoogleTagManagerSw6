@@ -1,5 +1,7 @@
 # 6.3.16
-- Wunschlisten Events hinzugefügt
+- Wunschlisten Events (add/remove) hinzugefügt
+- Bugfix: Preis in Listen-Events (FD-33029)
+- Bugfix: Kommentare in JS (CDVRS-56)
 
 # 6.3.15
 - Bugfix: Möglicher Fehler im Cart beim Benutzen von Gutscheinen
