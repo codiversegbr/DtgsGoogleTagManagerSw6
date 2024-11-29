@@ -211,34 +211,27 @@ export default class DtgsGoogleTagManagerPlugin extends Plugin
      * added in 6.3.16
      */
     onWishlistAdd(event) {
-
-        let productId = event.detail.productId;
-        let siblingHiddenField = DomAccessHelper.querySelector(document, 'input[value="' + productId + '"]');
-        let skuField = DomAccessHelper.querySelector(siblingHiddenField.parentNode, 'input[name="dtgs-gtm-product-sku"]');
-        if(skuField !== null) {
-            this.fireWishlistEvent(skuField, 'add_to_wishlist');
-        }
-
+        this.fireWishlistEvent(event, 'add_to_wishlist');
     }
 
     /**
      * added in 6.3.16
      */
     onWishlistRemove(event) {
-
-        let productId = event.detail.productId;
-        let siblingHiddenField = DomAccessHelper.querySelector(document, 'input[value="' + productId + '"]');
-        let skuField = DomAccessHelper.querySelector(siblingHiddenField.parentNode, 'input[name="dtgs-gtm-product-sku"]');
-        if(skuField !== null) {
-            this.fireWishlistEvent(skuField, 'remove_from_wishlist');
-        }
-
+        this.fireWishlistEvent(event, 'remove_from_wishlist');
     }
 
     /**
      * added in 6.3.16
      */
-    fireWishlistEvent(skuField, gtm_event_name) {
+    fireWishlistEvent(event, gtm_event_name) {
+
+        let skuField = null;
+        let productId = event.detail.productId;
+        let siblingHiddenField = DomAccessHelper.querySelector(document, 'input[value="' + productId + '"]', false);
+        if(siblingHiddenField) {
+            skuField = DomAccessHelper.querySelector(siblingHiddenField.parentNode, 'input[name="dtgs-gtm-product-sku"]', false);
+        }
 
         if(skuField !== null) {
 
@@ -274,8 +267,8 @@ export default class DtgsGoogleTagManagerPlugin extends Plugin
     }
 
     getLineItems() {
-        const lineItemsContainer = DomAccessHelper.querySelector(document, '.hidden-line-items-information');
-        const lineItemDataElements = DomAccessHelper.querySelectorAll(lineItemsContainer, '.hidden-line-item');
+        const lineItemsContainer = DomAccessHelper.querySelector(document, '.hidden-line-items-information', false);
+        const lineItemDataElements = DomAccessHelper.querySelectorAll(lineItemsContainer, '.hidden-line-item', false);
         const lineItems = [];
 
         lineItemDataElements.forEach(itemEl => {

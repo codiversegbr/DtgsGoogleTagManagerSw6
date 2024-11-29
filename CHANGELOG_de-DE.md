@@ -1,5 +1,5 @@
 # 6.3.16
-- Wunschlisten Events (add/remove) hinzugefügt
+- Neu: Wunschlisten Events (add/remove) auf Listen-/Detailseiten hinzugefügt
 - Bugfix: Preis in Listen-Events (FD-33029)
 - Bugfix: Kommentare in JS (CDVRS-56)
 

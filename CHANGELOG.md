@@ -1,5 +1,5 @@
 # 6.3.16
-- Added wishlist add/remove events
+- New: Added wishlist add/remove events on listing & detail pages
 - Bugfix: Price in listing events (FD-33029)
 - Bugfix: Comments in JS (CDVRS-56)
 
