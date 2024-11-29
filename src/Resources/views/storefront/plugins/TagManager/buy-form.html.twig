@@ -1,0 +1,19 @@
+<input type="hidden"
+       name="dtgs-gtm-currency-code"
+       value="{{ page.header.activeCurrency.isoCode }}">
+<input type="hidden"
+       name="dtgs-gtm-product-price"
+       value="{{ page.extensions.GtmAddToCartInfo.price }}">
+<input type="hidden"
+       name="dtgs-gtm-product-sku"
+       value="{{ page.extensions.GtmAddToCartInfo.sku }}">
+{% if(page.extensions.GtmAddToCartInfo.category) %}
+    <input type="hidden"
+           name="dtgs-gtm-product-category"
+           value="{{ page.extensions.GtmAddToCartInfo.category }}">
+{%  endif %}
+{% if(page.extensions.GtmAddToCartInfo.variantname) %}
+    <input type="hidden"
+           name="dtgs-gtm-product-variantname"
+           value="{{ page.extensions.GtmAddToCartInfo.variantname }}">
+{%  endif %}

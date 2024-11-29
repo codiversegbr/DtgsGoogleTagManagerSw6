@@ -1,0 +1,19 @@
+{% sw_extends '@Storefront/storefront/page/checkout/confirm/meta.html.twig' %}
+
+{% block layout_head_javascript_tracking %}
+
+    {% block dtgs_layout_head_gtm_datalayer %}
+        {% if config('DtgsGoogleTagManagerSw6.config.datalayerPosition') == 'head' %}
+            {% sw_include 'storefront/plugins/TagManager/datalayer.html.twig' %}
+        {% endif %}
+    {% endblock %}
+
+    {% block dtgs_layout_head_gtm_main %}
+        {% if config('DtgsGoogleTagManagerSw6.config.tagmanagerPosition') == 'head' %}
+            {% sw_include 'storefront/plugins/TagManager/tagmanager_main.html.twig' %}
+        {% endif %}
+    {% endblock %}
+
+    {{ parent() }}
+
+{% endblock %}

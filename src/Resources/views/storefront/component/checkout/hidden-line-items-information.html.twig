@@ -1,0 +1,16 @@
+{% sw_extends '@Storefront/storefront/component/checkout/hidden-line-items-information.html.twig' %}
+
+{% block component_hidden_line_item_information %}
+
+    {% set ga4Tags = page.extensions.GoogleTagManagerConfig.ga4_tags %}
+    {% set gtmCalculatedProductPrice = gtmGetCalculatedProductPrice(lineItem.payload, ga4Tags) %}
+
+    <span class="hidden-line-item"
+          data-id="{{ lineItem.id }}"
+          data-name="{{ lineItem.label }}"
+          data-quantity="{{ lineItem.quantity }}"
+          data-price="{{ gaPrice }}"
+          data-dtgs-sku="{{ lineItem.payload.productNumber }}"
+          data-dtgs-price="{{ gtmCalculatedProductPrice }}">
+    </span>
+{% endblock %}

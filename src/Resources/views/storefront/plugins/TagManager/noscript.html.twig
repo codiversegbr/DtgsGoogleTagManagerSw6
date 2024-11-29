@@ -1,0 +1,15 @@
+{% set gtmConfig = config('DtgsGoogleTagManagerSw6.config') %}
+
+{% if gtmIsActive(gtmConfig.googleId) and not gtmConfig.removeContainerCode %}
+    <!-- Google Tag Manager Noscript -->
+    {% for containerId in gtmGetContainerIds(gtmConfig.googleId) %}
+        <noscript class="noscript-gtm">
+            <iframe src="{{ gtmGetNoScriptUrl(gtmConfig.customGtmJsUrl) }}?id={{ containerId }}"
+                    height="0"
+                    width="0"
+                    style="display:none;visibility:hidden">
+            </iframe>
+        </noscript>
+    {% endfor %}
+    <!-- End Google Tag Manager Noscript -->
+{%  endif %}

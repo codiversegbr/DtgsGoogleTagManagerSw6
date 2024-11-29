@@ -1,0 +1,43 @@
+{
+    "name": "dtgs/google-tag-manager",
+    "description": "codiverse GoogleTagManager",
+    "version": "v6.3.16",
+    "type": "shopware-platform-plugin",
+    "license": "proprietary",
+    "authors": [
+        {
+            "name": "codiverse GbR",
+            "homepage": "https://www.codiverse.de/"
+        }
+    ],
+    "require": {
+        "shopware/core": ">=6.6, !=6.6.6.0",
+        "ext-json": "*"
+    },
+    "extra": {
+        "shopware-plugin-class": "Dtgs\\GoogleTagManager\\DtgsGoogleTagManagerSw6",
+        "plugin-icon": "src/Resources/config/plugin.png",
+        "copyright": "(c) by codiverse GbR",
+        "label": {
+            "de-DE": "codiverse GoogleTagManager",
+            "en-GB": "codiverse GoogleTagManager"
+        },
+        "description": {
+            "de-DE": "Nutzen Sie den Service \"Tag Manager\" von Google nun auch in Ihrem Online Shop! Mit dem Plugin \"Google Tag Manager Integration\" von codiverse binden Sie bequem und ohne Programmierkenntnisse den Google Tag Manager in Ihren Shopware Shop ein.",
+            "en-GB": "Use Google’s Service \"Tag Manager\" in your online shop! codiverse’s plugin \"Google Tag Manager Integration\" enables you to implement the Google Tag Manager without any programming skills."
+        },
+        "manufacturerLink": {
+            "de-DE": "https://store.shopware.com/codiverse.html",
+            "en-GB": "https://store.shopware.com/en/codiverse.html"
+        },
+        "supportLink": {
+            "de-DE": "https://www.codiverse.de/faqs/",
+            "en-GB": "https://www.codiverse.de/faqs/"
+        }
+    },
+    "autoload": {
+        "psr-4": {
+            "Dtgs\\GoogleTagManager\\": "src/"
+        }
+    }
+}

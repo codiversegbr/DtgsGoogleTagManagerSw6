@@ -1,0 +1,23 @@
+{% sw_extends '@Storefront/storefront/base.html.twig' %}
+
+{% block base_noscript %}
+    {{ parent() }}
+    {% sw_include 'storefront/plugins/TagManager/noscript.html.twig' %}
+{% endblock %}
+
+{% block base_body_inner %}
+
+    {% block dtgs_base_body_inner_gtm_datalayer %}
+        {% if config('DtgsGoogleTagManagerSw6.config.datalayerPosition') == 'body' %}
+            {% sw_include 'storefront/plugins/TagManager/datalayer.html.twig' %}
+        {% endif %}
+    {% endblock %}
+
+    {% block dtgs_base_body_inner_gtm_main %}
+        {% if config('DtgsGoogleTagManagerSw6.config.tagmanagerPosition') == 'body' and config('DtgsGoogleTagManagerSw6.config.removeContainerCode') == false %}
+            {% sw_include 'storefront/plugins/TagManager/tagmanager_main.html.twig' %}
+        {% endif %}
+    {% endblock %}
+
+    {{ parent() }}
+{% endblock %}

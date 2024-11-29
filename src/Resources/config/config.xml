@@ -1,0 +1,351 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/shopware/platform/master/src/Core/System/SystemConfig/Schema/config.xsd">
+
+    <card>
+        <title>Basic configuration</title>
+        <title lang="de-DE">Basis-Konfiguration</title>
+        <title lang="nl-NL">Basisconfiguratie</title>
+
+        <input-field>
+            <name>googleId</name>
+            <label>Google Tag Manager ID</label>
+            <label lang="de-DE">Google Tag Manager ID</label>
+            <label lang="nl-NL">Google Tag Manager ID</label>
+            <helpText>Please enter your Tag Manager ID. (Supports the use of multiple IDs! Please separate by comma)</helpText>
+            <helpText lang="de-DE">Geben Sie hier Ihre Tag Manager ID an. (Unterstützt die Verwendung mehrerer IDs! Bitte mit Komma separieren)</helpText>
+            <helpText lang="nl-NL">Voer hier uw Tag Manager-ID in. (Ondersteunt het gebruik van meerdere ID's! Gelieve te scheiden met komma's)</helpText>
+            <placeholder>please enter your GTM ID in order for this plugin to work</placeholder>
+            <placeholder lang="de-DE">die GTM ID wird für die Funktionalität des Plugins zwingend benötigt!</placeholder>
+            <placeholder lang="nl-NL">de GTM ID is absoluut noodzakelijk voor de functionaliteit van de plug-in!</placeholder>
+        </input-field>
+
+        <input-field>
+            <name>googleAdwordsId</name>
+            <label>Google Adwords Merchant ID</label>
+            <label lang="de-DE">Google Adwords Merchant ID</label>
+            <label lang="nl-NL">Google Adwords Merchant ID</label>
+            <helpText>Please enter your Adwords Merchant ID. (optional!)</helpText>
+            <helpText lang="de-DE">Geben Sie hier Ihre Adwords Merchant ID an. (optional!)</helpText>
+            <helpText lang="nl-NL">Voer hier uw Adwords Merchant ID/AdWords-Verkoper-ID in. (optioneel!)</helpText>
+        </input-field>
+
+        <input-field type="bool">
+            <name>remarketingEnabled</name>
+            <label>Use google remarketing?</label>
+            <label lang="de-DE">Remarketing Parameter einbinden?</label>
+            <label lang="nl-NL">Remarketing Parameters integreren?</label>
+            <helpText>Will add google remarketing to data layer.</helpText>
+            <helpText lang="de-DE">Geben Sie auch Remarketing Parameter für den Tag Manager aus.</helpText>
+            <helpText lang="nl-NL">Voer ook Remarketing Parameters uit voor Tag Manager.</helpText>
+        </input-field>
+
+        <input-field type="single-select">
+            <name>datalayerPosition</name>
+            <options>
+                <option>
+                    <id>head</id>
+                    <name>default - inside head-tag</name>
+                    <name lang="de-DE">Standard - im head-Tag</name>
+                    <name lang="nl-NL">Standaard - in de head-Tag</name>
+                </option>
+                <option>
+                    <id>body</id>
+                    <name>inside body-tag</name>
+                    <name lang="de-DE">im Body Tag</name>
+                    <name lang="nl-NL">in de Body Tag</name>
+                </option>
+            </options>
+            <defaultValue>head</defaultValue>
+            <label>Position of data layer</label>
+            <label lang="de-DE">Position des Datalayers</label>
+            <label lang="nl-NL">Positie van de Datalayer</label>
+        </input-field>
+
+        <input-field type="single-select">
+            <name>tagmanagerPosition</name>
+            <options>
+                <option>
+                    <id>head</id>
+                    <name lang="de-DE">Standard - im head-Tag</name>
+                    <name lang="nl-NL">Standaard - in de head-Tag</name>
+                    <name>default - inside head-tag</name>
+                </option>
+                <option>
+                    <id>body</id>
+                    <name lang="de-DE">im Body Tag</name>
+                    <name lang="nl-NL">in de Body Tag</name>
+                    <name>inside body-tag</name>
+                </option>
+            </options>
+            <defaultValue>head</defaultValue>
+            <label lang="de-DE">Position des Tag Managers</label>
+            <label lang="nl-NL">Positie van de Tag Manager</label>
+            <label>Position of tag manager</label>
+        </input-field>
+
+        <input-field type="single-select">
+            <name>consentModeImplementation</name>
+            <options>
+                <option>
+                    <id>shopwareCmp</id>
+                    <name lang="de-DE">Standard - Ich nutze die den Shopware Cookie Manager und benötige den Consent Mode.</name>
+                    <name lang="nl-NL">Standaard - Ik gebruik de Shopware Cookie Manager en heb de Consent Mode nodig.</name>
+                    <name>default - I am using the Shopware Cookie Manager and need the default Consent Mode implementation.</name>
+                </option>
+                <option>
+                    <id>thirdpartyCmp</id>
+                    <name lang="de-DE">Ich nutze eine Drittanbieter CMP (z.B. Usercentrics) und implementiere den Consent Mode durch eigenen Code / ein Plugin.</name>
+                    <name lang="nl-NL">Ik gebruik een CMP van derden (bijvoorbeeld Usercentrics) en implementeer de Consent Mode met behulp van mijn eigen code / plug-in.</name>
+                    <name>I am using a thirdparty implementation. The consent mode code is supplied through custom code / a plugin.</name>
+                </option>
+                <option>
+                    <id>other</id>
+                    <name lang="de-DE">Ich nutze keine Cookies / eine eigene Implementation / sonstiges. Der Consent Mode soll immer "granted" senden.</name>
+                    <name lang="nl-NL">Ik gebruik geen Cookies / eigen implementatie / iets anders. De Consent Mode moet altijd “granted” sturen.</name>
+                    <name>I do not use cookies / a custom implementation / other. I need the Consent Mode to always send "granted".</name>
+                </option>
+            </options>
+            <defaultValue>shopwareCmp</defaultValue>
+            <label>Implementation of Google Consent Mode V2</label>
+            <label lang="de-DE">Einbindung des Google Consent Mode V2</label>
+            <label lang="nl-NL">Integratie van de Google Consent Mode V2</label>
+            <helpText>Option 1: Inserts the Consent Mode Code and sends "granted", if users consent using the SW cookie manager.
+                Option 2: Removes the consent mode code that Shopware implements sind version 6.5.8.6.
+                Option 3: Always sends "granted". Please make sure this is legal in your country.</helpText>
+            <helpText lang="de-DE">Option 1: Fügt den Consent Mode Code ein und sendet "granted", wenn User im SW Cookie Manager zustimmen.
+                Option 2: Entfernt den Consent Mode Code aus Ihrem Shop, den SW ab Version 6.5.8.6 automatisch einfügt.
+                Option 3: Sendet IMMER granted. Bitte prüfen Sie genau, ob dieser Code für Vertriebsgebiet rechtlich zulässig ist.</helpText>
+            <helpText lang="nl-NL">Optie 1: Voegt de Consent Mode Code in en verzendt “granted” als User hiermee akkoord gaat in de SW Cookie Manager.
+                Optie 2: Verwijdert de Consent Mode Code uit uw Shop, die SW automatisch invoegt vanaf versie 6.5.8.6.
+                Optie 3: Verzendt ALTIJD “granted”. Controleer zorgvuldig of deze code wettelijk is toegestaan voor het verkoopgebied.</helpText>
+        </input-field>
+
+    </card>
+
+    <card>
+        <title>Advanced configuration</title>
+        <title lang="de-DE">Erweiterte Konfiguration</title>
+        <title lang="nl-NL">Geafanceerde configuratie</title>
+
+        <input-field type="single-select">
+            <name>showPriceType</name>
+            <options>
+                <option>
+                    <id>brutto</id>
+                    <name lang="nl-NL">bruto prijzen</name>
+                    <name lang="de-DE">Bruttopreise</name>
+                    <name>prices incl. tax</name>
+                </option>
+                <option>
+                    <id>netto</id>
+                    <name lang="nl-NL">netto prijzen</name>
+                    <name lang="de-DE">Nettopreise</name>
+                    <name>net prices</name>
+                </option>
+            </options>
+            <defaultValue>brutto</defaultValue>
+            <label lang="de-DE">Welcher Preistyp soll übergeben werden?</label>
+            <label lang="nl-NL">Welk prijstype moet worden doorgegeven?</label>
+            <label>Select price type</label>
+        </input-field>
+
+        <input-field type="bool">
+            <name>eeAddCategorynameInCheckout</name>
+            <label lang="de-DE">Enhanced Ecommerce: Kategorienamen übertragen?</label>
+            <label lang="nl-NL">Enhanced Ecommerce: Categorienamen overdragen?</label>
+            <label>Enhanced Ecommerce: add category names?</label>
+            <helpText lang="de-DE">Shopware übergibt die Kategorienamen nicht standardmäßig im Warenkorb. Über zusätzliche Datenbankanfragen können Sie ausgelesen und an Google Analytics übertragen werden.</helpText>
+            <helpText lang="nl-NL">Shopware geeft standaard de categorienamen niet door aan de winkelwagen. Ze kunnen via aanvullende database query's worden gelezen en overgedragen aan Google Analytics.</helpText>
+            <helpText>Shopware does not include category names by default in its basket. With additional db queries, we can add them to the transfered data.</helpText>
+        </input-field>
+
+        <input-field type="int">
+            <name>eeMaxAmountCategoriesForImpressions</name>
+            <label lang="de-DE">Enhanced Ecommerce: Maximale Anzahl an Produkten im Impressions-Array (Unbegrenzt: 0)</label>
+            <label lang="nl-NL">Enhanced Ecommerce: maximaal aantal producten in de Impressions-Array (onbeperkt: 0)</label>
+            <label>Enhanced Ecommerce: limit amount of products in impressions-array? (Set 0 for no limit)</label>
+            <defaultValue>0</defaultValue>
+            <helpText lang="de-DE">Wenn sehr viele Produkte in den Impressions übergeben werden, kann der Datalayer u.U. zu groß werden. Hier kann die Anzahl an übergebenen Produkten begrenzt werden.</helpText>
+            <helpText lang="nl-NL">Als er veel producten in de impressies / Impressions worden overgedragen, kan de datalayer (onder bepaalde omstandigheden) te groot worden. Hierbij kan het aantal ingeleverde producten beperkt worden.</helpText>
+            <helpText>Having a lot of products in your impressions-array can cause the datalayer to get to big for further processing. This options helps to limit the amount of products.</helpText>
+        </input-field>
+
+        <input-field type="bool">
+            <name>usercentricsEnabled</name>
+            <label lang="de-DE">UserCentrics Kompatibiltät aktivieren?</label>
+            <label lang="nl-NL">UserCentrics compatibiliteit inschakelen?</label>
+            <label>Enable UserCentrics compatibility?</label>
+            <helpText lang="de-DE">Diese Option fügt zusätzlichen Code (für die Version 1 von UserCentrics!) ein, der es für UserCentrics möglich macht, den GTM Code erst nach dem Consent auszugeben. Wenn Sie UserCentrics nicht nutzen, deaktivieren Sie bitte diese Funktion.</helpText>
+            <helpText lang="nl-NL">Met deze optie wordt een extra code ingevoegd ( voor versie 1 van UserCentrics! ) die het voor UserCentrics mogelijk maakt om de GTM-code alleen na toestemming / consent uit te geven. Indien u UserCentrics niet gebruikt, deactiveer dan deze functie.</helpText>
+            <helpText>This option adds additional code (UserCentrics Version 1!), required by the UserCentrics framework in order to withhold the GTM code until after the user's consent. Please disable, if you're not using UserCentrics.</helpText>
+        </input-field>
+
+        <input-field type="single-select">
+            <name>cookiefirstEnabled</name>
+            <options>
+                <option>
+                    <id>off</id>
+                    <name lang="de-DE">deaktivieren</name>
+                    <name lang="nl-NL">deactiveren</name>
+                    <name>disable</name>
+                </option>
+                <option>
+                    <id>necessary</id>
+                    <name lang="de-DE">Ja, Kategorie "necessary"</name>
+                    <name lang="nl-NL">Ja, categorie “necessary”</name>
+                    <name>yes, use category "necessary"</name>
+                </option>
+                <option>
+                    <id>functional</id>
+                    <name lang="de-DE">Ja, Kategorie "functional"</name>
+                    <name lang="nl-NL">Ja, categorie “functional”</name>
+                    <name>yes, use category "functional"</name>
+                </option>
+                <option>
+                    <id>performance</id>
+                    <name lang="de-DE">Ja, Kategorie "performance"</name>
+                    <name lang="nl-NL">Ja, categorie “performance”</name>
+                    <name>yes, use category "performance"</name>
+                </option>
+                <option>
+                    <id>advertising</id>
+                    <name lang="de-DE">Ja, Kategorie "advertising"</name>
+                    <name lang="nl-NL">Ja, categorie “advertising”</name>
+                    <name>yes, use category "advertising"</name>
+                </option>
+            </options>
+            <defaultValue>off</defaultValue>
+            <label lang="de-DE">CookieFirst Kompatibiltät aktivieren?</label>
+            <label lang="nl-NL">CookieFirst compatibiliteit inschakelen?</label>
+            <label>Enable CookieFirst compatibility?</label>
+            <helpText lang="de-DE">Diese Option fügt zusätzlichen Code ein, der es für CookieFirst möglich macht, den GTM Code erst nach dem Consent auszugeben. Wenn Sie CookieFirst nicht nutzen, deaktivieren Sie bitte diese Funktion.</helpText>
+            <helpText lang="nl-NL">Met deze optie wordt een extra code ingevoegd die het voor CookieFirst mogelijk maakt om de GTM-code alleen na toestemming / consent uit te geven. Indien u CookieFirst niet gebruikt, deactiveer dan deze functie.</helpText>
+            <helpText>This option adds additional code, required by the CookieFirst framework in order to withhold the GTM code until after the user's consent. Please disable, if you're not using CookieFirst.</helpText>
+        </input-field>
+
+        <input-field type="single-select">
+            <name>eeEnhancedConversions</name>
+            <options>
+                <option>
+                    <id>off</id>
+                    <name lang="de-DE">deaktivieren</name>
+                    <name lang="nl-NL">deactiveren</name>
+                    <name>disable</name>
+                </option>
+                <option>
+                    <id>mail</id>
+                    <name lang="de-DE">nur E-Mail Adresse</name>
+                    <name lang="nl-NL">e-mail only</name>
+                    <name>e-mail only</name>
+                </option>
+                <option>
+                    <id>full</id>
+                    <name lang="de-DE">komplette Userdaten</name>
+                    <name lang="nl-NL">full user data</name>
+                    <name>full user data</name>
+                </option>
+            </options>
+            <defaultValue>mail</defaultValue>
+            <label lang="de-DE">Erweiterte Conversions im Checkout</label>
+            <label lang="nl-NL">Enhanced Conversions bij de Checkout</label>
+            <label>Enhanced Conversions in checkout</label>
+            <helpText lang="de-DE">Legt fest, welche Daten in den erweiterten Conversions übergeben werden sollen.</helpText>
+            <helpText lang="nl-NL">Bepaalt welke gegevens moeten worden doorgegeven in de geavanceerde conversies.</helpText>
+            <helpText>Which data should be transferred when using Enhanced Conversions.</helpText>
+        </input-field>
+
+        <input-field type="bool">
+            <name>eeEnhancedConversionHashing</name>
+            <label lang="de-DE">Enhanced Conversion Daten vor dem Senden hashen?</label>
+            <label lang="nl-NL">Enhanced Conversion gegevens hashen voordat ze worden verzongen?</label>
+            <label>Hash Enhanced Conversion data before sending?</label>
+            <defaultValue>true</defaultValue>
+            <helpText lang="de-DE">Diese Option hasht die Kund*innen Daten (Mailadresse, Vorname, Nachname, Strasse, Telefonnummer) vor der Übergabe an Google. Wir empfehlen dies zu aktivieren, prüfen Sie aber nach der Aktivierung, ob Google die gehashten Daten auch akzeptiert.</helpText>
+            <helpText lang="nl-NL">Met deze optie worden de klantgegevens (e-mailadres, voornaam, achternaam, straat, telefoonnummer) gehasht voordat deze aan Google worden overgedragen. Wij adviseren deze te activeren, maar controleer na het activeren of Google de gehashte gegevens ook accepteert.</helpText>
+            <helpText>This option hashes customer data (mail address, first name, last name, street, phone number) before sending it to Google. Recommended, but please review your GA settings after changing this option and verify it still works.</helpText>
+        </input-field>
+    </card>
+
+    <card>
+        <title>Developer configuration</title>
+        <title lang="de-DE">Entwickler Konfiguration</title>
+        <title lang="nl-NL">Configuratie voor ontwikkelaars</title>
+
+        <input-field type="bool">
+            <name>removeContainerCode</name>
+            <label lang="de-DE">Nur Datalayer ausgeben? (Container Code entfernen)</label>
+            <label lang="nl-NL">Alleen Datalayer uitgeven? (Verwijder Container Code)</label>
+            <label>Datalayer only? (Remove container code)</label>
+            <defaultValue>false</defaultValue>
+            <helpText lang="de-DE">Dies sollte nur aktiviert werden, wenn Sie den Container Code manuell einbinden oder ein Drittanbieter-Tool nutzen, welches den Container Code obsolet macht.</helpText>
+            <helpText lang="nl-NL">Dit mag alleen worden ingeschakeld als u de Containter Code handmatig invoert of een tool van derden gebruikt die de Containter Code overbodig maakt.</helpText>
+            <helpText>This should be only used in specific cases where you need to place the container code manually or using another tool.</helpText>
+        </input-field>
+
+        <input-field type="bool">
+            <name>delayCodeInsertion</name>
+            <label lang="de-DE">GTM Code verzögert einfügen?</label>
+            <label lang="nl-NL">GTM-code vertraagd invoegen?</label>
+            <label>Delay insertion of GTM main code?</label>
+            <defaultValue>false</defaultValue>
+            <helpText lang="de-DE">Verzögert die Einfügung des GTM-Codes um die unten angegebene Dauer in Millisekunden. Kann zu verbesserten Werten für TTI und TBT führen, weil zusätzliches Javascript verzögert geladen wird.</helpText>
+            <helpText lang="nl-NL">Vertraagt het invoegen van de GTM-code gedurende de hieronder aangegeven duur in milliseconden. Kan resulteren in verbeterde TTI- en TBT-waarden vanwege het vertraagd laden van extra Javascript.</helpText>
+            <helpText>Delays the insertion of GTM main code. Can lead to better scores for TTI and TBT, since additional JS is loaded later.</helpText>
+        </input-field>
+
+        <input-field type="int">
+            <name>delayCodeInsertionTime</name>
+            <label lang="de-DE">Verzögerungszeit für Code-Einfügung (siehe oben)</label>
+            <label lang="nl-NL">Vertragingstijd voor code-invoer (zie hierboven)</label>
+            <label>Code insertion delay time</label>
+            <defaultValue>3000</defaultValue>
+            <helpText lang="de-DE">Geben Sie an, um welche Zeit die Code-Einfügung verzögert werden soll (in Millisekunden, Standard: 3000).</helpText>
+            <helpText lang="nl-NL">Geef op hoe lang het invoegen van de code moet worden uitgesteld (in milliseconden, standaard: 3000).</helpText>
+            <helpText>Delays the insertion of GTM main code. Can lead to better scores for TTI and TBT, since additional JS is loaded later.</helpText>
+        </input-field>
+
+        <input-field type="bool">
+            <name>delayCodeInsertionFinishpageException</name>
+            <label lang="de-DE">Code Verzögerung auf Bestellabschluss-Seite aussetzen?</label>
+            <label lang="nl-NL">Code-vertraging op de pagina voor het voltooien van de bestelling opschorten?</label>
+            <label>Skip delay on finish-page?</label>
+            <defaultValue>false</defaultValue>
+            <helpText lang="de-DE">Um sicherzustellen, dass Conversions IMMER getrackt werden, kann es Sinn machen, den Code auf der Bestellabschluss-Seite sofort einzufügen.</helpText>
+            <helpText lang="nl-NL">Om ervoor te zorgen dat conversies ALTIJD worden bijgehouden, kan het zinvol zijn om de code onmiddellijk in te voegen op de pagina voor het voltooien van de bestelling.</helpText>
+            <helpText>To ensure that conversions are ALWAYS tracked, it can be useful to insert the code on finish-pages immediately.</helpText>
+        </input-field>
+
+        <input-field>
+            <name>customGtmJsUrl</name>
+            <label lang="de-DE">Eigene GTM.js URL</label>
+            <label lang="nl-NL">Eigen GTM.js URL</label>
+            <label>Custom GTM.js URL</label>
+            <helpText lang="de-DE">Falls gewünscht, können Sie das GTM.js auch über Ihren eigenen Server ausliefern. Geben Sie im Anschluss hier die URL an. Beispiel: https://www.codiverse.de/mygtmscript.js oder https://www.codiverse.de/ oder https://www.codiverse.de/gtm.js</helpText>
+            <helpText lang="nl-NL">Indien gewenst kunt u de GTM.js ook via uw eigen server aanleveren. Vul dan hier de URL in. Voorbeeld: https://www.codiverse.de/mygtmscript.js oder https://www.codiverse.de/ oder https://www.codiverse.de/gtm.js</helpText>
+            <helpText>If you'd like to stay in first-party-context and deliver the gtm.js Script via your own server, please provide the URL here. Example: https://www.codiverse.de/mygtmscript.js or https://www.codiverse.de/ or https://www.codiverse.de/gtm.js</helpText>
+        </input-field>
+
+        <input-field type="single-select">
+            <name>tagmanagerLogging</name>
+            <options>
+                <option>
+                    <id>off</id>
+                    <name>off</name>
+                    <name lang="de-DE">Ausgeschaltet</name>
+                    <name lang="nl-NL">off</name>
+                </option>
+                <option>
+                    <id>debug</id>
+                    <name>debug</name>
+                    <name lang="de-DE">Debug</name>
+                    <name lang="nl-NL">Debug</name>
+                </option>
+            </options>
+            <defaultValue>off</defaultValue>
+            <label lang="de-DE">Entwickler: Logging</label>
+            <label lang="nl-NL">Ontwikkelaar: Logging</label>
+            <label>Developer: logging</label>
+        </input-field>
+    </card>
+</config>

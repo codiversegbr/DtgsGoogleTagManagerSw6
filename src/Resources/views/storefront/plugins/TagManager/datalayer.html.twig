@@ -1,0 +1,20 @@
+{% if page.extensions.GoogleTagManagerConfig.status == 'enabled' %}
+    <script>
+        dataLayer = window.dataLayer || [];
+        // Clear the previous ecommerce object
+        dataLayer.push({ ecommerce: null });
+        // Push regular datalayer
+        dataLayer.push({{ page.extensions.GoogleTagManagerConfig.tags|raw }});
+        {% if page.extensions.GoogleTagManagerConfig.ga4_tags != '[]' %}
+        // Push new GA4 tags
+        dataLayer.push({{ page.extensions.GoogleTagManagerConfig.ga4_tags|raw }});
+        {%  endif %}
+        {% if config('DtgsGoogleTagManagerSw6.config.remarketingEnabled') %}
+            var google_tag_params = {{ page.extensions.GoogleTagManagerConfig.remarketing_tags|raw }};
+            dataLayer.push ({
+                'event':'remarketingTriggered',
+                'google_tag_params': window.google_tag_params
+            });
+        {%  endif %}
+    </script>
+{%  endif %}
