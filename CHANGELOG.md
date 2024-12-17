@@ -2,7 +2,9 @@
 - Google Ads Consent Setting is now separate from Shopwares Google Ads Cookie (FD-33043)
 
 # 6.3.16
-- Added wishlist events
+- New: Added wishlist add/remove events on listing & detail pages
+- Bugfix: Price in listing events (FD-33029)
+- Bugfix: Comments in JS (CDVRS-56)
 
 # 6.3.15
 - Bugfix: Possible Error in Cart when using coupons

@@ -2,7 +2,9 @@
 - Google Ads Consent Einstellung ist nun unabhängig von Shopwares Google Ads Cookie (FD-33043)
 
 # 6.3.16
-- Wunschlisten Events hinzugefügt
+- Neu: Wunschlisten Events (add/remove) auf Listen-/Detailseiten hinzugefügt
+- Bugfix: Preis in Listen-Events (FD-33029)
+- Bugfix: Kommentare in JS (CDVRS-56)
 
 # 6.3.15
 - Bugfix: Möglicher Fehler im Cart beim Benutzen von Gutscheinen
