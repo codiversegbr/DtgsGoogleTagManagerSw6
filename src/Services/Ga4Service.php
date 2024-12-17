@@ -10,6 +10,7 @@ use Dtgs\GoogleTagManager\Components\Helper\ProductHelper;
 use Shopware\Core\Checkout\Cart\LineItem\LineItem;
 use Shopware\Core\Checkout\Cart\LineItem\LineItemCollection;
 use Shopware\Core\Checkout\Cart\Price\Struct\CalculatedPrice;
+use Shopware\Core\Checkout\Customer\Aggregate\CustomerWishlist\CustomerWishlistEntity;
 use Shopware\Core\Checkout\Order\OrderEntity;
 use Shopware\Core\Checkout\Promotion\Cart\PromotionProcessor;
 use Shopware\Core\Content\Category\CategoryEntity;
@@ -213,6 +214,14 @@ class Ga4Service
         $ga4_tags['items'] = $this->getImpressions($listing, $eeMaxAmountCategoriesForImpressions, $context, 'Category', $category);
 
         return $this->addEeEvent($ga4_tags, 'view_item_list');
+
+    }
+
+    public function getWishlistTags(mixed $navigationId, CustomerWishlistEntity $wishlist, SalesChannelContext $getSalesChannelContext)
+    {
+
+        var_dump($wishlist->getProducts());
+        exit;
 
     }
 

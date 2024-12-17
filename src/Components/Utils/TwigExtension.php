@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace Dtgs\GoogleTagManager\Components\Utils;
 
+use Composer\InstalledVersions;
+use OutOfBoundsException;
+use Shopware\Core\Content\Product\SalesChannel\SalesChannelProductEntity;
 use Twig\Extension\AbstractExtension;
 use Twig\TwigFunction;
 
@@ -21,6 +24,7 @@ class TwigExtension extends AbstractExtension
             new TwigFunction('gtmGetNoScriptUrl', [$this, 'getNoScriptUrl']),
             new TwigFunction('gtmGetVariantName', [$this, 'getVariantName']),
             new TwigFunction('gtmGetCalculatedProductPrice', [$this, 'getCalculatedProductPrice']),
+            new TwigFunction('gtmGetShopwareVersion', [$this, 'getShopwareVersion']),
         ];
     }
 
@@ -129,10 +133,8 @@ class TwigExtension extends AbstractExtension
 
         $ga4tagsAsObject = json_decode($ga4tags);
 
-        if(!is_array($lineItem)) return '';
-        if(isset($lineItem['productNumber'])) $sku = $lineItem['productNumber'];
-        //Coupon?
-        if(isset($lineItem['promotionId'])) $sku = 'voucher';
+        $sku = $this->getSkuFromLineItem($lineItem);
+        if(false === $sku) return '';
 
         try {
             if(!is_object($ga4tagsAsObject)) return '';
@@ -151,4 +153,36 @@ class TwigExtension extends AbstractExtension
 
         return '';
     }
+
+    /**
+     * @param $item
+     * @return false|mixed|string
+     */
+    private function getSkuFromLineItem($item): mixed
+    {
+        if(is_array($item)) {
+            if(isset($item['productNumber'])) return $item['productNumber'];
+            //Coupon?
+            if(isset($item['promotionId'])) return 'voucher';
+        }
+        if(!is_array($item) && get_class($item) == SalesChannelProductEntity::class) {
+            return $item->getProductNumber();
+        }
+
+        return false;
+    }
+
+    /**
+     * @return string|array|null
+     */
+    public function getShopwareVersion(): string|array|null
+    {
+        try {
+            return InstalledVersions::getVersion('shopware/core');
+        } catch (OutOfBoundsException $e) {
+            // Entwicklungsversion! shopware/core ist nicht installiert!
+            return '0.0.0.0';
+        }
+    }
+
 }

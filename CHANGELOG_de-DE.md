@@ -1,3 +1,6 @@
+# 6.3.17
+- Google Ads Consent Einstellung ist nun unabhängig von Shopwares Google Ads Cookie (FD-33043)
+
 # 6.3.16
 - Wunschlisten Events hinzugefügt
 

@@ -41,6 +41,7 @@ use Shopware\Storefront\Page\Page;
 use Shopware\Storefront\Page\PageLoadedEvent;
 use Shopware\Storefront\Page\Product\ProductPageLoadedEvent;
 use Shopware\Storefront\Page\Search\SearchPageLoadedEvent;
+use Shopware\Storefront\Page\Wishlist\WishlistPageLoadedEvent;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpKernel\Event\ResponseEvent;
 use Symfony\Component\HttpKernel\KernelEvents;
@@ -119,6 +120,8 @@ class GeneralSubscriber implements EventSubscriberInterface
             CmsPageLoadedEvent::class => 'onCmsPageLoaded',
             //
             OffcanvasCartPageLoadedEvent::class => 'onPageLoaded',
+            //
+            WishlistPageLoadedEvent::class => 'onPageLoaded',
         ];
     }
 
@@ -238,6 +241,13 @@ class GeneralSubscriber implements EventSubscriberInterface
             case SearchPageLoadedEvent::class:
                 $searchTags = $this->datalayerService->getSearchTags($page->getSearchTerm(), $page->getListing());
                 $remarketingTags = $this->remarketingService->getSearchTags($event->getRequest());
+                break;
+            case WishlistPageLoadedEvent::class:
+                $navigationId = $event->getRequest()->get('navigationId', $event->getSalesChannelContext()->getSalesChannel()->getNavigationCategoryId());
+                $navigationTags = $this->datalayerService->getNavigationTags($navigationId, $event->getSalesChannelContext());
+                $listing = $event->getPage()->getWishlist()->getProductListing();
+                $ga4Tags = $this->ga4Service->getNavigationTags($navigationId, $listing, $event->getSalesChannelContext());
+                $remarketingTags = $this->remarketingService->getNavigationTags($navigationId, $listing, $event->getSalesChannelContext(), $event->getRequest());
                 break;
             case NavigationPageLoadedEvent::class:
                 $navigationId = $event->getRequest()->get('navigationId', $event->getSalesChannelContext()->getSalesChannel()->getNavigationCategoryId());
