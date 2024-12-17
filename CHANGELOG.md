@@ -1,5 +1,6 @@
 # 6.3.17
 - Google Ads Consent Setting is now separate from Shopwares Google Ads Cookie (FD-33043)
+- New: view_item_list is now fired on wishlist (CDVRS-51)
 
 # 6.3.16
 - New: Added wishlist add/remove events on listing & detail pages
