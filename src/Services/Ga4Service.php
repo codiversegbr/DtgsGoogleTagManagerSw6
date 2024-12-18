@@ -216,15 +216,7 @@ class Ga4Service
         return $this->addEeEvent($ga4_tags, 'view_item_list');
 
     }
-
-    public function getWishlistTags(mixed $navigationId, CustomerWishlistEntity $wishlist, SalesChannelContext $getSalesChannelContext)
-    {
-
-        var_dump($wishlist->getProducts());
-        exit;
-
-    }
-
+    
     /**
      * SW6 ready
      *
