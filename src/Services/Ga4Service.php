@@ -216,7 +216,7 @@ class Ga4Service
         return $this->addEeEvent($ga4_tags, 'view_item_list');
 
     }
-    
+
     /**
      * SW6 ready
      *
