@@ -106,7 +106,7 @@ class DatalayerService
         $tagManagerConfig = $this->getGtmConfig($salesChannelId);
 
         if(isset($tagManagerConfig['googleId']) && $tagManagerConfig['googleId'] != '') {
-            $ids = explode(',', $tagManagerConfig['googleId']);
+            $ids = array_map('trim', explode(',', $tagManagerConfig['googleId']));
             return $ids;
         }
 
