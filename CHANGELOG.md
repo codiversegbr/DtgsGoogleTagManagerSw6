@@ -1,3 +1,7 @@
+# 6.3.18
+- New: trim GTM-IDs when using multiple (CDVRS-61)
+- New: remove_from_wishlist is now fired on wishlist (CDVRS-51)
+
 # 6.3.17
 - Google Ads Consent Setting is now separate from Shopwares Google Ads Cookie (FD-33043)
 - New: view_item_list is now fired on wishlist (CDVRS-51)

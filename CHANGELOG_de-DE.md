@@ -1,3 +1,7 @@
+# 6.3.18
+- Neu: Leerzeichen bei mehreren GTM IDs trimmen (CDVRS-61)
+- Neu: remove_from_wishlist wird nun auf Wunschlisten gefeuert (CDVRS-51)
+
 # 6.3.17
 - Google Ads Consent Einstellung ist nun unabhängig von Shopwares Google Ads Cookie (FD-33043)
 - Neu: view_item_list wird nun auf Wunschlisten gefeuert (CDVRS-51)

@@ -1,0 +1,8 @@
+{% sw_extends '@Storefront/storefront/component/product/card/box-wishlist.html.twig' %}
+
+{% block component_product_wishlist_remove_redirect %}
+    {{ parent() }}
+    <input type="hidden"
+           name="dtgs-gtm-product-sku"
+           value="{{ product.productNumber }}">
+{% endblock %}

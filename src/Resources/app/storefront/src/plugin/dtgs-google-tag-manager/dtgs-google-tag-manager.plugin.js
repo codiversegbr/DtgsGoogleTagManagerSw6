@@ -43,6 +43,11 @@ export default class DtgsGoogleTagManagerPlugin extends Plugin
             if(wishlistPlugin) wishlistPlugin.$emitter.subscribe('Wishlist/onProductAdded', this.onWishlistAdd.bind(this));
             if(wishlistPlugin) wishlistPlugin.$emitter.subscribe('Wishlist/onProductRemoved', this.onWishlistRemove.bind(this));
         }
+        //subscribe to wishlist remove form
+        const wishlistFormElement = DomAccessHelper.querySelector(document, '.product-wishlist-form', false);
+        if (wishlistFormElement) {
+            wishlistFormElement.addEventListener('submit', this.onWishlistRemoveFormSubmit.bind(this));
+        }
 
     }
 
@@ -211,27 +216,33 @@ export default class DtgsGoogleTagManagerPlugin extends Plugin
      * added in 6.3.16
      */
     onWishlistAdd(event) {
-        this.fireWishlistEvent(event, 'add_to_wishlist');
+        let skuField = this.getSkuFromEvent(event);
+        this.fireWishlistEvent(skuField, 'add_to_wishlist');
     }
 
     /**
      * added in 6.3.16
      */
     onWishlistRemove(event) {
-        this.fireWishlistEvent(event, 'remove_from_wishlist');
+        let skuField = this.getSkuFromEvent(event);
+        this.fireWishlistEvent(skuField, 'remove_from_wishlist');
+    }
+
+    /**
+     * added in 6.3.18
+     * @param event
+     */
+    onWishlistRemoveFormSubmit(event) {
+
+        let skuField = DomAccessHelper.querySelector(event.target, 'input[name="dtgs-gtm-product-sku"]', false);
+        this.fireWishlistEvent(skuField, 'remove_from_wishlist');
+
     }
 
     /**
      * added in 6.3.16
      */
-    fireWishlistEvent(event, gtm_event_name) {
-
-        let skuField = null;
-        let productId = event.detail.productId;
-        let siblingHiddenField = DomAccessHelper.querySelector(document, 'input[value="' + productId + '"]', false);
-        if(siblingHiddenField) {
-            skuField = DomAccessHelper.querySelector(siblingHiddenField.parentNode, 'input[name="dtgs-gtm-product-sku"]', false);
-        }
+    fireWishlistEvent(skuField, gtm_event_name) {
 
         if(skuField !== null) {
 
@@ -283,4 +294,18 @@ export default class DtgsGoogleTagManagerPlugin extends Plugin
         return lineItems;
     }
 
+    /**
+     * added in 6.3.18
+     * @param event
+     * @returns {*}
+     */
+    getSkuFromEvent(event) {
+
+        let productId = event.detail.productId;
+        let siblingHiddenField = DomAccessHelper.querySelector(document, 'input[value="' + productId + '"]', false);
+        if(siblingHiddenField) {
+            return DomAccessHelper.querySelector(siblingHiddenField.parentNode, 'input[name="dtgs-gtm-product-sku"]', false);
+        }
+
+    }
 }
