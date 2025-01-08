@@ -47,7 +47,7 @@ class TwigExtension extends AbstractExtension
     {
         if(empty($containerIds) || $containerIds == '') return [];
 
-        return explode(',', $containerIds);
+        return array_map('trim', explode(',', $containerIds));
     }
 
     /**

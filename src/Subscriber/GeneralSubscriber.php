@@ -13,11 +13,8 @@ use Shopware\Core\Content\Cms\CmsPageEntity;
 use Shopware\Core\Content\Cms\Events\CmsPageLoadedEvent;
 use Shopware\Core\Content\Cms\SalesChannel\Struct\ProductListingStruct;
 use Shopware\Core\Content\Product\SalesChannel\SalesChannelProductEntity;
-use Shopware\Core\Framework\DataAbstractionLayer\Event\EntitySearchedEvent;
 use Shopware\Core\Framework\Struct\ArrayEntity;
 use Shopware\Core\Framework\Struct\Struct;
-use Shopware\Core\PlatformRequest;
-use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Shopware\Storefront\Page\Account\Login\AccountLoginPageLoadedEvent;
 use Shopware\Storefront\Page\Account\Order\AccountEditOrderPageLoadedEvent;
@@ -43,8 +40,6 @@ use Shopware\Storefront\Page\Product\ProductPageLoadedEvent;
 use Shopware\Storefront\Page\Search\SearchPageLoadedEvent;
 use Shopware\Storefront\Page\Wishlist\WishlistPageLoadedEvent;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
-use Symfony\Component\HttpKernel\Event\ResponseEvent;
-use Symfony\Component\HttpKernel\KernelEvents;
 
 class GeneralSubscriber implements EventSubscriberInterface
 {
