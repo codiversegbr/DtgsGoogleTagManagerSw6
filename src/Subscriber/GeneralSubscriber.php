@@ -2,18 +2,16 @@
 
 namespace Dtgs\GoogleTagManager\Subscriber;
 
+use Dtgs\GoogleTagManager\Services\AdwordsService;
 use Dtgs\GoogleTagManager\Services\CustomerTagsService;
 use Dtgs\GoogleTagManager\Services\DatalayerService;
+use Dtgs\GoogleTagManager\Services\EnhancedEcommerceService;
 use Dtgs\GoogleTagManager\Services\Ga4Service;
 use Dtgs\GoogleTagManager\Services\GeneralTagsService;
 use Dtgs\GoogleTagManager\Services\RemarketingService;
-use Exception;
 use Shopware\Core\Content\Cms\Aggregate\CmsSlot\CmsSlotEntity;
-use Shopware\Core\Content\Cms\CmsPageEntity;
-use Shopware\Core\Content\Cms\Events\CmsPageLoadedEvent;
 use Shopware\Core\Content\Cms\SalesChannel\Struct\ProductListingStruct;
 use Shopware\Core\Content\Product\SalesChannel\SalesChannelProductEntity;
-use Shopware\Core\Framework\DataAbstractionLayer\Event\EntitySearchedEvent;
 use Shopware\Core\Framework\Struct\ArrayEntity;
 use Shopware\Core\Framework\Struct\Struct;
 use Shopware\Core\PlatformRequest;
@@ -29,13 +27,13 @@ use Shopware\Storefront\Page\Address\Listing\AddressListingPageLoadedEvent;
 use Shopware\Storefront\Page\Checkout\Cart\CheckoutCartPageLoadedEvent;
 use Shopware\Storefront\Page\Checkout\Confirm\CheckoutConfirmPageLoadedEvent;
 use Shopware\Storefront\Page\Checkout\Finish\CheckoutFinishPageLoadedEvent;
-use Shopware\Storefront\Page\Checkout\Offcanvas\OffcanvasCartPageLoadedEvent;
 use Shopware\Storefront\Page\Checkout\Register\CheckoutRegisterPageLoadedEvent;
-use Shopware\Storefront\Page\GenericPageLoadedEvent;
+use Shopware\Storefront\Page\Contact\ContactPageLoadedEvent;
 use Shopware\Storefront\Page\LandingPage\LandingPageLoadedEvent;
 use Shopware\Storefront\Page\Maintenance\MaintenancePageLoadedEvent;
 use Shopware\Storefront\Page\Navigation\Error\ErrorPageLoadedEvent;
 use Shopware\Storefront\Page\Navigation\NavigationPageLoadedEvent;
+use Shopware\Storefront\Page\Newsletter\Register\NewsletterRegisterPageLoadedEvent;
 use Shopware\Storefront\Page\Newsletter\Subscribe\NewsletterSubscribePageLoadedEvent;
 use Shopware\Storefront\Page\Page;
 use Shopware\Storefront\Page\PageLoadedEvent;
@@ -60,9 +58,17 @@ class GeneralSubscriber implements EventSubscriberInterface
      */
     private $ga4Service;
     /**
+     * @var EnhancedEcommerceService
+     */
+    private $enhancedEcomService;
+    /**
      * @var RemarketingService
      */
     private $remarketingService;
+    /**
+     * @var AdwordsService
+     */
+    private $adwordsService;
     /**
      * @var GeneralTagsService
      */
@@ -75,14 +81,18 @@ class GeneralSubscriber implements EventSubscriberInterface
     public function __construct(SystemConfigService $systemConfigService,
                                 DatalayerService $datalayerService,
                                 Ga4Service $ga4Service,
+                                EnhancedEcommerceService $enhancedEcomService,
                                 RemarketingService $remarketingService,
+                                AdwordsService $adwordsService,
                                 GeneralTagsService $generalTagsService,
                                 CustomerTagsService $customerTagsService)
     {
         $this->systemConfigService = $systemConfigService;
         $this->datalayerService = $datalayerService;
         $this->ga4Service = $ga4Service;
+        $this->enhancedEcomService = $enhancedEcomService;
         $this->remarketingService = $remarketingService;
+        $this->adwordsService = $adwordsService;
         $this->generalTagsService = $generalTagsService;
         $this->customerTagsService = $customerTagsService;
     }
@@ -113,47 +123,14 @@ class GeneralSubscriber implements EventSubscriberInterface
             MaintenancePageLoadedEvent::class => 'onPageLoaded',
             //
             NewsletterSubscribePageLoadedEvent::class => 'onPageLoaded',
-            //
-            GenericPageLoadedEvent::class => 'onPageLoaded',
-            //
-            CmsPageLoadedEvent::class => 'onCmsPageLoaded',
-            //
-            OffcanvasCartPageLoadedEvent::class => 'onPageLoaded',
         ];
-    }
-
-    /**
-     * @param CmsPageLoadedEvent $event
-     * @throws Exception
-     */
-    public function onCmsPageLoaded(CmsPageLoadedEvent $event): void
-    {
-
-        $navigationId = $event->getRequest()->get('navigationId', $event->getSalesChannelContext()->getSalesChannel()->getNavigationCategoryId());
-        $ga4Tags = [];
-
-        $result = $event->getResult();
-
-        foreach ($result as $block) {
-            $listing = $this->getListingOnNavigationPage($block);
-            if($listing) {
-                $ga4Tags = $this->ga4Service->getNavigationTags($navigationId, $listing, $event->getSalesChannelContext());
-            }
-        }
-
-        $ga4Tags = $this->ga4Service->prepareTagsForView($ga4Tags);
-
-        $event->getContext()->addExtension('GoogleTagManagerConfig', new ArrayEntity([
-            'ga4_tags' => $ga4Tags
-        ]));
-
     }
 
     /**
      * Event für alle Seiten
      *
      * @param PageLoadedEvent $event
-     * @throws Exception
+     * @throws \Exception
      */
     public function onPageLoaded($event)
     {
@@ -180,6 +157,8 @@ class GeneralSubscriber implements EventSubscriberInterface
         $searchTags = [];
         //Remarketing - V6.0.1
         $remarketingTags = [];
+        //EnhancedEcommerce - 6.0.2
+        $enhancedEcomTags = [];
         //GA4 - 6.2.0
         $ga4Tags = [];
 
@@ -193,6 +172,7 @@ class GeneralSubscriber implements EventSubscriberInterface
                 $detailTags = $this->datalayerService->getDetailTags($event->getPage()->getProduct(), $event->getSalesChannelContext());
                 $remarketingTags = $this->remarketingService->getDetailTags($event->getPage()->getProduct(), $event->getSalesChannelContext());
                 $ga4Tags = $this->ga4Service->getDetailTags($event->getPage()->getProduct(), $event->getSalesChannelContext());
+                $enhancedEcomTags = $this->enhancedEcomService->getDetailTags($event->getPage()->getProduct(), $event->getSalesChannelContext());
 
                 $addToCartInfo = new ArrayEntity([
                     'price' => $ga4Tags['ecommerce']['items'][0]['price'],
@@ -209,15 +189,16 @@ class GeneralSubscriber implements EventSubscriberInterface
             case CheckoutCartPageLoadedEvent::class:
             case CheckoutConfirmPageLoadedEvent::class:
             case CheckoutRegisterPageLoadedEvent::class:
-            case OffcanvasCartPageLoadedEvent::class:
                 $checkoutTags = $this->datalayerService->getCheckoutTags($page->getCart(), $event->getSalesChannelContext());
                 $remarketingTags = $this->remarketingService->getCheckoutTags($page->getCart(), $event->getSalesChannelContext());
                 $ga4Tags = $this->ga4Service->getCheckoutTags($page->getCart(), $event);
+                $enhancedEcomTags = $this->enhancedEcomService->getCheckoutTags($page->getCart(), $event);
                 break;
             case CheckoutFinishPageLoadedEvent::class:
                 $checkoutTags = $this->datalayerService->getFinishTags($page->getOrder(), $event->getSalesChannelContext());
                 $remarketingTags = $this->remarketingService->getPurchaseConfirmationTags($page->getOrder(), $event->getSalesChannelContext());
                 $ga4Tags = $this->ga4Service->getPurchaseConfirmationTags($page->getOrder(), $event->getSalesChannelContext());
+                $enhancedEcomTags = $this->enhancedEcomService->getPurchaseConfirmationTags($page->getOrder(), $event->getSalesChannelContext());
                 /**
                  * Code insertion delay exception on finish pages - since 6.2.9
                  */
@@ -238,31 +219,31 @@ class GeneralSubscriber implements EventSubscriberInterface
             case SearchPageLoadedEvent::class:
                 $searchTags = $this->datalayerService->getSearchTags($page->getSearchTerm(), $page->getListing());
                 $remarketingTags = $this->remarketingService->getSearchTags($event->getRequest());
+                $enhancedEcomTags = $this->enhancedEcomService->getSearchTags($page->getSearchTerm(), $page->getListing(), $event->getSalesChannelContext());
                 break;
             case NavigationPageLoadedEvent::class:
                 $navigationId = $event->getRequest()->get('navigationId', $event->getSalesChannelContext()->getSalesChannel()->getNavigationCategoryId());
                 $navigationTags = $this->datalayerService->getNavigationTags($navigationId, $event->getSalesChannelContext());
 
                 /** @var SalesChannelProductEntity[] $products */
-                $cmsPage = $event->getPage()->getCmsPage();
-                if($cmsPage) {
-                    $listing = $this->getListingOnNavigationPage($cmsPage);
-                    if($listing) {
-                        $remarketingTags = $this->remarketingService->getNavigationTags($navigationId, $listing, $event->getSalesChannelContext(), $event->getRequest());
-                        $ga4Tags = $this->ga4Service->getNavigationTags($navigationId, $listing, $event->getSalesChannelContext());
-                    }
-                    else {
-                        $remarketingTags = $this->remarketingService->getBasicTags($event->getRequest());
-                    }
+                $listing = $this->getListingOnNavigationPage($event->getPage());
+                if($listing) {
+                    $remarketingTags = $this->remarketingService->getNavigationTags($navigationId, $listing, $event->getSalesChannelContext(), $event->getRequest());
+                    $enhancedEcomTags = $this->enhancedEcomService->getNavigationTags($navigationId, $listing, $event->getSalesChannelContext());
+                    $ga4Tags = $this->ga4Service->getNavigationTags($navigationId, $listing, $event->getSalesChannelContext());
+                }
+                else {
+                    $remarketingTags = $this->remarketingService->getBasicTags($event->getRequest());
+                    $enhancedEcomTags = $this->enhancedEcomService->getBasicTags($event->getSalesChannelContext());
                 }
                 break;
             case ErrorPageLoadedEvent::class:
             case NewsletterSubscribePageLoadedEvent::class:
             case MaintenancePageLoadedEvent::class:
             case LandingPageLoadedEvent::class:
-            case GenericPageLoadedEvent::class:
             default:
                 $remarketingTags = $this->remarketingService->getBasicTags($event->getRequest());
+                $enhancedEcomTags = $this->enhancedEcomService->getBasicTags($event->getSalesChannelContext());
                 break;
         }
 
@@ -279,6 +260,7 @@ class GeneralSubscriber implements EventSubscriberInterface
 
         $remarketingTags = $this->remarketingService->prepareTagsForView($remarketingTags);
         $ga4Tags = $this->ga4Service->prepareTagsForView($ga4Tags);
+        $enhancedEcomTags = $this->enhancedEcomService->prepareTagsForView($enhancedEcomTags);
 
         $adwords_tracking_enabled = isset($tagManagerConfig['googleAdwordsId']) && $tagManagerConfig['googleAdwordsId'] != '';
 
@@ -298,6 +280,7 @@ class GeneralSubscriber implements EventSubscriberInterface
             'tags' => $datalayerTags,
             'remarketing_tags' => $remarketingTags,
             'ga4_tags' => $ga4Tags,
+            'enhancedecommerce_tags' => $enhancedEcomTags,
             'adwords_tracking_enabled' => $adwords_tracking_enabled,
             'status' => $status,
             'additionalServiceCode' => $additionalServiceCode,
@@ -310,9 +293,11 @@ class GeneralSubscriber implements EventSubscriberInterface
      * @param Struct $page
      * @return array|void
      */
-    private function getListingOnNavigationPage(CmsPageEntity $cmsPage)
+    private function getListingOnNavigationPage(Struct $page)
     {
-        if ($cmsPage->getType() !== 'product_list') {
+        $cmsPage = $page->getCmsPage();
+
+        if (!$cmsPage || $cmsPage->getType() !== 'product_list') {
             return;
         }
 

@@ -1,66 +1,33 @@
-# 6.3.16
-- Added wishlist events
-
-# 6.3.15
-- Bugfix: Possible Error in Cart when using coupons
-
-# 6.3.14
-- New: select_item now fires after using pagination in listing (CDVRS-53)
-- New: view_cart now fires when viewing offcanvas cart (CDVRS-52)
-- Bugfix: JS Error in listing when buy button is off (CDVRS-54)
-- Bugfix: Possible Error on json_decoding GA4 data
-
-# 6.3.13
-- Bugfix: Fixed a bug with pagination on listing pages
-
-# 6.3.12
-- New: Plugin-Config now also available in Dutch (CDVRS-34)
-- New: GenericPageLoadedEvent added as event (FD-32989)
-- New: Added more data to select_item event (CDVRS-45)
-- Bugfix: Prices in add_to_cart_list are now according to setting in config (CDVRS-46)
-
-# 6.3.11
+# 6.2.19
 - New: Added more data to remove_from_cart event
 - Bugfix: Noscript Code will now be removed if using plugin in datalayer only mode
 
-# 6.3.10
-- New: Consent Mode update is now sent immediately, not just upon page reload (CDVRS-40)
-
-# 6.3.9
+# 6.2.18
 - view_item_list-Event now includes item_variant (CDVRS-36)
-- view_item_list-Event now includes item_category (CDVRS-36)
-- small bugfixes for view_item_list-Event (CDVRS-36)
-- Indices added for Events view_cart, confirm_order und purchase. Indices now start globally at 0 instead of 1 (CDVRS-38)
 
-CAUTION: Due to a bug in SW 6.6.6.0, our plugin is not compatible with this version.
-Please install SW 6.6.6.1, which is already available for download.
+# 6.2.17
+- Update: Added default value for Enhanced Conversion hashing (true)
+- Bugfix: Possible error when user does not provide a phone number and EC hashing is active
 
-# 6.3.8
-- removed old snippet/translation files (CDVRS-35)
-
-# 6.3.7
+# 6.2.16
 - New: item_variant Parameter added to checkout events (CDVRS-22)
 - New: option to hash enhanced conversion data before sending it to Google (CDVRS-28)
 - Update: CookieFirst integration updated (CDVRS-26)
 - Bugfix: Undefined array key "item_category" on detail pages (CDVRS-30)
 
-# 6.3.6
-- Bugfix: Exception handling for products without UUIDs (e.g. vouchers) (CDVRS-23)
-
-# 6.3.5
-- Removed deprecated services
-
-# 6.3.4
+# 6.2.15
 - Bugfix: Exception handling for products without UUIDs (e.g. deposit)
 - Bugfix: Exception handling for custom products (SW Plugin SwagCustomizedProducts)
 
-# 6.3.3
+# 6.2.14
+- Bugfix: hidden fields for add_to_cart event are now also included in component/buy-widget/buy-widget-form.html.twig Template for better compatibility
+
+# 6.2.13
 - New: value-Parameter in add_to_cart Event (CDVRS-1)
 - New: Category in "add_to_cart" Event (CDVRS-11)
 - New: Parent Product ID in Datalayer (CDVRS-13)
-- Bugfix: Detail Page Template is now using component/buy-widget/buy-widget-form.html.twig Template
 
-# 6.3.2
+# 6.2.12
 - Bugfix: Missing semicolon in Remarketing Code (FD-32841)
 - Bugfix: Loading of Customer Group (FD-32842)
 - Bugfix: PHP Warning when entering a voucher code (SW-267207)
@@ -68,11 +35,8 @@ Please install SW 6.6.6.1, which is already available for download.
 - PageHiding Option removed (Functionality has been discontinued by Google)
 - New: Option to chose from different implementation styles for Google Consent Mode. Please review your plugin settings.
 
-# 6.3.1
+# 6.2.11
 - Due to the way that Shopware implemented Google's Consent Mode V2, some setups could lose connection to GA. This update fixes this issue. Please check your data after installing this update and read our detailed blogpost: https://www.codiverse.de/google-consent-mode-2-0-infos-und-nutzung/
-
-# 6.3.0
-- SW6.6 compatibility
 
 # 6.2.10
 - Bugfix for promocodes in Datalayer on purchase confirmation pages

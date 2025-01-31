@@ -16,5 +16,12 @@
                 'google_tag_params': window.google_tag_params
             });
         {%  endif %}
+        {% if config('DtgsGoogleTagManagerSw6.config.legacyTrackingEnabled') %}
+            {% if page.extensions.GoogleTagManagerConfig.enhancedecommerce_tags != '[]' %}
+            dataLayer.push (
+                {{ page.extensions.GoogleTagManagerConfig.enhancedecommerce_tags|raw }}
+            );
+            {%  endif %}
+        {%  endif %}
     </script>
 {%  endif %}

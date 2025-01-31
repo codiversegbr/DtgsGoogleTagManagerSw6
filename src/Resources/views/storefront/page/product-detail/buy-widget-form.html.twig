@@ -1,0 +1,9 @@
+{% sw_extends '@Storefront/storefront/page/product-detail/buy-widget-form.html.twig' %}
+
+{% block page_product_detail_product_buy_meta %}
+
+    {{ parent() }}
+
+    {% sw_include 'storefront/plugins/TagManager/buy-form.html.twig' %}
+
+{% endblock %}

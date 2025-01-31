@@ -1,22 +1,12 @@
-{% set ga4Tags = page.extensions.GoogleTagManagerConfig.ga4_tags %}
-{% set cmsGa4Tags = context.context.extensions.GoogleTagManagerConfig.ga4_tags %}
-
-{% set gtmCalculatedProductPrice = gtmGetCalculatedProductPrice(product, ga4Tags, cmsGa4Tags) %}
-
 <input type="hidden"
        name="dtgs-gtm-currency-code"
        value="{{ page.header.activeCurrency.isoCode }}">
 <input type="hidden"
        name="dtgs-gtm-product-price"
-       value="{{ gtmCalculatedProductPrice }}">
+       value="{{ product.calculatedPrice.unitPrice }}">
 <input type="hidden"
        name="dtgs-gtm-product-sku"
        value="{{ product.productNumber }}">
-{% if product.manufacturer %}
-    <input type="hidden"
-           name="dtgs-gtm-product-brand"
-           value="{{ product.manufacturer.translated.name }}">
-{% endif %}
 {% if(page.header.navigation.active.name) %}
     <input type="hidden"
            name="dtgs-gtm-product-category"

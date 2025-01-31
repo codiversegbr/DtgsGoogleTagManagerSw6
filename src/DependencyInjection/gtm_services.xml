@@ -26,6 +26,23 @@
             <argument type="service" id="Dtgs\GoogleTagManager\Components\Helper\LoggingHelper" />
         </service>
 
+        <service id="Dtgs\GoogleTagManager\Services\EnhancedEcommerceService">
+            <argument type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService" />
+            <argument type="service" id="service_container"/>
+            <argument type="service" id="Dtgs\GoogleTagManager\Components\Helper\ProductHelper" />
+            <argument type="service" id="Dtgs\GoogleTagManager\Components\Helper\CategoryHelper" />
+            <argument type="service" id="Dtgs\GoogleTagManager\Components\Helper\ManufacturerHelper" />
+            <argument type="service" id="Dtgs\GoogleTagManager\Components\Helper\PriceHelper" />
+            <argument type="service" id="Dtgs\GoogleTagManager\Components\Helper\LoggingHelper" />
+        </service>
+
+        <service id="Dtgs\GoogleTagManager\Services\AdwordsService">
+            <argument type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService" />
+            <argument type="service" id="Dtgs\GoogleTagManager\Services\GeneralTagsService" />
+            <argument type="service" id="Dtgs\GoogleTagManager\Components\Helper\PriceHelper" />
+            <argument type="service" id="Dtgs\GoogleTagManager\Components\Helper\LoggingHelper" />
+        </service>
+
         <service id="Dtgs\GoogleTagManager\Services\RemarketingService">
             <argument type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService" />
             <argument type="service" id="Dtgs\GoogleTagManager\Components\Helper\CategoryHelper" />

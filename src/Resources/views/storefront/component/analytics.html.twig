@@ -2,7 +2,7 @@
 
 {% set gtmConfig = config('DtgsGoogleTagManagerSw6.config') %}
 
-{% block component_head_analytics_gtag_consent %}
+{% block component_head_analytics %}
     {% if gtmConfig.consentModeImplementation == 'shopwareCmp' %}
         <script>
             window.dataLayer = window.dataLayer || [];

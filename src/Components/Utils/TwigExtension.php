@@ -20,7 +20,6 @@ class TwigExtension extends AbstractExtension
             new TwigFunction('gtmGetJsUrl', [$this, 'getJsUrl']),
             new TwigFunction('gtmGetNoScriptUrl', [$this, 'getNoScriptUrl']),
             new TwigFunction('gtmGetVariantName', [$this, 'getVariantName']),
-            new TwigFunction('gtmGetCalculatedProductPrice', [$this, 'getCalculatedProductPrice']),
         ];
     }
 
@@ -92,7 +91,7 @@ class TwigExtension extends AbstractExtension
     }
 
     /**
-     * since 6.3.7: returns variant name from option array
+     * since 6.2.16: returns variant name from option array
      * if necessary
      * @param array $options
      * @return string
@@ -110,45 +109,5 @@ class TwigExtension extends AbstractExtension
         }
 
         return trim($variantName);
-    }
-
-    /**
-     * since 6.3.12: Get Calculated Price for listing pages
-     * search for calculated price in GA4 Tags given to template
-     * use SKU to identify the product
-     *
-     * @param $lineItem
-     * @param $ga4tags
-     * @param $cmsGa4tags
-     * @return mixed
-     */
-    public function getCalculatedProductPrice($lineItem, $ga4tags, $cmsGa4tags = null): mixed
-    {
-        if ($ga4tags === null && $cmsGa4tags === null) return '';
-        if ($ga4tags === null && $cmsGa4tags) $ga4tags = $cmsGa4tags;
-
-        $ga4tagsAsObject = json_decode($ga4tags);
-
-        if(!is_array($lineItem)) return '';
-        if(isset($lineItem['productNumber'])) $sku = $lineItem['productNumber'];
-        //Coupon?
-        if(isset($lineItem['promotionId'])) $sku = 'voucher';
-
-        try {
-            if(!is_object($ga4tagsAsObject)) return '';
-            if(!is_object($ga4tagsAsObject->ecommerce)) return '';
-            if(!is_array($ga4tagsAsObject->ecommerce->items)) return '';
-            $items = $ga4tagsAsObject->ecommerce->items;
-
-            foreach ($items as $item) {
-                if(!is_object($item)) return '';
-                if($item->item_id == $sku) return $item->price;
-            }
-        }
-        catch (\Exception $exception) {
-
-        }
-
-        return '';
     }
 }

@@ -36,9 +36,9 @@ export default class GtmRemoveFromCart extends AnalyticsEvent
         dataLayer.push({ ecommerce: null });
         dataLayer.push({
             'event': 'remove_from_cart',
+            'currency': currencyCode.value,
+            'value': Number(totalPrice.value),
             'ecommerce': {
-                'currency': currencyCode.value,
-                'value': Number(totalPrice.value),
                 'items': [{
                     'item_id': hiddenInput.value,
                     'item_name': itemName.value,

@@ -1,6 +1,9 @@
 <?php
 /**
- * ProductHelper Class
+ * Created by PhpStorm.
+ * User: constantin
+ * Date: 28.02.17
+ * Time: 15:35
  */
 namespace Dtgs\GoogleTagManager\Components\Helper;
 
@@ -11,7 +14,6 @@ use Shopware\Core\Content\Product\SalesChannel\Detail\AbstractProductDetailRoute
 use Shopware\Core\Content\Product\SalesChannel\SalesChannelProductEntity;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
-use Shopware\Core\Framework\Uuid\Exception\InvalidUuidException;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Symfony\Component\HttpFoundation\Request;
 
@@ -59,7 +61,10 @@ class ProductHelper
         try {
             $result = $this->productDetailRoute->load($productId, new Request(), $context, new Criteria());
         }
-        catch (InvalidUuidException|ProductNotFoundException|\Exception $exception) {
+        catch (ProductNotFoundException $exception) {
+            return null;
+        }
+        catch (\Exception $exception) {
             return null;
         }
         return $result->getProduct();

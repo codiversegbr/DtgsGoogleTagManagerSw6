@@ -22,10 +22,12 @@ use Shopware\Storefront\Page\Checkout\Confirm\CheckoutConfirmPageLoadedEvent;
 use Shopware\Storefront\Page\Checkout\Register\CheckoutRegisterPageLoadedEvent;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
-class Ga4Service
+/**
+ * @deprecated since 6.2.0
+ */
+class EnhancedEcommerceService
 {
     private $systemConfigService;
-    private $generalTagsService;
     /**
      * @var ContainerInterface $container
      */
@@ -47,7 +49,6 @@ class Ga4Service
     private $manufacturerHelper;
 
     public function __construct(SystemConfigService $systemConfigService,
-                                GeneralTagsService $generalTagsService,
                                 ContainerInterface $container,
                                 ProductHelper $productHelper,
                                 CategoryHelper $categoryHelper,
@@ -57,7 +58,6 @@ class Ga4Service
     {
         $this->container = $container;
         $this->systemConfigService = $systemConfigService;
-        $this->generalTagsService = $generalTagsService;
         $this->productHelper = $productHelper;
         $this->categoryHelper = $categoryHelper;
         $this->manufacturerHelper = $manufacturerHelper;
@@ -77,28 +77,12 @@ class Ga4Service
     }
 
     /**
-     * SW6 ready
-     *
-     */
-    public function getAdwordsId($salesChannelId) {
-
-        $tagManagerConfig = $this->getGtmConfig($salesChannelId);
-
-        if(isset($tagManagerConfig['googleAdwordsId'])) {
-            return $tagManagerConfig['googleAdwordsId'];
-        }
-
-        return false;
-
-    }
-
-    /**
-     * @param $ga4Tags
+     * @param $enhancedEcomTags
      * @return false|string
      */
-    public function prepareTagsForView($ga4Tags)
+    public function prepareTagsForView($enhancedEcomTags)
     {
-        return json_encode($ga4Tags);
+        return json_encode($enhancedEcomTags);
     }
 
     /**
@@ -127,9 +111,9 @@ class Ga4Service
      */
     public function getDetailTags(SalesChannelProductEntity $product, SalesChannelContext $context) {
 
-        $ga4_tags = [];
+        $enhanced_ecom_tags = [];
         //Currency Code
-        $ga4_tags['currency'] = $context->getCurrency()->getIsoCode();
+        $enhanced_ecom_tags['currencyCode'] = $context->getCurrency()->getIsoCode();
 
         //New in 1.3.5 - select if brutto/netto
         $price = ($product->getCalculatedPrices()->count()) ? $product->getCalculatedPrices()->first()->getUnitPrice() : $product->getCalculatedPrice()->getUnitPrice();
@@ -144,42 +128,46 @@ class Ga4Service
             $tax = 0;
         }
 
-        $item_price = (float) $this->priceHelper->getPrice($brutto_price, $tax, $context);
-
         $product_data = [
-            'item_name'      =>  $product->getTranslation('name'),
-            'item_id'        =>  $product->getProductNumber(),
-            'price'          =>  $item_price,
-            'index' => 0, //Index auf Detailseiten immer 0
-            'item_list_name' => 'Category',
-            'quantity' => 1,
+            'name'      =>  $product->getTranslation('name'),
+            'id'        =>  $product->getProductNumber(),
+            'price'     =>  (float) $this->priceHelper->getPrice($brutto_price, $tax, $context),
         ];
-
-        //added in 6.2.16 - CDVRS-0000022
-        if($this->getVariantName($product->getVariation())) {
-            $product_data['item_variant'] = $this->getVariantName($product->getVariation());
-        }
 
         //Product Category - Changed to SEO Category in V6.1.22
         $seoCategory = $product->getSeoCategory();
         if($seoCategory) {
-            $product_data['item_category'] = $seoCategory->getTranslation('name');
-            $product_data['item_list_id'] = $seoCategory->getId();
-        } else {
-            $product_data['item_category'] = '';
+            $product_data['category'] = $seoCategory->getTranslation('name');
         }
 
         if($product->getManufacturer())
-            $product_data['item_brand'] = $product->getManufacturer()->getTranslation('name');
+            $product_data['brand'] = $product->getManufacturer()->getTranslation('name');
 
-        $ga4_tags['value'] = $item_price;
-        $ga4_tags['items'] = [$product_data];
+        $enhanced_ecom_tags['detail']['products'] = [$product_data];
 
         /**
          * Related und Similar Articles: tbd
          */
 
-        return $this->addEeEvent($ga4_tags, 'view_item');
+        $enhanced_ecom_tags = $this->addEeEvent($enhanced_ecom_tags, '');
+        return $enhanced_ecom_tags;
+
+    }
+
+    /**
+     * SW6 ready
+     *
+     * @param SalesChannelContext $context
+     * @return array
+     */
+    public function getBasicTags(SalesChannelContext $context) {
+
+        $enhanced_ecom_tags = [];
+        //Currency Code
+        $enhanced_ecom_tags['currencyCode'] = $context->getCurrency()->getIsoCode();
+
+        $enhanced_ecom_tags = $this->addEeEvent($enhanced_ecom_tags, '');
+        return $enhanced_ecom_tags;
 
     }
 
@@ -197,16 +185,44 @@ class Ga4Service
         $pluginConfig = $this->getGtmConfig($context->getSalesChannel()->getId());
         $eeMaxAmountCategoriesForImpressions = (isset($pluginConfig['eeMaxAmountCategoriesForImpressions'])) ? $pluginConfig['eeMaxAmountCategoriesForImpressions'] : 0;
 
-        $ga4_tags = [];
+        $enhanced_ecom_tags = [];
         //Currency Code
-        $ga4_tags['currency'] = $context->getCurrency()->getIsoCode();
+        $enhanced_ecom_tags['currencyCode'] = $context->getCurrency()->getIsoCode();
 
         $category = $this->categoryHelper->getCategoryById($navigationId, $context);
 
         //Impressions
-        $ga4_tags['items'] = $this->getImpressions($listing, $eeMaxAmountCategoriesForImpressions, $context, 'Category', $category->getTranslation('name'));
+        $enhanced_ecom_tags['impressions'] = $this->getImpressions($listing, $eeMaxAmountCategoriesForImpressions, $context, 'Category', $category->getTranslation('name'));
 
-        return $this->addEeEvent($ga4_tags, 'view_item_list');
+        $enhanced_ecom_tags = $this->addEeEvent($enhanced_ecom_tags, '');
+        return $enhanced_ecom_tags;
+
+    }
+
+    /**
+     * SW6 ready
+     *
+     * @param $searchTerm
+     * @param ProductListingResult $listing
+     * @param SalesChannelContext $context
+     * @return array
+     * @throws \Exception
+     */
+    public function getSearchTags($searchTerm, ProductListingResult $listing, SalesChannelContext $context) {
+
+        $pluginConfig = $this->getGtmConfig($context->getSalesChannel()->getId());
+        $eeMaxAmountCategoriesForImpressions = (isset($pluginConfig['eeMaxAmountCategoriesForImpressions'])) ? $pluginConfig['eeMaxAmountCategoriesForImpressions'] : 0;
+
+        $enhanced_ecom_tags = [];
+
+        //Currency Code
+        $enhanced_ecom_tags['currencyCode'] = $context->getCurrency()->getIsoCode();
+
+        //Impressions
+        $enhanced_ecom_tags['impressions'] = $this->getImpressions($listing->getEntities(), $eeMaxAmountCategoriesForImpressions, $context, 'Search', '');
+
+        $enhanced_ecom_tags = $this->addEeEvent($enhanced_ecom_tags, '');
+        return $enhanced_ecom_tags;
 
     }
 
@@ -222,15 +238,20 @@ class Ga4Service
 
         $pluginConfig = $this->getGtmConfig($event->getSalesChannelContext()->getSalesChannel()->getId());
         $addCategoryNames = (isset($pluginConfig['eeAddCategorynameInCheckout'])) ? $pluginConfig['eeAddCategorynameInCheckout'] : false;
-        $useNetPrices = isset($pluginConfig['showPriceType']) && $pluginConfig['showPriceType'] == 'netto';
 
-        $ga4_tags = [];
+        $enhanced_ecom_tags = [];
         //Currency Code
-        $ga4_tags['currency'] = $event->getSalesChannelContext()->getCurrency()->getIsoCode();
-        $ga4_tags['value'] = ($useNetPrices) ? $cartOrOrder->getPrice()->getNetPrice() : $cartOrOrder->getPrice()->getTotalPrice();
-        $ga4_tags['items'] = $this->getBasketItems($cartOrOrder->getLineItems(), $event->getSalesChannelContext(), $addCategoryNames, 'checkout');
+        $enhanced_ecom_tags['currencyCode'] = $event->getSalesChannelContext()->getCurrency()->getIsoCode();
 
-        return $this->addEeEvent($ga4_tags, $this->getCheckoutEventName($event));
+        //Detail Impressions
+        $enhanced_ecom_tags['checkout'] = array();
+        $enhanced_ecom_tags['checkout']['actionField'] = array(
+            'step' => $this->getCheckoutStep($event),
+        );
+        $enhanced_ecom_tags['checkout']['products'] = $this->getBasketItems($cartOrOrder->getLineItems(), $event->getSalesChannelContext(), $addCategoryNames, 'checkout');
+
+        $enhanced_ecom_tags = $this->addEeEvent($enhanced_ecom_tags, 'checkout');
+        return $enhanced_ecom_tags;
 
     }
 
@@ -242,12 +263,15 @@ class Ga4Service
      * @return array
      * @throws \Exception
      */
-    public function getPurchaseConfirmationTags(OrderEntity $order, SalesChannelContext $context): array
-    {
+    public function getPurchaseConfirmationTags(OrderEntity $order, SalesChannelContext $context) {
 
         $pluginConfig = $this->getGtmConfig($context->getSalesChannel()->getId());
         $addCategoryNames = (isset($pluginConfig['eeAddCategorynameInCheckout'])) ? $pluginConfig['eeAddCategorynameInCheckout'] : false;
         $useNetPrices = isset($pluginConfig['showPriceType']) && $pluginConfig['showPriceType'] == 'netto';
+
+        $enhanced_ecom_tags = [];
+        //Currency Code
+        $enhanced_ecom_tags['currencyCode'] = $context->getCurrency()->getIsoCode();
 
         //added in 6.1.24
         $shipping = $order->getShippingCosts();
@@ -262,44 +286,37 @@ class Ga4Service
             $shippingTax = 0;
         }
 
-        //Finish fields
-        $ga4_tags = [];
+        //added in 6.1.24
+        $revenue = ($useNetPrices) ? $order->getAmountNet() : $order->getAmountTotal();
+
+        $actionField = array(
+            'id'        => $order->getOrderNumber(),
+            'revenue'   => $revenue,
+            'tax'       => $this->priceHelper->formatPrice($order->getAmountTotal() - $order->getAmountNet()),
+            'shipping'  => (float) $this->priceHelper->getPrice($order->getShippingTotal(), $shippingTax, $context),
+        );
 
         $lineItems = $order->getLineItems()->filterByType(PromotionProcessor::LINE_ITEM_TYPE);
         if ($lineItems->count() >= 1) {
             $promoCode = $this->getPromotionCode($order->getLineItems());
             if($promoCode != '') {
-                $ga4_tags['coupon'] = $promoCode;
+                $actionField['coupon'] = $promoCode;
             }
         }
 
-        //added in 6.1.24
-        $revenue = ($useNetPrices) ? $order->getAmountNet() : $order->getAmountTotal();
+        //Finish fields
+        $enhanced_ecom_tags['purchase'] = array();
+        $enhanced_ecom_tags['purchase']['actionField'] = $actionField;
+        $enhanced_ecom_tags['purchase']['products'] = $this->getBasketItems($order->getLineItems(), $context, $addCategoryNames, 'purchase');
 
-        $ga4_tags['currency'] = $context->getCurrency()->getIsoCode();
-        $ga4_tags['transaction_id'] = $order->getOrderNumber();
-        $ga4_tags['value'] = $revenue;
-        $ga4_tags['tax'] = $this->priceHelper->formatPrice($order->getAmountTotal() - $order->getAmountNet());
-        $ga4_tags['shipping'] = (float) $this->priceHelper->getPrice($order->getShippingTotal(), $shippingTax, $context);
-        $ga4_tags['items'] = $this->getBasketItems($order->getLineItems(), $context, $addCategoryNames, 'purchase');
-
-        //added in 6.2.3
-        $adwords_tracking_enabled = isset($pluginConfig['googleAdwordsId']) && $pluginConfig['googleAdwordsId'] != '';
-        if($adwords_tracking_enabled) {
-            $ga4_tags['aw_merchant_id'] = $this->getAdwordsId($context->getSalesChannel()->getId());
-            $localeCode = $this->generalTagsService->getLocaleCode($context->getContext());
-            $ga4_tags['aw_feed_country'] = $this->generalTagsService->getCldrCountryCode($localeCode);
-            $ga4_tags['aw_feed_language'] = $this->generalTagsService->getCldrLanguageCode($localeCode);
-        }
-
-        return $this->addEeEvent($ga4_tags, 'purchase');
+        $enhanced_ecom_tags = $this->addEeEvent($enhanced_ecom_tags, 'shopwareGTM.orderCompleted');
+        return $enhanced_ecom_tags;
 
     }
 
     /**
      * @param $listing
      * @param int $maxCategories
-     * @param SalesChannelContext $context
      * @param string $listName
      * @param string $category
      * @return array
@@ -328,21 +345,14 @@ class Ga4Service
             }
 
             $item = array(
-                'item_name'      =>  $product->getTranslation('name'),
-                'item_id'        =>  $product->getProductNumber(),
-                'price'          =>  (float) $this->priceHelper->getPrice($brutto_price, $tax, $context),
-                'item_brand'     =>  ($product->getManufacturer() !== null) ? $product->getManufacturer()->getTranslation('name') : '',
-                'index'          =>  ++$i,
-                'quantity'       => 1
+                'name'      =>  $product->getTranslation('name'),
+                'id'        =>  $product->getProductNumber(),
+                'price'     =>  (float) $this->priceHelper->getPrice($brutto_price, $tax, $context),
+                'brand'     =>  ($product->getManufacturer() !== null) ? $product->getManufacturer()->getTranslation('name') : '',
+                'position'  =>  ++$i
             );
-            if($listName) $item['item_list_name'] = $listName;
-            if($category) $item['item_list_id'] = $category;
-
-            //added in 6.2.18 - CDVRS-33 + CDVRS-36
-            if($this->getVariantName($product->getVariation())) {
-                $item['item_variant'] = $this->getVariantName($product->getVariation());
-            }
-
+            if($listName) $item['list'] = $listName;
+            if($category) $item['category'] = $category;
             $tags[] = $item;
 
             //since 6.1.35
@@ -361,8 +371,7 @@ class Ga4Service
      * @return array
      * @throws \Exception
      */
-    private function  getBasketItems($listing, SalesChannelContext $context, $addCategoryNames = false, $location = 'checkout'): array
-    {
+    private function  getBasketItems($listing, SalesChannelContext $context, $addCategoryNames = false, $location = 'checkout') {
 
         $tags = array();
         if(empty($listing)) return $tags;
@@ -401,22 +410,17 @@ class Ga4Service
             }
 
             $item = array(
-                'item_name'      =>  $productName,
-                'item_id'        =>  $productNumber,
+                'name'      =>  $productName,
+                'id'        =>  $productNumber,
                 'price'     =>  (float) $this->priceHelper->getPrice($product->getPrice()->getUnitPrice(), $tax, $context),
                 'quantity'  =>  $product->getQuantity(),
             );
-
-            //added in 6.2.16 - CDVRS-0000022
-            if(isset($payload['options']) && $this->getVariantName($payload['options'])) {
-                $item['item_variant'] = $this->getVariantName($payload['options']);
-            }
 
             if(isset($payload['manufacturerId'])) {
                 //V6.1.20: add manufacturer-name
                 $manufacturer = $this->manufacturerHelper->getManufacturerById($payload['manufacturerId'], $context);
                 if($manufacturer !== null) {
-                    $item['item_brand'] = $manufacturer->getTranslation('name');
+                    $item['brand'] = $manufacturer->getTranslation('name');
                 }
             }
 
@@ -425,7 +429,7 @@ class Ga4Service
                 if($product->getReferencedId()) {
                     $salesChannelProduct = $this->productHelper->getSalesChannelProductEntityByProductId($product->getReferencedId(), $context);
                     if($salesChannelProduct !== null && $salesChannelProduct->getSeoCategory() !== null) {
-                        $item['item_category'] = $salesChannelProduct->getSeoCategory()->getTranslation('name');
+                        $item['category'] = $salesChannelProduct->getSeoCategory()->getTranslation('name');
                     }
                 }
             }
@@ -441,24 +445,26 @@ class Ga4Service
      * @param $event
      * @return int
      */
-    private function getCheckoutEventName($event)
-    {
+    private function getCheckoutStep($event) {
 
-        $event_name = 0;
+        $step = 0;
 
         switch (get_class($event)) {
+            case CheckoutCartPageLoadedEvent::class:
+                $step =  1;
+                break;
             case CheckoutConfirmPageLoadedEvent::class:
-                $event_name = 'confirm_order';
+                $step =  3;
                 break;
             case CheckoutRegisterPageLoadedEvent::class:
-                $event_name = 'begin_checkout';
+                $step =  2;
                 break;
             default:
-                $event_name = 'view_cart';
+                $step =  0;
                 break;
         }
 
-        return $event_name;
+        return $step;
 
     }
 
@@ -476,24 +482,6 @@ class Ga4Service
             }
 
         }
-    }
-
-    /**
-     * @return string|null
-     */
-    private function getVariantName(array $options)
-    {
-        if (empty($options)) return null;
-
-        $variantName = '';
-        foreach ($options as $option) {
-
-            //$variantName .= $option['group'].': '.$option['option'];
-            $variantName .= $option['option'].' ';
-
-        }
-
-        return trim($variantName);
     }
 
 }
