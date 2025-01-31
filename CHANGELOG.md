@@ -1,3 +1,11 @@
+# 6.2.20
+- New: trim GTM-IDs when using multiple (CDVRS-61)
+- New: select_item now fires after using pagination in listing (CDVRS-53)
+- New: view_cart now fires when viewing offcanvas cart (CDVRS-52)
+- New: GenericPageLoadedEvent added as event (FD-32989)
+- Bugfix: JS Error in listing when buy button is off (CDVRS-54)
+- Bugfix: Comments in JS (CDVRS-56)
+
 # 6.2.19
 - New: Added more data to remove_from_cart event
 - Bugfix: Noscript Code will now be removed if using plugin in datalayer only mode

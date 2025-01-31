@@ -1,3 +1,11 @@
+# 6.2.20
+- Neu: Leerzeichen bei mehreren GTM IDs trimmen (CDVRS-61)
+- Neu: select_item feuert nun auch nach Blättern im Listing (CDVRS-53)
+- Neu: view_cart feuert nun auch beim Offcanvas WK (CDVRS-52)
+- Neu: GenericPageLoadedEvent als Event hinzugefügt (FD-32989)
+- Bugfix: JS Fehler in Listings wenn Kaufen-Button deaktiviert (CDVRS-54)
+- Bugfix: Kommentare in JS (CDVRS-56)
+
 # 6.2.19
 - New: Mehr Daten im remove_from_cart Event
 - Bugfix: Noscript Code wird nun entfernt, wenn Plugin im Datalayer-Only Mode genutzt wird
