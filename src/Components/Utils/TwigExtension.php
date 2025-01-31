@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Dtgs\GoogleTagManager\Components\Utils;
 
+use Shopware\Core\Content\Product\SalesChannel\SalesChannelProductEntity;
 use Twig\Extension\AbstractExtension;
 use Twig\TwigFunction;
 
@@ -20,6 +21,7 @@ class TwigExtension extends AbstractExtension
             new TwigFunction('gtmGetJsUrl', [$this, 'getJsUrl']),
             new TwigFunction('gtmGetNoScriptUrl', [$this, 'getNoScriptUrl']),
             new TwigFunction('gtmGetVariantName', [$this, 'getVariantName']),
+            new TwigFunction('gtmGetCalculatedProductPrice', [$this, 'getCalculatedProductPrice']),
         ];
     }
 
@@ -109,5 +111,61 @@ class TwigExtension extends AbstractExtension
         }
 
         return trim($variantName);
+    }
+
+    /**
+     * since 6.2.20: Get Calculated Price for listing pages
+     * search for calculated price in GA4 Tags given to template
+     * use SKU to identify the product
+     *
+     * @param $lineItem
+     * @param $ga4tags
+     * @param $cmsGa4tags
+     * @return mixed
+     */
+    public function getCalculatedProductPrice($lineItem, $ga4tags, $cmsGa4tags = null): mixed
+    {
+        if ($ga4tags === null && $cmsGa4tags === null) return '';
+        if ($ga4tags === null && $cmsGa4tags) $ga4tags = $cmsGa4tags;
+
+        $ga4tagsAsObject = json_decode($ga4tags);
+
+        $sku = $this->getSkuFromLineItem($lineItem);
+        if(false === $sku) return '';
+
+        try {
+            if(!is_object($ga4tagsAsObject)) return '';
+            if(!is_object($ga4tagsAsObject->ecommerce)) return '';
+            if(!is_array($ga4tagsAsObject->ecommerce->items)) return '';
+            $items = $ga4tagsAsObject->ecommerce->items;
+
+            foreach ($items as $item) {
+                if(!is_object($item)) return '';
+                if($item->item_id == $sku) return $item->price;
+            }
+        }
+        catch (\Exception $exception) {
+
+        }
+
+        return '';
+    }
+
+    /**
+     * @param $item
+     * @return false|mixed|string
+     */
+    private function getSkuFromLineItem($item): mixed
+    {
+        if(is_array($item)) {
+            if(isset($item['productNumber'])) return $item['productNumber'];
+            //Coupon?
+            if(isset($item['promotionId'])) return 'voucher';
+        }
+        if(!is_array($item) && get_class($item) == SalesChannelProductEntity::class) {
+            return $item->getProductNumber();
+        }
+
+        return false;
     }
 }
