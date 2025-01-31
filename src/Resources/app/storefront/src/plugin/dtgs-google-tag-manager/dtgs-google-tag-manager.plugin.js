@@ -4,6 +4,7 @@ import { COOKIE_CONFIGURATION_UPDATE } from 'src/plugin/cookie/cookie-configurat
 import GtmAddToCartEvent from './events/add-to-cart.event';
 import GtmRemoveFromCartEvent from './events/remove-from-cart.event';
 import CookieStorageHelper from 'src/helper/storage/cookie-storage.helper';
+import DomAccessHelper from 'src/helper/dom-access.helper';
 
 export default class DtgsGoogleTagManagerPlugin extends Plugin
 {
@@ -19,6 +20,12 @@ export default class DtgsGoogleTagManagerPlugin extends Plugin
         }
 
         this.fireCookieConsentEvent();
+
+        const listingElement = document.querySelector('[data-listing-pagination]');
+        if(listingElement) {
+            const listingPlugin = window.PluginManager.getPluginInstanceFromElement(listingElement, 'Listing');
+            if(listingPlugin) listingPlugin.$emitter.subscribe('Listing/afterRenderResponse', this.onPageSwitched.bind(this));
+        }
     }
 
     fireCookieConsentEvent() {
@@ -76,12 +83,7 @@ export default class DtgsGoogleTagManagerPlugin extends Plugin
     registerDefaultEvents() {
         this.registerEvent(GtmAddToCartEvent);
         this.registerEvent(GtmRemoveFromCartEvent);
-
-        //Select Item Event
-        let productLinkElements = document.querySelectorAll('a.product-name, a.product-image-link, a.product-button-detail');
-        productLinkElements.forEach((item) => {
-            item.addEventListener('click', this.fireSelectItemEvent);
-        });
+        this.registerSelectItemEvent();
     }
 
     registerEvent(event) {
@@ -127,5 +129,23 @@ export default class DtgsGoogleTagManagerPlugin extends Plugin
         this.events.forEach(event => {
             event.disable();
         });
+    }
+
+    registerSelectItemEvent() {
+
+        //Select Item Event
+        let productLinkElements = DomAccessHelper.querySelectorAll(document, 'a.product-name, a.product-image-link, a.product-button-detail', false);
+        if(productLinkElements) {
+            productLinkElements.forEach((item) => {
+                item.addEventListener('click', this.fireSelectItemEvent);
+            });
+        }
+
+    }
+
+    onPageSwitched() {
+
+        this.registerSelectItemEvent();
+
     }
 }
