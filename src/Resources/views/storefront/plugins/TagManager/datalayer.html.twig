@@ -1,12 +1,12 @@
 {% if page.extensions.GoogleTagManagerConfig.status == 'enabled' %}
     <script>
         dataLayer = window.dataLayer || [];
-        // Clear the previous ecommerce object
+        {# Clear the previous ecommerce object #}
         dataLayer.push({ ecommerce: null });
-        // Push regular datalayer
+        {# Push regular datalayer #}
         dataLayer.push({{ page.extensions.GoogleTagManagerConfig.tags|raw }});
         {% if page.extensions.GoogleTagManagerConfig.ga4_tags != '[]' %}
-        // Push new GA4 tags
+        {# Push new GA4 tags #}
         dataLayer.push({{ page.extensions.GoogleTagManagerConfig.ga4_tags|raw }});
         {%  endif %}
         {% if config('DtgsGoogleTagManagerSw6.config.remarketingEnabled') %}
