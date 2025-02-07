@@ -14,6 +14,9 @@ use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Symfony\Component\HttpFoundation\Request;
 
+/**
+ * @deprecated
+ */
 class RemarketingService
 {
     private $systemConfigService;
