@@ -126,6 +126,7 @@ class RemarketingService
 
         $remarketing_tags['ecomm_prodid'] = array();
         foreach($listing as $prod) {
+            if(!is_a($prod, SalesChannelProductEntity::class)) continue;
             /** @var SalesChannelProductEntity $prod */
             $productNumber = $prod->getProductNumber();
             $remarketing_tags['ecomm_prodid'][] = (!empty($productNumber)) ? $productNumber : $prod->getId();
