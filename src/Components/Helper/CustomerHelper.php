@@ -4,9 +4,12 @@
  */
 namespace Dtgs\GoogleTagManager\Components\Helper;
 
+use Shopware\Core\Checkout\Customer\Aggregate\CustomerGroup\CustomerGroupCollection;
+use Shopware\Core\Checkout\Customer\Aggregate\CustomerGroup\CustomerGroupEntity;
 use Shopware\Core\Checkout\Customer\CustomerCollection;
 use Shopware\Core\Checkout\Customer\CustomerEntity;
 use Shopware\Core\Checkout\Order\OrderCollection;
+use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
@@ -23,12 +26,19 @@ class CustomerHelper
     /**
      * @var EntityRepository
      */
+    private EntityRepository $customerGroupRepository;
+
+    /**
+     * @var EntityRepository
+     */
     private EntityRepository $orderRepository;
 
     public function __construct(EntityRepository $customerRepository,
+                                EntityRepository $customerGroupRepository,
                                 EntityRepository $orderRepository)
     {
         $this->customerRepository = $customerRepository;
+        $this->customerGroupRepository = $customerGroupRepository;
         $this->orderRepository = $orderRepository;
     }
 
@@ -63,7 +73,21 @@ class CustomerHelper
             $sum += $order->getAmountTotal();
         }
 
-        return ['orderCount' => $orderCollection->count(), 'orderSum' => $sum];
+        return ['orderCount' => $orderCollection->count(), 'orderSum' => floatval($sum)];
+    }
+
+    /**
+     * @param $groupId
+     * @param Context $context
+     * @return CustomerGroupEntity|null
+     */
+    public function getCustomerGroup($groupId, SalesChannelContext $context) {
+
+        $criteria = new Criteria([$groupId]);
+        /** @var CustomerGroupCollection $customerGroupCollection */
+        $customerGroupCollection = $this->customerGroupRepository->search($criteria, $context->getContext())->getEntities();
+        return $customerGroupCollection->get($groupId);
+
     }
 
 }

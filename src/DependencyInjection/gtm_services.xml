@@ -40,8 +40,7 @@
         </service>
 
         <service id="Dtgs\GoogleTagManager\Services\CustomerTagsService">
-            <argument type="service" id="order.repository"/>
-            <argument type="service" id="customer_group.repository"/>
+            <argument type="service" id="Dtgs\GoogleTagManager\Components\Helper\CustomerHelper" />
             <argument type="service" id="Dtgs\GoogleTagManager\Components\Helper\LoggingHelper" />
         </service>
     </services>
