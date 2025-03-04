@@ -27,3 +27,8 @@
            name="dtgs-gtm-product-variantname"
            value="{{ gtmGetVariantName(product.variation) }}">
 {%  endif %}
+{% if(config('DtgsGoogleTagManagerSw6.config.addProductDatabaseIds')) %}
+    <input type="hidden"
+           name="dtgs-gtm-product-db-id"
+           value="{{ product.id }}">
+{%  endif %}

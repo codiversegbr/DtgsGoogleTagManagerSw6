@@ -284,6 +284,17 @@
         </input-field>
 
         <input-field type="bool">
+            <name>addProductDatabaseIds</name>
+            <label lang="de-DE">Datenbank-IDs der Produkte in Events ausgeben?</label>
+            <label lang="nl-NL">Database-ID's van producten in events uitvoeren?</label>
+            <label>Add database IDs of products to ecommerce events?</label>
+            <defaultValue>false</defaultValue>
+            <helpText lang="de-DE">Fügt die eindeutige Shopware-Datenbank-ID des Produkts zu den Ecommerce Events hinzu.</helpText>
+            <helpText lang="nl-NL">Voegt de unieke Shopware-database-ID van het product toe aan de ecommerce events.</helpText>
+            <helpText>Adds the unique Shopware database ID of a product to ecommerce events for further distinction.</helpText>
+        </input-field>
+
+        <input-field type="bool">
             <name>delayCodeInsertion</name>
             <label lang="de-DE">GTM Code verzögert einfügen?</label>
             <label lang="nl-NL">GTM-code vertraagd invoegen?</label>

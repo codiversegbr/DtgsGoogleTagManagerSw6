@@ -202,6 +202,10 @@ class GeneralSubscriber implements EventSubscriberInterface
                     $addToCartInfo->set('variantname', $ga4Tags['ecommerce']['items'][0]['item_variant']);
                 }
 
+                if($this->ga4Service->addDatabaseProductId($salesChannelId)) {
+                    $addToCartInfo->set('add_db_ids', true);
+                }
+
                 $page->addExtension('GtmAddToCartInfo', $addToCartInfo);
                 break;
             case CheckoutCartPageLoadedEvent::class:
