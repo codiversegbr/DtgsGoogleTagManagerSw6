@@ -11,6 +11,10 @@
           data-quantity="{{ lineItem.quantity }}"
           data-price="{{ gaPrice }}"
           data-dtgs-sku="{{ lineItem.payload.productNumber }}"
-          data-dtgs-price="{{ gtmCalculatedProductPrice }}">
+          data-dtgs-price="{{ gtmCalculatedProductPrice }}"
+            {% if(config('DtgsGoogleTagManagerSw6.config.addProductDatabaseIds')) %}
+                data-dtgs-db-id="{{ lineItem.id }}"
+            {%  endif %}
+    >
     </span>
 {% endblock %}
