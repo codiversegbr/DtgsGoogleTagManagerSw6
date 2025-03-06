@@ -288,6 +288,9 @@ export default class DtgsGoogleTagManagerPlugin extends Plugin
                 item_name: DomAccessHelper.getDataAttribute(itemEl, 'name'),
                 quantity: DomAccessHelper.getDataAttribute(itemEl, 'quantity'),
                 price: DomAccessHelper.getDataAttribute(itemEl, 'data-dtgs-price'),
+                //added in 6.3.19 - this is always here, regardless of config setting
+                //maybe optimize in the future
+                item_db_id: DomAccessHelper.getDataAttribute(itemEl, 'id'),
             });
         });
 
