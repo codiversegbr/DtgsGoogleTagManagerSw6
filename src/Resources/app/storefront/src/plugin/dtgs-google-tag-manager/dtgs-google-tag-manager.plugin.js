@@ -283,12 +283,16 @@ export default class DtgsGoogleTagManagerPlugin extends Plugin
         const lineItems = [];
 
         lineItemDataElements.forEach(itemEl => {
-            lineItems.push({
+            let item = {
                 item_id: DomAccessHelper.getDataAttribute(itemEl, 'data-dtgs-sku'),
                 item_name: DomAccessHelper.getDataAttribute(itemEl, 'name'),
                 quantity: DomAccessHelper.getDataAttribute(itemEl, 'quantity'),
                 price: DomAccessHelper.getDataAttribute(itemEl, 'data-dtgs-price'),
-            });
+            }
+            if(DomAccessHelper.getDataAttribute(itemEl, 'data-dtgs-db-id', false) !== undefined) {
+                item['item_db_id'] = DomAccessHelper.getDataAttribute(itemEl, 'id');
+            }
+            lineItems.push(item);
         });
 
         return lineItems;

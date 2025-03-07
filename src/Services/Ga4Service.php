@@ -102,6 +102,24 @@ class Ga4Service
     }
 
     /**
+     * GH-Ticket #7
+     *
+     * @param $salesChannelId
+     * @return bool
+     */
+    public function addDatabaseProductId($salesChannelId) {
+
+        $tagManagerConfig = $this->getGtmConfig($salesChannelId);
+
+        if(isset($tagManagerConfig['addProductDatabaseIds'])) {
+            return $tagManagerConfig['addProductDatabaseIds'];
+        }
+
+        return false;
+
+    }
+
+    /**
      * @param $ga4Tags
      * @return false|string
      */
@@ -167,6 +185,10 @@ class Ga4Service
         //added in 6.3.7 - CDVRS-0000022
         if($this->getVariantName($product->getVariation())) {
             $product_data['item_variant'] = $this->getVariantName($product->getVariation());
+        }
+
+        if($this->addDatabaseProductId($context->getSalesChannel()->getId())) {
+            $product_data['item_db_id'] = $product->getId();
         }
 
         //Product Category - Changed to SEO Category in V6.1.22
@@ -367,6 +389,10 @@ class Ga4Service
             if($category) $item['item_list_id'] = $category->getId();
             if($category) $item['item_category'] = $category->getTranslation('name');
 
+            if($this->addDatabaseProductId($context->getSalesChannel()->getId())) {
+                $item['item_db_id'] = $product->getId();
+            }
+
             //added in 6.3.9 - CDVRS-33 + CDVRS-36
             if($this->getVariantName($product->getVariation())) {
                 $item['item_variant'] = $this->getVariantName($product->getVariation());
@@ -441,6 +467,10 @@ class Ga4Service
             //added in 6.3.7 - CDVRS-0000022
             if(isset($payload['options']) && $this->getVariantName($payload['options'])) {
                 $item['item_variant'] = $this->getVariantName($payload['options']);
+            }
+
+            if($this->addDatabaseProductId($context->getSalesChannel()->getId())) {
+                $item['item_db_id'] = $product->getId();
             }
 
             if(isset($payload['manufacturerId'])) {

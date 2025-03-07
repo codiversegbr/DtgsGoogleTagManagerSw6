@@ -17,3 +17,8 @@
            name="dtgs-gtm-product-variantname"
            value="{{ page.extensions.GtmAddToCartInfo.variantname }}">
 {%  endif %}
+{% if(page.extensions.GtmAddToCartInfo.add_db_ids) %}
+    <input type="hidden"
+           name="dtgs-gtm-product-db-id"
+           value="{{ product.id }}">
+{%  endif %}
