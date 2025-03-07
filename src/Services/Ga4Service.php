@@ -94,6 +94,11 @@ class Ga4Service
 
     }
 
+    public function remarketingEnabled($salesChannelId) {
+        $tagManagerConfig = $this->getGtmConfig($salesChannelId);
+        return (isset($tagManagerConfig['remarketingIntegration']) && $tagManagerConfig['remarketingIntegration'] == 'enable');
+    }
+
     /**
      * @param $ga4Tags
      * @return false|string
@@ -171,6 +176,11 @@ class Ga4Service
             $product_data['item_category'] = '';
         }
 
+        //add Remarketing Data
+        if($this->remarketingEnabled($context->getSalesChannel()->getId())) {
+            $product_data['id'] = $product->getProductNumber();
+            $product_data['google_business_vertical'] = 'retail';
+        }
 
         if($product->getManufacturer())
             $product_data['item_brand'] = $product->getManufacturer()->getTranslation('name');
@@ -352,6 +362,12 @@ class Ga4Service
                 $item['item_variant'] = $this->getVariantName($product->getVariation());
             }
 
+            //add Remarketing Data
+            if($this->remarketingEnabled($context->getSalesChannel()->getId())) {
+                $item['id'] = $product->getProductNumber();
+                $item['google_business_vertical'] = 'retail';
+            }
+
             $tags[] = $item;
 
             //since 6.1.35
@@ -440,6 +456,12 @@ class Ga4Service
                         $item['item_category'] = $salesChannelProduct->getSeoCategory()->getTranslation('name');
                     }
                 }
+            }
+
+            //add Remarketing Data
+            if($this->remarketingEnabled($context->getSalesChannel()->getId())) {
+                $item['id'] = $productNumber;
+                $item['google_business_vertical'] = 'retail';
             }
 
             $tags[] = $item;
