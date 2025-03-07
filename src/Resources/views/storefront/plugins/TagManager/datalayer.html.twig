@@ -9,12 +9,15 @@
         {# Push new GA4 tags #}
         dataLayer.push({{ page.extensions.GoogleTagManagerConfig.ga4_tags|raw }});
         {%  endif %}
-        {% if config('DtgsGoogleTagManagerSw6.config.remarketingEnabled') %}
+        {% if config('DtgsGoogleTagManagerSw6.config.remarketingIntegration') == 'legacy' %}
             var google_tag_params = {{ page.extensions.GoogleTagManagerConfig.remarketing_tags|raw }};
             dataLayer.push ({
                 'event':'remarketingTriggered',
                 'google_tag_params': window.google_tag_params
             });
+        {%  endif %}
+        {% if config('DtgsGoogleTagManagerSw6.config.remarketingIntegration') == 'enable' %}
+            var dtgsRemarketingEnabled = true;
         {%  endif %}
     </script>
 {%  endif %}
