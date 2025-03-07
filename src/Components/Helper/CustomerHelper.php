@@ -73,7 +73,7 @@ class CustomerHelper
             $sum += $order->getAmountTotal();
         }
 
-        return ['orderCount' => $orderCollection->count(), 'orderSum' => floatval($sum)];
+        return ['orderCount' => $orderCollection->count(), 'orderSum' => (float)number_format($sum, 2, '.', '')];
     }
 
     /**
