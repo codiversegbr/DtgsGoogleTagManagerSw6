@@ -205,7 +205,7 @@ class Ga4Service
      * @return array
      * @throws \Exception
      */
-    public function getNavigationTags($navigationId, $listing, SalesChannelContext $context) {
+    public function getNavigationTags($navigationId, $listing, SalesChannelContext $context, $listName = 'Category') {
 
         $pluginConfig = $this->getGtmConfig($context->getSalesChannel()->getId());
         $eeMaxAmountCategoriesForImpressions = (isset($pluginConfig['eeMaxAmountCategoriesForImpressions'])) ? $pluginConfig['eeMaxAmountCategoriesForImpressions'] : 0;
@@ -217,11 +217,11 @@ class Ga4Service
         //Currency Code
         $ga4_tags['currency'] = $context->getCurrency()->getIsoCode();
         //Added in 6.3.9
-        $ga4_tags['item_list_name'] = 'Category';
+        $ga4_tags['item_list_name'] = $listName;
         if($category) $ga4_tags['item_list_id'] = $category->getId();
 
         //Impressions
-        $ga4_tags['items'] = $this->getImpressions($listing, $eeMaxAmountCategoriesForImpressions, $context, 'Category', $category);
+        $ga4_tags['items'] = $this->getImpressions($listing, $eeMaxAmountCategoriesForImpressions, $context, $listName, $category);
 
         return $this->addEeEvent($ga4_tags, 'view_item_list');
 
@@ -331,6 +331,7 @@ class Ga4Service
         $i = 0;
 
         foreach($listing as $product) {
+            if(!is_a($product, SalesChannelProductEntity::class)) continue;
             /** @var SalesChannelProductEntity $product */
             $price = ($product->getCalculatedPrices()->count()) ? $product->getCalculatedPrices()->first()->getUnitPrice() : $product->getCalculatedPrice()->getUnitPrice();
             $brutto_price = (is_float($price)) ? $price : str_replace(',', '.', $price);
