@@ -1,3 +1,10 @@
+# 6.3.19
+- Neu: Option um Produkt IDs (Shopware UUIDs) in ecommerce events zu includieren (GTM-GH-7)
+- Neu: Parameter new_customer und customer_lifetime_value sind nun im purchase Event vorhanden (GTM-GH-3)
+- New: visitorLifetimeOrderCount nun im Datalayer vorhanden (GTM-GH-6)
+- New: Neue Remarketing Implementation (alte Version per Config Option verfügbar, wird bald entfernt) (CDVRS-49)
+- New: view_item_list Events werden nun auch für Shopping Welten Elemente gefeuert (CDVRS-8)
+
 # 6.3.18
 - Neu: Leerzeichen bei mehreren GTM IDs trimmen (CDVRS-61)
 - Neu: remove_from_wishlist wird nun auf Wunschlisten gefeuert (CDVRS-51)
