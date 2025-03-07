@@ -30,8 +30,29 @@
             <helpText lang="nl-NL">Voer hier uw Adwords Merchant ID/AdWords-Verkoper-ID in. (optioneel!)</helpText>
         </input-field>
 
-        <input-field type="bool">
-            <name>remarketingEnabled</name>
+        <input-field type="single-select">
+            <name>remarketingIntegration</name>
+            <options>
+                <option>
+                    <id>off</id>
+                    <name lang="de-DE">deaktivieren</name>
+                    <name lang="nl-NL">deactiveren</name>
+                    <name>disable</name>
+                </option>
+                <option>
+                    <id>enable</id>
+                    <name>as part of GA4 ecommerce data (latest version)</name>
+                    <name lang="de-DE">als Teil der GA4 E-Commerce Daten (aktuellste Implementation)</name>
+                    <name lang="nl-NL">als onderdeel van GA4 e-commerce events (nieuwste versie)</name>
+                </option>
+                <option>
+                    <id>legacy</id>
+                    <name>as separate events (legacy, will be removed soon)</name>
+                    <name lang="de-DE">als separate Events (veraltet, wird demnächst entfernt)</name>
+                    <name lang="nl-NL">als afzonderlijke events (oud, wordt binnenkort verwijderd)</name>
+                </option>
+            </options>
+            <defaultValue>off</defaultValue>
             <label>Use google remarketing?</label>
             <label lang="de-DE">Remarketing Parameter einbinden?</label>
             <label lang="nl-NL">Remarketing Parameters integreren?</label>

@@ -71,6 +71,12 @@ export default class GtmAddToCartEvent extends EventAwareAnalyticsEvent
         //Database ID - GH-7 / added in 6.3.19
         if(formData.get('dtgs-gtm-product-db-id') !== null) Object.assign(products, {'item_db_id': formData.get('dtgs-gtm-product-db-id')});
 
+        //Remarketing
+        if(typeof dtgsRemarketingEnabled !== 'undefined' && dtgsRemarketingEnabled === true) {
+            Object.assign(products, {'id': formData.get('dtgs-gtm-product-sku')});
+            Object.assign(products, {'google_business_vertical': 'retail'});
+        }
+
         return products;
 
     }

@@ -12,6 +12,7 @@ use Shopware\Core\Content\Cms\Aggregate\CmsSlot\CmsSlotEntity;
 use Shopware\Core\Content\Cms\CmsPageEntity;
 use Shopware\Core\Content\Cms\Events\CmsPageLoadedEvent;
 use Shopware\Core\Content\Cms\SalesChannel\Struct\ProductListingStruct;
+use Shopware\Core\Content\Cms\SalesChannel\Struct\ProductSliderStruct;
 use Shopware\Core\Content\Product\SalesChannel\SalesChannelProductEntity;
 use Shopware\Core\Framework\Struct\ArrayEntity;
 use Shopware\Core\Framework\Struct\Struct;
@@ -133,7 +134,7 @@ class GeneralSubscriber implements EventSubscriberInterface
         $result = $event->getResult();
 
         foreach ($result as $block) {
-            $listing = $this->getListingOnNavigationPage($block);
+            $listing = $this->getMainListing($block);
             if($listing) {
                 $ga4Tags = $this->ga4Service->getNavigationTags($navigationId, $listing, $event->getSalesChannelContext());
             }
@@ -180,6 +181,8 @@ class GeneralSubscriber implements EventSubscriberInterface
         $remarketingTags = [];
         //GA4 - 6.2.0
         $ga4Tags = [];
+        //Additional Listing - 6.3.19
+        $additionalEvents = [];
 
         /**
          * Code insertion delay exception on finish pages - since 6.2.9
@@ -255,13 +258,20 @@ class GeneralSubscriber implements EventSubscriberInterface
                 /** @var SalesChannelProductEntity[] $products */
                 $cmsPage = $event->getPage()->getCmsPage();
                 if($cmsPage) {
-                    $listing = $this->getListingOnNavigationPage($cmsPage);
+                    $listing = $this->getMainListing($cmsPage);
                     if($listing) {
                         $remarketingTags = $this->remarketingService->getNavigationTags($navigationId, $listing, $event->getSalesChannelContext(), $event->getRequest());
                         $ga4Tags = $this->ga4Service->getNavigationTags($navigationId, $listing, $event->getSalesChannelContext());
                     }
                     else {
                         $remarketingTags = $this->remarketingService->getBasicTags($event->getRequest());
+                    }
+                    //added in 6.3.19
+                    $additionalListings = $this->getAdditionalListings($cmsPage);
+                    if($additionalListings) {
+                        foreach ($additionalListings as $additionalListing) {
+                            $additionalEvents[] = $this->ga4Service->getNavigationTags($navigationId, $additionalListing, $event->getSalesChannelContext(), 'Additional');
+                        }
                     }
                 }
                 break;
@@ -288,6 +298,11 @@ class GeneralSubscriber implements EventSubscriberInterface
 
         $remarketingTags = $this->remarketingService->prepareTagsForView($remarketingTags);
         $ga4Tags = $this->ga4Service->prepareTagsForView($ga4Tags);
+        if(!empty($additionalEvents)) {
+            $additionalEvents = array_map(function($additionalEvent) {
+                return $this->ga4Service->prepareTagsForView($additionalEvent);
+            }, $additionalEvents);
+        }
 
         $adwords_tracking_enabled = isset($tagManagerConfig['googleAdwordsId']) && $tagManagerConfig['googleAdwordsId'] != '';
 
@@ -307,6 +322,7 @@ class GeneralSubscriber implements EventSubscriberInterface
             'tags' => $datalayerTags,
             'remarketing_tags' => $remarketingTags,
             'ga4_tags' => $ga4Tags,
+            'additional_events' => $additionalEvents,
             'adwords_tracking_enabled' => $adwords_tracking_enabled,
             'status' => $status,
             'additionalServiceCode' => $additionalServiceCode,
@@ -316,26 +332,73 @@ class GeneralSubscriber implements EventSubscriberInterface
     }
 
     /**
-     * @param Struct $page
+     * @param CmsPageEntity $cmsPage
+     * @param string $type
      * @return array|void
      */
-    private function getListingOnNavigationPage(CmsPageEntity $cmsPage)
+    private function getListingsOnNavigationPage(CmsPageEntity $cmsPage, string $type)
     {
         if ($cmsPage->getType() !== 'product_list') {
             return;
         }
 
         $slots = $cmsPage->getSections()->getBlocks()->getSlots();
+        $productListingContainerStructs = [];
+        $productListings = [];
         foreach($slots as $slot) {
             /** @var CmsSlotEntity $slot */
-            if($slot->getType() == 'product-listing') {
-                /** @var ProductListingStruct $productListingStruct */
-                $productListingStruct = $slot->getData();
-                break;
+            if($slot->getType() == $type) {
+                $productListingContainerStructs[] = $slot->getData();
+                //product-listing may only appear once
+                if($type == 'product-listing') {
+                    break;
+                }
             }
         }
-        if(!isset($productListingStruct) || !is_a($productListingStruct, 'Shopware\Core\Content\Cms\SalesChannel\Struct\ProductListingStruct')) return;
+        if(!empty($productListingContainerStructs)) {
+            foreach ($productListingContainerStructs as $productListingContainerStruct) {
+                if(is_a($productListingContainerStruct, 'Shopware\Core\Content\Cms\SalesChannel\Struct\ProductListingStruct')) {
+                    $productListings[] = $productListingContainerStruct->getListing()->getElements();
+                }
+                if(is_a($productListingContainerStruct, 'Shopware\Core\Content\Cms\SalesChannel\Struct\ProductSliderStruct')) {
+                    $productListings[] = $productListingContainerStruct->getProducts()->getElements();
+                }
+                if(is_a($productListingContainerStruct, 'Shopware\Core\Content\Cms\SalesChannel\Struct\CrossSellingStruct')) {
+                    $csElements = $productListingContainerStruct->getCrossSellings()->getElements();
+                    foreach ($csElements as $csElement) {
+                        $productListings[] = $csElement->getProducts()->getElements();
+                    }
+                }
+            }
+        }
 
-        return $productListingStruct->getListing()->getElements();
+        return $productListings;
+
+    }
+
+    private function getAdditionalListings(CmsPageEntity $cmsPage): ?array
+    {
+        $additionalListingKeys = [
+          'product-slider',
+          'cross-selling'
+        ];
+        $additionalListings = [];
+
+        foreach ($additionalListingKeys as $additionalListingKey) {
+            $listings = $this->getListingsOnNavigationPage($cmsPage, $additionalListingKey);
+            if($listings) {
+                foreach ($listings as $listing) {
+                    $additionalListings[] = array_merge($listing, $additionalListings);
+                }
+            }
+        }
+
+        return !empty($additionalListings) ? $additionalListings : null;
+    }
+
+    private function getMainListing(CmsPageEntity $cmsPage)
+    {
+        $listings = $this->getListingsOnNavigationPage($cmsPage, 'product-listing');
+        return !empty($listings) ? $listings[0] : null;
     }
 }

@@ -14,6 +14,9 @@ use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Symfony\Component\HttpFoundation\Request;
 
+/**
+ * @deprecated
+ */
 class RemarketingService
 {
     private $systemConfigService;
@@ -126,6 +129,7 @@ class RemarketingService
 
         $remarketing_tags['ecomm_prodid'] = array();
         foreach($listing as $prod) {
+            if(!is_a($prod, SalesChannelProductEntity::class)) continue;
             /** @var SalesChannelProductEntity $prod */
             $productNumber = $prod->getProductNumber();
             $remarketing_tags['ecomm_prodid'][] = (!empty($productNumber)) ? $productNumber : $prod->getId();

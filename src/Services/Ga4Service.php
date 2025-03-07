@@ -101,6 +101,11 @@ class Ga4Service
 
     }
 
+    public function remarketingEnabled($salesChannelId) {
+        $tagManagerConfig = $this->getGtmConfig($salesChannelId);
+        return (isset($tagManagerConfig['remarketingIntegration']) && $tagManagerConfig['remarketingIntegration'] == 'enable');
+    }
+
     /**
      * GH-Ticket #7
      *
@@ -200,6 +205,11 @@ class Ga4Service
             $product_data['item_category'] = '';
         }
 
+        //add Remarketing Data
+        if($this->remarketingEnabled($context->getSalesChannel()->getId())) {
+            $product_data['id'] = $product->getProductNumber();
+            $product_data['google_business_vertical'] = 'retail';
+        }
 
         if($product->getManufacturer())
             $product_data['item_brand'] = $product->getManufacturer()->getTranslation('name');
@@ -224,7 +234,7 @@ class Ga4Service
      * @return array
      * @throws \Exception
      */
-    public function getNavigationTags($navigationId, $listing, SalesChannelContext $context) {
+    public function getNavigationTags($navigationId, $listing, SalesChannelContext $context, $listName = 'Category') {
 
         $pluginConfig = $this->getGtmConfig($context->getSalesChannel()->getId());
         $eeMaxAmountCategoriesForImpressions = (isset($pluginConfig['eeMaxAmountCategoriesForImpressions'])) ? $pluginConfig['eeMaxAmountCategoriesForImpressions'] : 0;
@@ -236,11 +246,11 @@ class Ga4Service
         //Currency Code
         $ga4_tags['currency'] = $context->getCurrency()->getIsoCode();
         //Added in 6.3.9
-        $ga4_tags['item_list_name'] = 'Category';
+        $ga4_tags['item_list_name'] = $listName;
         if($category) $ga4_tags['item_list_id'] = $category->getId();
 
         //Impressions
-        $ga4_tags['items'] = $this->getImpressions($listing, $eeMaxAmountCategoriesForImpressions, $context, 'Category', $category);
+        $ga4_tags['items'] = $this->getImpressions($listing, $eeMaxAmountCategoriesForImpressions, $context, $listName, $category);
 
         return $this->addEeEvent($ga4_tags, 'view_item_list');
 
@@ -364,6 +374,7 @@ class Ga4Service
         $i = 0;
 
         foreach($listing as $product) {
+            if(!is_a($product, SalesChannelProductEntity::class)) continue;
             /** @var SalesChannelProductEntity $product */
             $price = ($product->getCalculatedPrices()->count()) ? $product->getCalculatedPrices()->first()->getUnitPrice() : $product->getCalculatedPrice()->getUnitPrice();
             $brutto_price = (is_float($price)) ? $price : str_replace(',', '.', $price);
@@ -396,6 +407,12 @@ class Ga4Service
             //added in 6.3.9 - CDVRS-33 + CDVRS-36
             if($this->getVariantName($product->getVariation())) {
                 $item['item_variant'] = $this->getVariantName($product->getVariation());
+            }
+
+            //add Remarketing Data
+            if($this->remarketingEnabled($context->getSalesChannel()->getId())) {
+                $item['id'] = $product->getProductNumber();
+                $item['google_business_vertical'] = 'retail';
             }
 
             $tags[] = $item;
@@ -490,6 +507,12 @@ class Ga4Service
                         $item['item_category'] = $salesChannelProduct->getSeoCategory()->getTranslation('name');
                     }
                 }
+            }
+
+            //add Remarketing Data
+            if($this->remarketingEnabled($context->getSalesChannel()->getId())) {
+                $item['id'] = $productNumber;
+                $item['google_business_vertical'] = 'retail';
             }
 
             $tags[] = $item;
