@@ -27,8 +27,10 @@ use Shopware\Storefront\Page\Address\Listing\AddressListingPageLoadedEvent;
 use Shopware\Storefront\Page\Checkout\Cart\CheckoutCartPageLoadedEvent;
 use Shopware\Storefront\Page\Checkout\Confirm\CheckoutConfirmPageLoadedEvent;
 use Shopware\Storefront\Page\Checkout\Finish\CheckoutFinishPageLoadedEvent;
+use Shopware\Storefront\Page\Checkout\Offcanvas\OffcanvasCartPageLoadedEvent;
 use Shopware\Storefront\Page\Checkout\Register\CheckoutRegisterPageLoadedEvent;
 use Shopware\Storefront\Page\Contact\ContactPageLoadedEvent;
+use Shopware\Storefront\Page\GenericPageLoadedEvent;
 use Shopware\Storefront\Page\LandingPage\LandingPageLoadedEvent;
 use Shopware\Storefront\Page\Maintenance\MaintenancePageLoadedEvent;
 use Shopware\Storefront\Page\Navigation\Error\ErrorPageLoadedEvent;
@@ -123,6 +125,10 @@ class GeneralSubscriber implements EventSubscriberInterface
             MaintenancePageLoadedEvent::class => 'onPageLoaded',
             //
             NewsletterSubscribePageLoadedEvent::class => 'onPageLoaded',
+            //
+            GenericPageLoadedEvent::class => 'onPageLoaded',
+            //
+            OffcanvasCartPageLoadedEvent::class => 'onPageLoaded',
         ];
     }
 
@@ -194,6 +200,11 @@ class GeneralSubscriber implements EventSubscriberInterface
                 $ga4Tags = $this->ga4Service->getCheckoutTags($page->getCart(), $event);
                 $enhancedEcomTags = $this->enhancedEcomService->getCheckoutTags($page->getCart(), $event);
                 break;
+            case OffcanvasCartPageLoadedEvent::class:
+                $checkoutTags = $this->datalayerService->getCheckoutTags($page->getCart(), $event->getSalesChannelContext());
+                $remarketingTags = $this->remarketingService->getCheckoutTags($page->getCart(), $event->getSalesChannelContext());
+                $ga4Tags = $this->ga4Service->getCheckoutTags($page->getCart(), $event);
+                break;
             case CheckoutFinishPageLoadedEvent::class:
                 $checkoutTags = $this->datalayerService->getFinishTags($page->getOrder(), $event->getSalesChannelContext());
                 $remarketingTags = $this->remarketingService->getPurchaseConfirmationTags($page->getOrder(), $event->getSalesChannelContext());
@@ -241,6 +252,7 @@ class GeneralSubscriber implements EventSubscriberInterface
             case NewsletterSubscribePageLoadedEvent::class:
             case MaintenancePageLoadedEvent::class:
             case LandingPageLoadedEvent::class:
+            case GenericPageLoadedEvent::class:
             default:
                 $remarketingTags = $this->remarketingService->getBasicTags($event->getRequest());
                 $enhancedEcomTags = $this->enhancedEcomService->getBasicTags($event->getSalesChannelContext());

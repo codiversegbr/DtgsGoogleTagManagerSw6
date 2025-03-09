@@ -4,6 +4,8 @@ import { COOKIE_CONFIGURATION_UPDATE } from 'src/plugin/cookie/cookie-configurat
 import GtmAddToCartEvent from './events/add-to-cart.event';
 import GtmRemoveFromCartEvent from './events/remove-from-cart.event';
 import CookieStorageHelper from 'src/helper/storage/cookie-storage.helper';
+import LineItemHelper from 'src/plugin/google-analytics/line-item.helper';
+import DomAccessHelper from 'src/helper/dom-access.helper';
 
 export default class DtgsGoogleTagManagerPlugin extends Plugin
 {
@@ -19,6 +21,13 @@ export default class DtgsGoogleTagManagerPlugin extends Plugin
         }
 
         this.fireCookieConsentEvent();
+
+        //subscribe to opening off canvas WK - added in 6.3.14
+        const offCanvasCartElement = document.querySelector('.header-cart');
+        if(offCanvasCartElement) {
+            const offCanvasCartPlugin = window.PluginManager.getPluginInstanceFromElement(offCanvasCartElement, 'OffCanvasCart');
+            if(offCanvasCartPlugin) offCanvasCartPlugin.$emitter.subscribe('offCanvasOpened', this.onOffCanvasOpened.bind(this));
+        }
     }
 
     fireCookieConsentEvent() {
@@ -127,5 +136,41 @@ export default class DtgsGoogleTagManagerPlugin extends Plugin
         this.events.forEach(event => {
             event.disable();
         });
+    }
+
+
+    /**
+     * added in 6.2.20
+     */
+    onOffCanvasOpened() {
+
+        let additionalProperties = LineItemHelper.getAdditionalProperties();
+        let lineItems = this.getLineItems();
+
+        window.dataLayer.push({
+            'event': 'view_cart',
+            'currency': additionalProperties.currency,
+            'ecommerce': {
+                'items': lineItems
+            }
+        });
+
+    }
+
+    getLineItems() {
+        const lineItemsContainer = DomAccessHelper.querySelector(document, '.hidden-line-items-information', false);
+        const lineItemDataElements = DomAccessHelper.querySelectorAll(lineItemsContainer, '.hidden-line-item', false);
+        const lineItems = [];
+
+        lineItemDataElements.forEach(itemEl => {
+            lineItems.push({
+                item_id: DomAccessHelper.getDataAttribute(itemEl, 'data-dtgs-sku'),
+                item_name: DomAccessHelper.getDataAttribute(itemEl, 'name'),
+                quantity: DomAccessHelper.getDataAttribute(itemEl, 'quantity'),
+                price: DomAccessHelper.getDataAttribute(itemEl, 'data-dtgs-price'),
+            });
+        });
+
+        return lineItems;
     }
 }
