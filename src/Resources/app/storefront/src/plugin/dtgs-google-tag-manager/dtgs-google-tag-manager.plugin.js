@@ -28,6 +28,12 @@ export default class DtgsGoogleTagManagerPlugin extends Plugin
             const offCanvasCartPlugin = window.PluginManager.getPluginInstanceFromElement(offCanvasCartElement, 'OffCanvasCart');
             if(offCanvasCartPlugin) offCanvasCartPlugin.$emitter.subscribe('offCanvasOpened', this.onOffCanvasOpened.bind(this));
         }
+        //Select Item Event nach Seitenwechsel
+        const listingElement = document.querySelector('[data-listing-pagination]');
+        if(listingElement) {
+            const listingPlugin = window.PluginManager.getPluginInstanceFromElement(listingElement, 'Listing');
+            if(listingPlugin) listingPlugin.$emitter.subscribe('Listing/afterRenderResponse', this.onPageSwitched.bind(this));
+        }
     }
 
     fireCookieConsentEvent() {
@@ -85,12 +91,7 @@ export default class DtgsGoogleTagManagerPlugin extends Plugin
     registerDefaultEvents() {
         this.registerEvent(GtmAddToCartEvent);
         this.registerEvent(GtmRemoveFromCartEvent);
-
-        //Select Item Event
-        let productLinkElements = document.querySelectorAll('a.product-name, a.product-image-link, a.product-button-detail');
-        productLinkElements.forEach((item) => {
-            item.addEventListener('click', this.fireSelectItemEvent);
-        });
+        this.registerSelectItemEvent();
     }
 
     registerEvent(event) {
@@ -138,6 +139,29 @@ export default class DtgsGoogleTagManagerPlugin extends Plugin
         });
     }
 
+    /**
+     * added in 6.2.20
+     */
+    registerSelectItemEvent() {
+
+        //Select Item Event
+        let productLinkElements = DomAccessHelper.querySelectorAll(document, 'a.product-name, a.product-image-link, a.product-button-detail', false);
+        if(productLinkElements) {
+            productLinkElements.forEach((item) => {
+                item.addEventListener('click', this.fireSelectItemEvent);
+            });
+        }
+
+    }
+
+    /**
+     * added in 6.2.20
+     */
+    onPageSwitched() {
+
+        this.registerSelectItemEvent();
+
+    }
 
     /**
      * added in 6.2.20
