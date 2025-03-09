@@ -3,6 +3,9 @@
 - Neu: select_item feuert nun auch nach Blättern im Listing (CDVRS-53)
 - Neu: view_cart feuert nun auch beim Offcanvas WK (CDVRS-52)
 - Neu: GenericPageLoadedEvent als Event hinzugefügt (FD-32989)
+- Neu: Parameter new_customer und customer_lifetime_value sind nun im purchase Event vorhanden (GTM-GH-3)
+- Neu: visitorLifetimeOrderCount nun im Datalayer vorhanden (GTM-GH-6)
+- Neu: Neue Remarketing Implementation (alte Version per Config Option verfügbar, wird bald entfernt) (CDVRS-49)
 - Bugfix: JS Fehler in Listings wenn Kaufen-Button deaktiviert (CDVRS-54)
 - Bugfix: Kommentare in JS (CDVRS-56)
 
