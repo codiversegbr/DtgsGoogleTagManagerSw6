@@ -33,8 +33,26 @@
             <helpText>Use this, if you are not ready to switch to GA4.</helpText>
         </input-field>
 
-        <input-field type="bool">
-            <name>remarketingEnabled</name>
+        <input-field type="single-select">
+            <name>remarketingIntegration</name>
+            <options>
+                <option>
+                    <id>off</id>
+                    <name lang="de-DE">deaktivieren</name>
+                    <name>disable</name>
+                </option>
+                <option>
+                    <id>enable</id>
+                    <name>as part of GA4 ecommerce data (latest version)</name>
+                    <name lang="de-DE">als Teil der GA4 E-Commerce Daten (aktuellste Implementation)</name>
+                </option>
+                <option>
+                    <id>legacy</id>
+                    <name>as separate events (legacy, will be removed soon)</name>
+                    <name lang="de-DE">als separate Events (veraltet, wird demnächst entfernt)</name>
+                </option>
+            </options>
+            <defaultValue>off</defaultValue>
             <label lang="de-DE">Remarketing Parameter einbinden?</label>
             <label>Use google remarketing?</label>
             <helpText lang="de-DE">Geben Sie auch Remarketing Parameter für den Tag Manager aus.</helpText>

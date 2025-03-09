@@ -69,6 +69,12 @@ export default class GtmAddToCartEvent extends EventAwareAnalyticsEvent
         if(formData.get('dtgs-gtm-product-price') !== null) Object.assign(products, {'price': Number(formData.get('dtgs-gtm-product-price'))});
         if(formData.get('brand-name') !== null) Object.assign(products, {'item_brand': formData.get('brand-name')});
 
+        //Remarketing
+        if(typeof dtgsRemarketingEnabled !== 'undefined' && dtgsRemarketingEnabled === true) {
+            Object.assign(products, {'id': formData.get('dtgs-gtm-product-sku')});
+            Object.assign(products, {'google_business_vertical': 'retail'});
+        }
+        
         return products;
 
     }
