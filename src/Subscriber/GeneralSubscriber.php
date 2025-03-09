@@ -153,8 +153,7 @@ class GeneralSubscriber implements EventSubscriberInterface
 
         //The following tags will always be there
         $generalTags = $this->generalTagsService->getGeneralTags($page, $event->getSalesChannelContext()->getContext(), $event->getRequest());
-        $customerTags = $this->customerTagsService->getCustomerTags($event->getSalesChannelContext()->getCustomer(), $event->getSalesChannelContext()->getContext());
-        $utmTags = $this->generalTagsService->getUtmTags($event->getRequest());
+        $customerTags = $this->customerTagsService->getCustomerTags($event->getSalesChannelContext()->getCustomer(), $event->getSalesChannelContext());        $utmTags = $this->generalTagsService->getUtmTags($event->getRequest());
         //Specific page tags
         $navigationTags = [];
         $accountTags = [];

@@ -7,6 +7,7 @@ use Dtgs\GoogleTagManager\Components\Helper\LoggingHelper;
 use Dtgs\GoogleTagManager\Components\Helper\ManufacturerHelper;
 use Dtgs\GoogleTagManager\Components\Helper\PriceHelper;
 use Dtgs\GoogleTagManager\Components\Helper\ProductHelper;
+use Dtgs\GoogleTagManager\Components\Helper\CustomerHelper;
 use Shopware\Core\Checkout\Cart\LineItem\LineItem;
 use Shopware\Core\Checkout\Cart\LineItem\LineItemCollection;
 use Shopware\Core\Checkout\Cart\Price\Struct\CalculatedPrice;
@@ -45,6 +46,10 @@ class Ga4Service
      * @var ManufacturerHelper
      */
     private $manufacturerHelper;
+    /**
+     * @var CustomerHelper
+     */
+    private $customerHelper;
 
     public function __construct(SystemConfigService $systemConfigService,
                                 GeneralTagsService $generalTagsService,
@@ -52,6 +57,7 @@ class Ga4Service
                                 ProductHelper $productHelper,
                                 CategoryHelper $categoryHelper,
                                 ManufacturerHelper $manufacturerHelper,
+                                CustomerHelper $customerHelper,
                                 PriceHelper $priceHelper,
                                 LoggingHelper $loggingHelper)
     {
@@ -61,6 +67,7 @@ class Ga4Service
         $this->productHelper = $productHelper;
         $this->categoryHelper = $categoryHelper;
         $this->manufacturerHelper = $manufacturerHelper;
+        $this->customerHelper = $customerHelper;
         $this->priceHelper = $priceHelper;
         $this->loggingHelper = $loggingHelper;
     }
@@ -282,6 +289,20 @@ class Ga4Service
         $ga4_tags['tax'] = $this->priceHelper->formatPrice($order->getAmountTotal() - $order->getAmountNet());
         $ga4_tags['shipping'] = (float) $this->priceHelper->getPrice($order->getShippingTotal(), $shippingTax, $context);
         $ga4_tags['items'] = $this->getBasketItems($order->getLineItems(), $context, $addCategoryNames, 'purchase');
+
+        //new customer & lifetime value
+        $customer = $order->getOrderCustomer();
+        if($customer) {
+            $customerData = $customer->getCustomer();
+            $customerOrderStatistics = $this->customerHelper->getCustomerOrderStatisticsByCustomerId($customer->getCustomerId(), $context);
+            $isGuest = $customerData->getGuest();
+            if(!$isGuest) {
+                /** new_customer should only be specified if there is certainty about the customer, not if it is a guest account */
+                $ga4_tags['new_customer'] = !(($customerOrderStatistics['orderCount'] > 1));
+            }
+            $ga4_tags['customer_lifetime_value'] = $customerOrderStatistics['orderSum'];
+            //$ga4_tags['customer_order_count'] = $customerOrderStatistics['orderCount'];
+        }
 
         //added in 6.2.3
         $adwords_tracking_enabled = isset($pluginConfig['googleAdwordsId']) && $pluginConfig['googleAdwordsId'] != '';

@@ -2,33 +2,21 @@
 
 namespace Dtgs\GoogleTagManager\Services;
 
+use Dtgs\GoogleTagManager\Components\Helper\CustomerHelper;
 use Dtgs\GoogleTagManager\Components\Helper\LoggingHelper;
-use Shopware\Core\Checkout\Customer\Aggregate\CustomerGroup\CustomerGroupCollection;
-use Shopware\Core\Checkout\Order\OrderCollection;
-use Shopware\Core\Checkout\Order\OrderEntity;
-use Shopware\Core\Framework\Context;
 use Shopware\Core\Checkout\Customer\CustomerEntity;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
-use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
-use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
+use Shopware\Core\System\SalesChannel\SalesChannelContext;
 
 class CustomerTagsService
 {
 
     private $loggingHelper;
-    /**
-     * @var EntityRepository
-     */
-    private $orderRepository;
-    /**
-     * @var EntityRepository
-     */
-    private $customerGroupRepository;
 
-    public function __construct(EntityRepository $orderRepository, EntityRepository $customerGroupRepository, LoggingHelper $loggingHelper)
+    private $customerHelper;
+
+    public function __construct(CustomerHelper $customerHelper, LoggingHelper $loggingHelper)
     {
-        $this->orderRepository = $orderRepository;
-        $this->customerGroupRepository = $customerGroupRepository;
+        $this->customerHelper = $customerHelper;
         $this->loggingHelper = $loggingHelper;
     }
 
@@ -37,21 +25,25 @@ class CustomerTagsService
      *
      * Gets customer information
      *
-     * @param CustomerEntity $customer or null
+     * @param CustomerEntity|null $customer or null
+     * @param SalesChannelContext $context
      * @return array
      */
-    public function getCustomerTags(?CustomerEntity $customer, Context $context) {
+    public function getCustomerTags(?CustomerEntity $customer, SalesChannelContext $context) {
 
         $tags = array();
 
         if($customer) {
             $tags['visitorLoginState'] = 'Logged In';
 
-            $customerGroup = $this->getCustomerGroup($customer->getGroupId(), $context);
+            $customerGroup = $this->customerHelper->getCustomerGroup($customer->getGroupId(), $context);
+            $customerOrderStatistics = $this->customerHelper->getCustomerOrderStatisticsByCustomerId($customer->getId(), $context);
 
             $tags['visitorType'] = ($customerGroup) ? $customerGroup->getName() : 'default';
             $tags['visitorId'] = $customer->getCustomerNumber();
-            $tags['visitorLifetimeValue'] = $this->getCustomerLifetimeValue($customer->getId(), $context);
+            $tags['visitorLifetimeValue'] = $customerOrderStatistics['orderSum'];
+            $tags['visitorLifetimeOrderCount'] = $customerOrderStatistics['orderCount'];
+            $tags['visitorHasPlacedOrderBefore'] = ($customerOrderStatistics['orderCount'] > 0) ? 'Yes' : 'No';
             $tags['visitorExistingCustomer'] = 'Yes';
 
         } else {
@@ -65,44 +57,6 @@ class CustomerTagsService
         if($this->loggingHelper->loggingType('debug')) $this->loggingHelper->logMsg('Customer-Tags: ' . json_encode($tags));
 
         return $tags;
-
-    }
-
-    /**
-     * @param $groupId
-     * @param Context $context
-     * @return \Shopware\Core\Checkout\Customer\Aggregate\CustomerGroup\CustomerGroupEntity|null
-     */
-    private function getCustomerGroup($groupId, Context $context) {
-
-        $criteria = new Criteria([$groupId]);
-        /** @var CustomerGroupCollection $customerGroupCollection */
-        $customerGroupCollection = $this->customerGroupRepository->search($criteria, $context)->getEntities();
-        return $customerGroupCollection->get($groupId);
-
-    }
-
-    /**
-     * @param $customerId
-     * @param Context $context
-     * @return float
-     */
-    private function getCustomerLifetimeValue($customerId, Context $context) {
-
-        $criteria = new Criteria();
-        $criteria->addFilter(new EqualsFilter('orderCustomer.customerId', $customerId));
-        /** @var OrderCollection $orderCollection */
-        $orderCollection = $this->orderRepository->search($criteria, $context)->getEntities();
-
-        if(!$orderCollection) return floatval(0);
-
-        $lifetimeValue = 0;
-        /** @var OrderEntity $order */
-        foreach ($orderCollection as $order) {
-            $lifetimeValue += $order->getAmountTotal();
-        }
-
-        return floatval($lifetimeValue);
 
     }
 
