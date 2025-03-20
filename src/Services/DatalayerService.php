@@ -280,6 +280,7 @@ class DatalayerService
 
 		//Transaction Product Data
 		foreach($cartOrOrder->getLineItems() as $item) {
+            //$item Shopware\Core\Checkout\Cart\LineItem\LineItem
             if (isset($item->getPayload()['promotionId'])) {
                 $voucher = $item->getPayload();
                 if(isset($voucher['code'])) {
@@ -296,8 +297,9 @@ class DatalayerService
                     $tax = 0;
                 }
 
+                $payLoad = $item->getPayload();
                 $productName = $item->getLabel();
-                $productNumber = $item->getPayload()['productNumber'] ?? 'none';
+                $productNumber = $payLoad['productNumber'] ?? 'none';
 
                 //Anpassung für Swag Custom Products - V6.1.29
                 if($item->getType() == 'customized-products' && $item->getChildren()) {
@@ -332,7 +334,7 @@ class DatalayerService
                     //Damit die Optionen im WK erhalten bleiben (können ja auch einen Preis haben),
                     //wird hier die Exception gefangen und keine gesonderte Behandlung vorgenommen.
                 }
-                $checkoutTags['transactionProducts'][] = array(
+                $transactionProduct = array(
                     'id' => $item->getId(),
                     'parent_id' => ($product !== null) ? $product->getParentId() : '',
                     'name' => $productName,
@@ -340,7 +342,18 @@ class DatalayerService
                     //'category' => '', //nicht vorhanden im Array
                     'price' => $this->priceHelper->getPrice($item->getPrice()->getUnitPrice(), $tax, $context),
                     'quantity' => $item->getQuantity(),
+                    //GH-10 - more information in transactionProducts
+                    'product_url' => $product->getSeoUrls()->first()?->getSeoPathInfo(),
                 );
+                //GH-10 - more information in transactionProducts
+                if(isset($payLoad['options']) && $this->getVariantName($payLoad['options'])) {
+                    $transactionProduct['item_variant'] = $this->getVariantName($payLoad['options']);
+                }
+                if($product->getEan()) {
+                    $transactionProduct['ean'] = $product->getEan();
+                }
+
+                $checkoutTags['transactionProducts'][] = $transactionProduct;
             }
 		}
 
@@ -489,6 +502,24 @@ class DatalayerService
             $normalizedEmail = sprintf('%s@%s', $emailParts[0], $emailParts[1]);
         }
         return self::normalizeAndHash($hashAlgorithm, $normalizedEmail, true);
+    }
+
+    /**
+     * @return string|null
+     */
+    private function getVariantName(array $options)
+    {
+        if (empty($options)) return null;
+
+        $variantName = '';
+        foreach ($options as $option) {
+
+            //$variantName .= $option['group'].': '.$option['option'];
+            $variantName .= $option['option'].' ';
+
+        }
+
+        return trim($variantName);
     }
 
 }
