@@ -358,12 +358,15 @@ class GeneralSubscriber implements EventSubscriberInterface
         if(!empty($productListingContainerStructs)) {
             foreach ($productListingContainerStructs as $productListingContainerStruct) {
                 if(is_a($productListingContainerStruct, 'Shopware\Core\Content\Cms\SalesChannel\Struct\ProductListingStruct')) {
+                    if($productListingContainerStruct->getListing() === null) continue;
                     $productListings[] = $productListingContainerStruct->getListing()->getElements();
                 }
                 if(is_a($productListingContainerStruct, 'Shopware\Core\Content\Cms\SalesChannel\Struct\ProductSliderStruct')) {
+                    if($productListingContainerStruct->getProducts() === null) continue;
                     $productListings[] = $productListingContainerStruct->getProducts()->getElements();
                 }
                 if(is_a($productListingContainerStruct, 'Shopware\Core\Content\Cms\SalesChannel\Struct\CrossSellingStruct')) {
+                    if($productListingContainerStruct->getCrossSellings() === null) continue;
                     $csElements = $productListingContainerStruct->getCrossSellings()->getElements();
                     foreach ($csElements as $csElement) {
                         $productListings[] = $csElement->getProducts()->getElements();
