@@ -1,4 +1,5 @@
 # 6.2.20
+- Neu: PCI konforme Script Einbindung (GH-12)
 - Neu: Leerzeichen bei mehreren GTM IDs trimmen (CDVRS-61)
 - Neu: select_item feuert nun auch nach Blättern im Listing (CDVRS-53)
 - Neu: view_cart feuert nun auch beim Offcanvas WK (CDVRS-52)

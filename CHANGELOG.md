@@ -1,4 +1,5 @@
 # 6.2.20
+- New: PCI compliance for GTM scripts (GH-12)
 - New: trim GTM-IDs when using multiple (CDVRS-61)
 - New: select_item now fires after using pagination in listing (CDVRS-53)
 - New: view_cart now fires when viewing offcanvas cart (CDVRS-52)
