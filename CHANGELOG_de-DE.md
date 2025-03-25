@@ -1,3 +1,8 @@
+# 6.3.20
+- Neu: mehr Produktdaten im transactionProducts Array (GTM-GH-10)
+- Neu: PCI compliance (GTM-GH-12)
+- Bugfix: Fehler beim Einsatz von Slidern mit leeren dynamischen Produktgruppen in Erlebniswelten (GTM-GH-12)
+
 # 6.3.19
 - Neu: Option um Produkt IDs (Shopware UUIDs) in ecommerce events zu includieren (GTM-GH-7)
 - Neu: Parameter new_customer und customer_lifetime_value sind nun im purchase Event vorhanden (GTM-GH-3)
