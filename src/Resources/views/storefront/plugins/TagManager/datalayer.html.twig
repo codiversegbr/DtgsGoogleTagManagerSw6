@@ -1,5 +1,5 @@
 {% if page.extensions.GoogleTagManagerConfig.status == 'enabled' %}
-    <script>
+    <script{% if app.request.attributes.get('_cspNonce') %} nonce="{{ app.request.attributes.get('_cspNonce') }}"{% endif %}>
         dataLayer = window.dataLayer || [];
         {# Clear the previous ecommerce object #}
         dataLayer.push({ ecommerce: null });

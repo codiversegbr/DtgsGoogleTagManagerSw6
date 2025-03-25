@@ -3,11 +3,12 @@
 {% if gtmIsActive(gtmConfig.googleId) %}
     {% for containerId in gtmGetContainerIds(gtmConfig.googleId) %}
         {% if page.extensions.GoogleTagManagerConfig.code_delay_active == true %}
-            <script{{ page.extensions.GoogleTagManagerConfig.additionalServiceCode|raw }}>{% verbatim %}
+            <script{% if app.request.attributes.get('_cspNonce') %} nonce="{{ app.request.attributes.get('_cspNonce') }}"{% endif %}{{ page.extensions.GoogleTagManagerConfig.additionalServiceCode|raw }}>{% verbatim %}
                     var googleTagManagerFunction = function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
                             new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
                         j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
-                        '{% endverbatim %}{{ gtmGetJsUrl(gtmConfig.customGtmJsUrl) }}{% verbatim %}?id='+i+dl;f.parentNode.insertBefore(j,f);
+                        '{% endverbatim %}{{ gtmGetJsUrl(gtmConfig.customGtmJsUrl) }}{% verbatim %}?id='+i+dl;{% endverbatim %}{% if app.request.attributes.get('_cspNonce') %}var n=d.querySelector('[nonce]');
+                n&&j.setAttribute('nonce',n.nonce||n.getAttribute('nonce'));{% endif %}{% verbatim %}f.parentNode.insertBefore(j,f);
                     }{% endverbatim %};
 
                     setTimeout(() => {
@@ -15,10 +16,12 @@
                     }, {{ gtmConfig.delayCodeInsertionTime }});
             </script>
         {% else %}
-            <script{{ page.extensions.GoogleTagManagerConfig.additionalServiceCode|raw }}>{% verbatim %}(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+            <script{% if app.request.attributes.get('_cspNonce') %} nonce="{{ app.request.attributes.get('_cspNonce') }}"{% endif %}{{ page.extensions.GoogleTagManagerConfig.additionalServiceCode|raw }}>{% verbatim %}
+                    (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
                             new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
                         j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
-                        '{% endverbatim %}{{ gtmGetJsUrl(gtmConfig.customGtmJsUrl) }}{% verbatim %}?id='+i+dl;f.parentNode.insertBefore(j,f);
+                        '{% endverbatim %}{{ gtmGetJsUrl(gtmConfig.customGtmJsUrl) }}{% verbatim %}?id='+i+dl;{% endverbatim %}{% if app.request.attributes.get('_cspNonce') %}var n=d.querySelector('[nonce]');
+                n&&j.setAttribute('nonce',n.nonce||n.getAttribute('nonce'));{% endif %}{% verbatim %}f.parentNode.insertBefore(j,f);
                     }{% endverbatim %})(window,document,'script','dataLayer','{{ containerId }}');</script>
         {% endif %}
     {% endfor %}

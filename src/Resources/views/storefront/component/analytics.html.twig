@@ -4,7 +4,7 @@
 
 {% block component_head_analytics_gtag_consent %}
     {% if gtmConfig.consentModeImplementation == 'shopwareCmp' %}
-        <script>
+        <script{% if app.request.attributes.get('_cspNonce') %} nonce="{{ app.request.attributes.get('_cspNonce') }}"{% endif %}>
             window.dataLayer = window.dataLayer || [];
             function gtag() { dataLayer.push(arguments); }
 
@@ -28,7 +28,7 @@
             })();
         </script>
     {%  elseif gtmConfig.consentModeImplementation == 'other' %}
-        <script>
+        <script{% if app.request.attributes.get('_cspNonce') %} nonce="{{ app.request.attributes.get('_cspNonce') }}"{% endif %}>
             window.dataLayer = window.dataLayer || [];
             function gtag() { dataLayer.push(arguments); }
 
