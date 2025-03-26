@@ -12,7 +12,7 @@
                 const analyticsStorageEnabled = document.cookie.split(';').some((item) => item.trim().includes('dtgsAllowGtmTracking=1'));
 
                 let googleAdsCookieName = 'google-ads-enabled';
-                {% if version_compare('6.6.9.0', gtmGetShopwareVersion(), '>=') %}
+                {% if version_compare(gtmGetShopwareVersion(), '6.6.9.0', '>=') %}
                     googleAdsCookieName = 'dtgsAllowGtmTracking';
                 {% endif %}
 
