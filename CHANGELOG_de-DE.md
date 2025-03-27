@@ -1,3 +1,6 @@
+# 6.3.21
+- Bugfix: Checkout Fehler für Custom Products
+
 # 6.3.20
 - Neu: mehr Produktdaten im transactionProducts Array (GTM-GH-10)
 - Neu: PCI compliance (GTM-GH-12)
