@@ -342,16 +342,23 @@ class DatalayerService
                     //'category' => '', //nicht vorhanden im Array
                     'price' => $this->priceHelper->getPrice($item->getPrice()->getUnitPrice(), $tax, $context),
                     'quantity' => $item->getQuantity(),
-                    //GH-10 - more information in transactionProducts
-                    'product_url' => $product->getSeoUrls()->first()?->getSeoPathInfo(),
                 );
                 //GH-10 - more information in transactionProducts
                 if(isset($payLoad['options']) && $this->getVariantName($payLoad['options'])) {
                     $transactionProduct['item_variant'] = $this->getVariantName($payLoad['options']);
                 }
-                if($product->getEan()) {
-                    $transactionProduct['ean'] = $product->getEan();
+                try {
+                    if($product && $product->getEan()) {
+                        $transactionProduct['ean'] = $product->getEan();
+                    }
+                    if($product && $product->getSeoUrls()) {
+                        $transactionProduct['product_url'] = $product->getSeoUrls()->first()?->getSeoPathInfo();
+                    }
+                } catch (Exception $exception) {
+                    //Custom Products werden als eigene Items im WK gehandlet, haben aber ggf.
+                    //nicht die benötigten Memberfunktionen
                 }
+
 
                 $checkoutTags['transactionProducts'][] = $transactionProduct;
             }
