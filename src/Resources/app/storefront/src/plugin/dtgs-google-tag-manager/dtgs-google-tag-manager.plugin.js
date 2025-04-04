@@ -13,8 +13,6 @@ export default class DtgsGoogleTagManagerPlugin extends Plugin
         this.cookieEnabledName = 'dtgsAllowGtmTracking';
         this.cookieAdsEnabledName = window.googleAdsCookieName || 'google-ads-enabled';
 
-        alert(this.cookieAdsEnabledName);
-
         this.handleCookieChangeEvent();
 
         this.startGoogleTagManager();
