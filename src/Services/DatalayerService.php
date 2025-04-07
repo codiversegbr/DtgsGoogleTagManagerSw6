@@ -322,8 +322,8 @@ class DatalayerService
                 try {
                     if (method_exists($item, 'getProductId')) {
                         $product = $this->productHelper->getProductyById($item->getProductId(), $context);
-                    } elseif (method_exists($item, 'getId')) {
-                        $product = $this->productHelper->getProductyById($item->getId(), $context);
+                    } elseif (method_exists($item, 'getReferencedId')) {
+                        $product = $this->productHelper->getProductyById($item->getReferencedId(), $context);
                     }
                 } catch (InvalidUuidException | InvalidCriteriaIdsException $exception) {
                     //CDVRS-16
