@@ -1,3 +1,8 @@
+# 6.3.22
+- Bugfix: updateConsentMode nutzt die falsche Variable für Google Ad Permissions (GTM-GH-19)
+- Änderung: Product im Datalayer über ReferenceID ziehen statt ID (GTM-GH-17)
+- Bugfix: JS Error: auf Listenseite bei leerem Offcanvas WK (GTM-GH-16)
+
 # 6.3.21
 - Bugfix: Checkout Fehler für Custom Products
 
