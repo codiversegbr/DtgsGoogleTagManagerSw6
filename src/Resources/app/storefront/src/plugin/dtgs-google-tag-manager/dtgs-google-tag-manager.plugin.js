@@ -267,8 +267,6 @@ export default class DtgsGoogleTagManagerPlugin extends Plugin
         let additionalProperties = LineItemHelper.getAdditionalProperties();
         let lineItems = this.getLineItems();
 
-        if(lineItems === false) return;
-
         window.dataLayer.push({
             'event': 'view_cart',
             'currency': additionalProperties.currency,
@@ -284,7 +282,7 @@ export default class DtgsGoogleTagManagerPlugin extends Plugin
         const lineItemDataElements = DomAccessHelper.querySelectorAll(lineItemsContainer, '.hidden-line-item', false);
         const lineItems = [];
 
-        if(lineItemDataElements === false) return false;
+        if(lineItemDataElements === false) return [];
 
         lineItemDataElements.forEach(itemEl => {
             let item = {
