@@ -175,6 +175,11 @@ export default class DtgsGoogleTagManagerPlugin extends Plugin
             return;
         }
 
+        //GTM-GH-21: let 3rdparty system handle consent
+        if(typeof dtgsConsentHandler !== 'undefined' && dtgsConsentHandler === 'thirdpartyCmp') {
+            return;
+        }
+
         const consentUpdateConfig = {};
 
         if (Object.prototype.hasOwnProperty.call(updatedCookies, this.cookieEnabledName)) {

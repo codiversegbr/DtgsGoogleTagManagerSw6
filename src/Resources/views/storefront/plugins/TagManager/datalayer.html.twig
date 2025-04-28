@@ -25,5 +25,7 @@
         {% if config('DtgsGoogleTagManagerSw6.config.remarketingIntegration') == 'enable' %}
             var dtgsRemarketingEnabled = true;
         {%  endif %}
+        {# how is consent handled? #}
+        var dtgsConsentHandler = '{{ config('DtgsGoogleTagManagerSw6.config.consentModeImplementation') }}';
     </script>
 {%  endif %}
