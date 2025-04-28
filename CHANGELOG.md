@@ -2,6 +2,7 @@
 - Bugfix: updateConsentMode using the wrong variable for Google Ad Permissions (GTM-GH-19)
 - Change: get Product in Datalayer via ReferenceID instead of ID (GTM-GH-17)
 - Bugfix: JS Error on listing pages when showing off-canvas cart and cart is empty (GTM-GH-16)
+- Bugfix: gtag is not defined JS Error when using a thirdparty consent service (GTM-GH-21)
 
 # 6.3.21
 - Bugfix: Checkout Error for custom products
