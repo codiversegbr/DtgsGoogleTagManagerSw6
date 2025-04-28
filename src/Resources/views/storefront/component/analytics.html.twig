@@ -28,6 +28,11 @@
                 });
             })();
         </script>
+    {%  elseif gtmConfig.consentModeImplementation == 'thirdpartyCmp' %}
+        <script{% if app.request.attributes.get('_cspNonce') %} nonce="{{ app.request.attributes.get('_cspNonce') }}"{% endif %}>
+            window.dataLayer = window.dataLayer || [];
+            function gtag() { dataLayer.push(arguments); }
+        </script>
     {%  elseif gtmConfig.consentModeImplementation == 'other' %}
         <script{% if app.request.attributes.get('_cspNonce') %} nonce="{{ app.request.attributes.get('_cspNonce') }}"{% endif %}>
             window.dataLayer = window.dataLayer || [];
