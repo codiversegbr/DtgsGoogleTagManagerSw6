@@ -1,3 +1,7 @@
+# 6.3.23
+- Bugfix: JS Error on listing pages when showing off-canvas cart and cart is empty (GTM-GH-16)
+- Bugfix: Use nullsafe operator when fetching price in checkout (GTM-GH-24)
+
 # 6.3.22
 - Bugfix: updateConsentMode using the wrong variable for Google Ad Permissions (GTM-GH-19)
 - Change: get Product in Datalayer via ReferenceID instead of ID (GTM-GH-17)
