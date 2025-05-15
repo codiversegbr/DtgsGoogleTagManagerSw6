@@ -288,7 +288,7 @@ class DatalayerService
                 }
             } else {
                 /** @var LineItem $item */
-                $taxRate = $item->getPrice()->getTaxRules()->first();
+                $taxRate = $item->getPrice()?->getTaxRules()->first();
                 if($taxRate) {
                     $tax = $taxRate->getTaxRate();
                 }
