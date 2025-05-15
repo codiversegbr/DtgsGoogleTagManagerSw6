@@ -287,6 +287,8 @@ export default class DtgsGoogleTagManagerPlugin extends Plugin
         const lineItemDataElements = DomAccessHelper.querySelectorAll(lineItemsContainer, '.hidden-line-item', false);
         const lineItems = [];
 
+        if(lineItemDataElements === false) return [];
+
         lineItemDataElements.forEach(itemEl => {
             let item = {
                 item_id: DomAccessHelper.getDataAttribute(itemEl, 'data-dtgs-sku'),
