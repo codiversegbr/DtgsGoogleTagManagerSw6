@@ -1,6 +1,7 @@
 # 6.3.23
 - Bugfix: JS Error: auf Listenseite bei leerem Offcanvas WK (GTM-GH-16)
 - Bugfix: Nullsafe operator anwenden wenn der Preis im Checkout gezogen wird (GTM-GH-24)
+- SW6.7 Kompatibilität
 
 # 6.3.22
 - Bugfix: updateConsentMode nutzt die falsche Variable für Google Ad Permissions (GTM-GH-19)
