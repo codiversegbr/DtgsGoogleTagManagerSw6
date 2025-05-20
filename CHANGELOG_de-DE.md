@@ -1,4 +1,4 @@
-# 6.3.23
+# 6.4.0
 - Bugfix: JS Error: auf Listenseite bei leerem Offcanvas WK (GTM-GH-16)
 - Bugfix: Nullsafe operator anwenden wenn der Preis im Checkout gezogen wird (GTM-GH-24)
 - SW6.7 Kompatibilität

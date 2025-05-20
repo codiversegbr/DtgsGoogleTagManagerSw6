@@ -1,4 +1,4 @@
-# 6.3.23
+# 6.4.0
 - Bugfix: JS Error on listing pages when showing off-canvas cart and cart is empty (GTM-GH-16)
 - Bugfix: Use nullsafe operator when fetching price in checkout (GTM-GH-24)
 - SW6.7 compatibility
