@@ -1,3 +1,7 @@
+# 6.3.23
+- Bugfix: JS Error: auf Listenseite bei leerem Offcanvas WK (GTM-GH-16)
+- Bugfix: Nutzt jetzt den nullsafe operator wenn Preise im Checkout geladen werden (GTM-GH-24)
+
 # 6.3.22
 - Bugfix: updateConsentMode nutzt die falsche Variable für Google Ad Permissions (GTM-GH-19)
 - Änderung: Product im Datalayer über ReferenceID ziehen statt ID (GTM-GH-17)
