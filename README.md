@@ -5,19 +5,19 @@
 <p align="center"><strong>by codiverse</strong>
 
 <h2>Highlights</h2>
-* ✅ Google Analytics 4 ready
-* ✅ Ready for Consent Mode V2
-* ✅ Super rich DataLayer
-* ✅ Enhanced Conversions
-* ✅ Fast support!
+- ✅ Google Analytics 4 ready
+- ✅ Ready for Consent Mode V2
+- ✅ Super rich DataLayer
+- ✅ Enhanced Conversions
+- ✅ Fast support!
 
 <h2>Features</h2>
-* 👍 compatible with Shopware Cooke Consent Management
-* 👍 compatible with ACRIS EU Cookie Policy Pro
-* 👍 plenty of developer settings
-* 👍 Choose position for GTM Code and DataLayer
-* 👍 Gross- and Net-Prices available
-* 👍 Use multiple container IDs! (https://developers.google.com/tag-manager/devguide?hl=en#multiple-containers)
+- 👍 compatible with Shopware Cooke Consent Management
+- 👍 compatible with ACRIS EU Cookie Policy Pro
+- 👍 plenty of developer settings
+- 👍 Choose position for GTM Code and DataLayer
+- 👍 Gross- and Net-Prices available
+- 👍 Use multiple container IDs! (https://developers.google.com/tag-manager/devguide?hl=en#multiple-containers)
 
 <h2>About</h2>
 Hi, we are codiverse and we love Shopware! We are a team of experienced developers and we are putting our plugin to Github in order to collaborate with experienced developers to make our plugin even better. If you have any questions or suggestions, please feel free to contact us at <a href="mailto:support@codiverse.de">support@codiverse.de</a> or visit our <a href="https://www.codiverse.de">website</a>.
