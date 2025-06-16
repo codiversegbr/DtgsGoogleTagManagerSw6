@@ -199,7 +199,7 @@ class RemarketingService
         $remarketing_tags['ecomm_pname'] = $namesAsArray;
         $remarketing_tags['ecomm_pvalue'] = $valuesAsArray;
         //total cart value
-        if($this->priceHelper->getPriceType() == 'netto') $remarketing_tags['ecomm_totalvalue'] = (float) $cartOrOrder->getPrice()->getNetPrice();
+        if($this->priceHelper->getPriceType($context) == 'netto') $remarketing_tags['ecomm_totalvalue'] = (float) $cartOrOrder->getPrice()->getNetPrice();
         else $remarketing_tags['ecomm_totalvalue'] = (float) $cartOrOrder->getPrice()->getTotalPrice();
 
         return $remarketing_tags;
