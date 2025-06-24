@@ -8,6 +8,7 @@ use Dtgs\GoogleTagManager\Components\Helper\LoggingHelper;
 use Dtgs\GoogleTagManager\Components\Helper\ManufacturerHelper;
 use Dtgs\GoogleTagManager\Components\Helper\PriceHelper;
 use Dtgs\GoogleTagManager\Components\Helper\ProductHelper;
+use Shopware\Core\Checkout\Cart\Cart;
 use Shopware\Core\Checkout\Cart\LineItem\LineItem;
 use Shopware\Core\Checkout\Cart\LineItem\LineItemCollection;
 use Shopware\Core\Checkout\Cart\Price\Struct\CalculatedPrice;
@@ -356,6 +357,44 @@ class Ga4Service
 
     }
 
+    private function getGenericPaymentOrShippingInfoData($cart, SalesChannelContext $context): array
+    {
+        $pluginConfig = $this->getGtmConfig($context->getSalesChannel()->getId());
+        $addCategoryNames = (isset($pluginConfig['eeAddCategorynameInCheckout'])) ? $pluginConfig['eeAddCategorynameInCheckout'] : false;
+        $useNetPrices = isset($pluginConfig['showPriceType']) && $pluginConfig['showPriceType'] == 'netto';
+
+        $ga4_tags = [];
+        $ga4_tags['currency'] = $context->getCurrency()->getIsoCode();
+        $ga4_tags['value'] = ($useNetPrices) ? $cart->getPrice()->getNetPrice() : $cart->getPrice()->getTotalPrice();
+        $ga4_tags['items'] = $this->getBasketItems($cart->getLineItems(), $context, $addCategoryNames, 'confirm');
+
+        return $ga4_tags;
+    }
+
+    /**
+     * CDVRS-GH-14
+     */
+    public function getAddPaymentInfoTags($cart, SalesChannelContext $context): array
+    {
+        $ga4_tags = $this->getGenericPaymentOrShippingInfoData($cart, $context);
+        $ga4_tags['payment_type'] = $context->getPaymentMethod()?->getTechnicalName();
+        $ga4_tags['payment_type_translated'] = $context->getPaymentMethod()?->getName();
+
+        return $this->addEeEvent($ga4_tags, 'add_payment_info');
+    }
+
+    /**
+     * CDVRS-GH-14
+     */
+    public function getAddShippingInfoTags($cart, SalesChannelContext $context): array
+    {
+        $ga4_tags = $this->getGenericPaymentOrShippingInfoData($cart, $context);
+        $ga4_tags['shipping_tier'] = $context->getShippingMethod()?->getTechnicalName();
+        $ga4_tags['shipping_tier_translated'] = $context->getShippingMethod()?->getName();
+
+        return $this->addEeEvent($ga4_tags, 'add_shipping_info');
+    }
+
     /**
      * @param $listing
      * @param int $maxCategories
@@ -433,7 +472,7 @@ class Ga4Service
      * @return array
      * @throws \Exception
      */
-    private function  getBasketItems($listing, SalesChannelContext $context, $addCategoryNames = false, $location = 'checkout'): array
+    private function getBasketItems($listing, SalesChannelContext $context, $addCategoryNames = false, $location = 'checkout'): array
     {
 
         $i = 0;
