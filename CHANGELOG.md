@@ -1,3 +1,7 @@
+# 6.3.24
+- Bugfix: use sales channel context for price type configuration (GTM-GH-PR #30, thanks to @bethlehemit)
+- New: Events add_payment_info & add_shipping_info (GTM-GH-14)
+
 # 6.3.23
 - Bugfix: JS Error on listing pages when showing off-canvas cart and cart is empty (GTM-GH-16)
 - Bugfix: Use nullsafe operator when fetching price in checkout (GTM-GH-24)

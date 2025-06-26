@@ -1,3 +1,7 @@
+# 6.3.24
+- Bugfix: Abfrage des Preistypen berücksichtigt jetzt auch Subshops (GTM-GH-PR #30, thanks to @bethlehemit)
+- Neu: Events add_payment_info & add_shipping_info (GTM-GH-14)
+
 # 6.3.23
 - Bugfix: JS Error: auf Listenseite bei leerem Offcanvas WK (GTM-GH-16)
 - Bugfix: Nutzt jetzt den nullsafe operator wenn Preise im Checkout geladen werden (GTM-GH-24)
