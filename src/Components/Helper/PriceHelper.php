@@ -31,12 +31,13 @@ class PriceHelper
 
     /**
      * V 1.3.5 - Netto/Bruttopreise übergeben - Preistyp ermitteln
+     * @param SalesChannelContext $context
      * @return string
      * @throws \Exception
      */
-    public function getPriceType() {
+    public function getPriceType(SalesChannelContext $context) {
 
-        $tagManagerConfig = $this->systemConfigService->get('DtgsGoogleTagManagerSw6.config');
+        $tagManagerConfig = $this->systemConfigService->get('DtgsGoogleTagManagerSw6.config', $context->getSalesChannelId());
 
         if(isset($tagManagerConfig['showPriceType'])) {
 
@@ -62,7 +63,7 @@ class PriceHelper
         if(!is_numeric($tax)) $tax = 19;
 
         //Einstellung im Plugin - Netto oder Bruttopreise ausgeben?
-        $plugin_price_type = $this->getPriceType();
+        $plugin_price_type = $this->getPriceType($context);
 
         //see FD-32842
         $customerGroup = $context->getCurrentCustomerGroup();
