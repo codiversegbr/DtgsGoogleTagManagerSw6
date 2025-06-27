@@ -15,6 +15,7 @@ use Shopware\Core\Content\Cms\SalesChannel\Struct\ProductListingStruct;
 use Shopware\Core\Content\Cms\SalesChannel\Struct\ProductSliderStruct;
 use Shopware\Core\Content\Product\SalesChannel\SalesChannelProductEntity;
 use Shopware\Core\Framework\Struct\ArrayEntity;
+use Shopware\Core\Framework\Struct\ArrayStruct;
 use Shopware\Core\Framework\Struct\Struct;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Shopware\Storefront\Page\Account\Login\AccountLoginPageLoadedEvent;
@@ -41,6 +42,7 @@ use Shopware\Storefront\Page\Product\ProductPageLoadedEvent;
 use Shopware\Storefront\Page\Search\SearchPageLoadedEvent;
 use Shopware\Storefront\Page\Wishlist\WishlistPageLoadedEvent;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
+use Symfony\Component\HttpFoundation\RequestStack;
 
 class GeneralSubscriber implements EventSubscriberInterface
 {
@@ -68,13 +70,19 @@ class GeneralSubscriber implements EventSubscriberInterface
      * @var CustomerTagsService
      */
     private $customerTagsService;
+    /**
+     * @var RequestStack
+     */
+    private $requestStack;
 
     public function __construct(SystemConfigService $systemConfigService,
                                 DatalayerService $datalayerService,
                                 Ga4Service $ga4Service,
                                 RemarketingService $remarketingService,
                                 GeneralTagsService $generalTagsService,
-                                CustomerTagsService $customerTagsService)
+                                CustomerTagsService $customerTagsService,
+                                RequestStack $requestStack
+    )
     {
         $this->systemConfigService = $systemConfigService;
         $this->datalayerService = $datalayerService;
@@ -82,6 +90,7 @@ class GeneralSubscriber implements EventSubscriberInterface
         $this->remarketingService = $remarketingService;
         $this->generalTagsService = $generalTagsService;
         $this->customerTagsService = $customerTagsService;
+        $this->requestStack = $requestStack;
     }
 
     public static function getSubscribedEvents(): array
@@ -166,6 +175,20 @@ class GeneralSubscriber implements EventSubscriberInterface
         if(!$containerIds && $tagManagerConfig['removeContainerCode'] === false) {
             $status = 'disabled';
         }
+
+        // Include GTM script in HTML if config is off or consent cookie is true
+        $gtmConsent = true;
+        if ($this->requestStack
+            && ($request = $this->requestStack->getCurrentRequest())
+            && isset($tagManagerConfig['loadGoogleScriptAfterConsent'])
+            && $tagManagerConfig['loadGoogleScriptAfterConsent']
+        ) {
+            $gtmConsent = $request->cookies->get('dtgsAllowGtmTracking', '0');
+            $gtmConsent = (bool) (int) $gtmConsent;
+        }
+        $event->getPage()->addExtension('dtgsAllowGtmTracking', new ArrayStruct([
+            'gtmConsent' => $gtmConsent
+        ]));
 
         //The following tags will always be there
         $generalTags = $this->generalTagsService->getGeneralTags($page, $event->getSalesChannelContext()->getContext(), $event->getRequest());

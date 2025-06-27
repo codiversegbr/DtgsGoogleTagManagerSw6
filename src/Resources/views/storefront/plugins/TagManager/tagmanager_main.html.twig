@@ -1,28 +1,30 @@
 {% set gtmConfig = config('DtgsGoogleTagManagerSw6.config') %}
 
 {% if gtmIsActive(gtmConfig.googleId) %}
-    {% for containerId in gtmGetContainerIds(gtmConfig.googleId) %}
-        {% if page.extensions.GoogleTagManagerConfig.code_delay_active == true %}
-            <script{% if app.request.attributes.get('_cspNonce') %} nonce="{{ app.request.attributes.get('_cspNonce') }}"{% endif %}{{ page.extensions.GoogleTagManagerConfig.additionalServiceCode|raw }}>{% verbatim %}
-                    var googleTagManagerFunction = function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
-                            new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
-                        j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
-                        '{% endverbatim %}{{ gtmGetJsUrl(gtmConfig.customGtmJsUrl) }}{% verbatim %}?id='+i+dl;{% endverbatim %}{% if app.request.attributes.get('_cspNonce') %}var n=d.querySelector('[nonce]');
-                n&&j.setAttribute('nonce',n.nonce||n.getAttribute('nonce'));{% endif %}{% verbatim %}f.parentNode.insertBefore(j,f);
-                    }{% endverbatim %};
+    <script{% if app.request.attributes.get('_cspNonce') %} nonce="{{ app.request.attributes.get('_cspNonce') }}"{% endif %}>
+        (function e(){window.document.$emitter&&typeof window.document.$emitter.subscribe==="function"?window.document.$emitter.subscribe("CookieConfiguration_Update",t=>{t&&t.detail&&Object.prototype.hasOwnProperty.call(t.detail,"dtgsAllowGtmTracking")&&window.location.reload()}):setTimeout(e,100)})();
+    </script>
+{% endif %}
 
-                    setTimeout(() => {
-                        googleTagManagerFunction(window,document,'script','dataLayer','{{ containerId }}');
-                    }, {{ gtmConfig.delayCodeInsertionTime }});
-            </script>
-        {% else %}
-            <script{% if app.request.attributes.get('_cspNonce') %} nonce="{{ app.request.attributes.get('_cspNonce') }}"{% endif %}{{ page.extensions.GoogleTagManagerConfig.additionalServiceCode|raw }}>{% verbatim %}
-                    (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
-                            new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
-                        j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
-                        '{% endverbatim %}{{ gtmGetJsUrl(gtmConfig.customGtmJsUrl) }}{% verbatim %}?id='+i+dl;{% endverbatim %}{% if app.request.attributes.get('_cspNonce') %}var n=d.querySelector('[nonce]');
-                n&&j.setAttribute('nonce',n.nonce||n.getAttribute('nonce'));{% endif %}{% verbatim %}f.parentNode.insertBefore(j,f);
-                    }{% endverbatim %})(window,document,'script','dataLayer','{{ containerId }}');</script>
-        {% endif %}
+{% if gtmIsActive(gtmConfig.googleId) and page.extensions.dtgsAllowGtmTracking.gtmConsent %}
+    {% for containerId in gtmGetContainerIds(gtmConfig.googleId) %}
+        <script{% if app.request.attributes.get('_cspNonce') %} nonce="{{ app.request.attributes.get('_cspNonce') }}"{% endif %}{{ page.extensions.GoogleTagManagerConfig.additionalServiceCode|raw }}>
+            window.dataLayer = window.dataLayer || [];
+            {% verbatim %}var loadGTM = function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+                    new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+                j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+                '{% endverbatim %}{{ gtmGetJsUrl(gtmConfig.customGtmJsUrl) }}{% verbatim %}?id='+i+dl;{% endverbatim %}{% if app.request.attributes.get('_cspNonce') %}var n=d.querySelector('[nonce]');
+            n&&j.setAttribute('nonce',n.nonce||n.getAttribute('nonce'));{% endif %}{% verbatim %}f.parentNode.insertBefore(j,f);
+                    }{% endverbatim %};
+            {% if gtmConfig.loadGoogleScriptAfterConsent %}
+                function handleCookieConsent(){try{let t=document.cookie.split(";").some(t=>t.trim().includes("dtgsAllowGtmTracking=1"));t&&loadGTM(window,document,"script","dataLayer","{{ containerId }}")}catch(e){}void 0!==document.$emitter?document.$emitter.subscribe("CookieConfiguration_Update",function(t){t.detail.hasOwnProperty("dtgsAllowGtmTracking")&&!0===t.detail.dtgsAllowGtmTracking&&loadGTM(window,document,"script","dataLayer","{{ containerId }}")}):setTimeout(handleCookieConsent,100)}"loading"===document.readyState?document.addEventListener("DOMContentLoaded",handleCookieConsent):handleCookieConsent();
+            {% elseif page.extensions.GoogleTagManagerConfig.code_delay_active == true %}
+                setTimeout(function () {
+                    loadGTM(window,document,'script','dataLayer','{{ containerId }}');
+                }, {{ gtmConfig.delayCodeInsertionTime }});
+            {% else %}
+                loadGTM(window,document,'script','dataLayer','{{ containerId }}');
+            {% endif %}
+        </script>
     {% endfor %}
 {%  endif %}

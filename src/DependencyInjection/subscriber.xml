@@ -13,6 +13,7 @@
             <argument type="service" id="Dtgs\GoogleTagManager\Services\RemarketingService" />
             <argument type="service" id="Dtgs\GoogleTagManager\Services\GeneralTagsService" />
             <argument type="service" id="Dtgs\GoogleTagManager\Services\CustomerTagsService" />
+            <argument type="service" id="request_stack" />
             <tag name="kernel.event_subscriber"/>
         </service>
 

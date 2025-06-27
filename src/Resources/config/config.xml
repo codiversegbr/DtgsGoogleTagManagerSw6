@@ -294,6 +294,17 @@
         <title lang="nl-NL">Configuratie voor ontwikkelaars</title>
 
         <input-field type="bool">
+            <name>loadGoogleScriptAfterConsent</name>
+            <label lang="de-DE">GTM-Hauptskript (gtm.js) erst nach Cookie-Zustimmung laden</label>
+            <label lang="nl-NL">Laad GTM-hoofdscript (gtm.js) alleen na toestemming voor cookies</label>
+            <label>Load GTM main script (gtm.js) only after cookie consent</label>
+            <defaultValue>false</defaultValue>
+            <helpText lang="de-DE">Um zu verhindern, dass vor Consent bereits Kontakt zum Google Server hergestellt wird, können die Google Scripte erst NACH Google Consent geladen werden. Dies führt zur weniger Daten in GA4, ist aber aus datenschutzrechtlichen Gründen häufig von unseren Kund*innen gewünscht worden.</helpText>
+            <helpText lang="nl-NL">Om te voorkomen dat er vóór toestemming contact met de Google-server tot stand wordt gebracht, kunnen de Google-scripts pas worden geladen NADAT Google toestemming heeft gegeven. Dit resulteert in minder gegevens in GA4, maar is vanwege de gegevensbescherming vaak door onze klanten aangevraagd.</helpText>
+            <helpText>To prevent contact being established with the Google server before consent, the Google scripts can only be loaded AFTER Google Consent. This leads to less data in GA4, but has often been requested by our customers for data protection reasons.</helpText>
+        </input-field>
+
+        <input-field type="bool">
             <name>removeContainerCode</name>
             <label lang="de-DE">Nur Datalayer ausgeben? (Container Code entfernen)</label>
             <label lang="nl-NL">Alleen Datalayer uitgeven? (Verwijder Container Code)</label>
