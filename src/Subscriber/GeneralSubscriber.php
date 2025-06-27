@@ -165,18 +165,6 @@ class GeneralSubscriber implements EventSubscriberInterface
      */
     public function onPageLoaded($event)
     {
-        $gtmConsent = false;
-        if ($this->requestStack
-            && ($request = $this->requestStack->getCurrentRequest())
-        ) {
-            $gtmConsent = $request->cookies->get('dtgsAllowGtmTracking', '0');
-            $gtmConsent = (bool) (int) $gtmConsent;
-        }
-
-        $event->getPage()->addExtension('dtgsAllowGtmTracking', new ArrayStruct([
-            'gtmConsent' => $gtmConsent
-        ]));
-
         /** @var Page $page */
         $page = $event->getPage();
         $status = 'enabled';
@@ -187,6 +175,20 @@ class GeneralSubscriber implements EventSubscriberInterface
         if(!$containerIds && $tagManagerConfig['removeContainerCode'] === false) {
             $status = 'disabled';
         }
+
+        // Include GTM script in HTML if config is off or consent cookie is true
+        $gtmConsent = true;
+        if ($this->requestStack
+            && ($request = $this->requestStack->getCurrentRequest())
+            && isset($tagManagerConfig['loadGoogleScriptAfterConsent'])
+            && $tagManagerConfig['loadGoogleScriptAfterConsent']
+        ) {
+            $gtmConsent = $request->cookies->get('dtgsAllowGtmTracking', '0');
+            $gtmConsent = (bool) (int) $gtmConsent;
+        }
+        $event->getPage()->addExtension('dtgsAllowGtmTracking', new ArrayStruct([
+            'gtmConsent' => $gtmConsent
+        ]));
 
         //The following tags will always be there
         $generalTags = $this->generalTagsService->getGeneralTags($page, $event->getSalesChannelContext()->getContext(), $event->getRequest());
