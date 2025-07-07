@@ -1,6 +1,6 @@
 {% set gtmConfig = config('DtgsGoogleTagManagerSw6.config') %}
 
-{% if gtmIsActive(gtmConfig.googleId) %}
+{% if gtmConfig.pluginActiveInSaleschannel and gtmIsActive(gtmConfig.googleId) %}
     {% for containerId in gtmGetContainerIds(gtmConfig.googleId) %}
         {% if page.extensions.GoogleTagManagerConfig.code_delay_active == true %}
             <script{% if app.request.attributes.get('_cspNonce') %} nonce="{{ app.request.attributes.get('_cspNonce') }}"{% endif %}{{ page.extensions.GoogleTagManagerConfig.additionalServiceCode|raw }}>{% verbatim %}
