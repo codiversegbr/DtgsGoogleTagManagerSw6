@@ -3,6 +3,7 @@
 - Neu: Option, die Plugin Funktionalität vollständig pro Saleschannel zu aktivieren/deaktivieren (GTM-GH-26)
 - Bugfix: Fehler „Call to a member function getGuest() on null“ im Checkout für Nutzer*innen der B2B Suite (GTM-GH-34)
 - Bugfix: null check zu allen $item->getPrice() calls hinzugefügt (GTM-GH-35)
+- Bugfix: Currency fehlt bei remove_from_cart Event im Offcanvas WK (GTM-GH-37)
 
 # 6.3.24
 - Bugfix: Abfrage des Preistypen berücksichtigt jetzt auch Subshops (GTM-GH-PR #30, thanks to @bethlehemit)
