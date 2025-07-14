@@ -190,6 +190,9 @@ class GeneralSubscriber implements EventSubscriberInterface
             'gtmConsent' => $gtmConsent
         ]));
 
+        /** GITHUB-26: Option to completely remove functionality from saleschannel */
+        if(!$tagManagerConfig['pluginActiveInSaleschannel']) return;
+
         //The following tags will always be there
         $generalTags = $this->generalTagsService->getGeneralTags($page, $event->getSalesChannelContext()->getContext(), $event->getRequest());
         $customerTags = $this->customerTagsService->getCustomerTags($event->getSalesChannelContext()->getCustomer(), $event->getSalesChannelContext());

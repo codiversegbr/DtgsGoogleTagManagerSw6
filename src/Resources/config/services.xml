@@ -9,6 +9,9 @@
                  decorates="Shopware\Storefront\Framework\Cookie\CookieProviderInterface">
             <argument type="service"
                       id="Dtgs\GoogleTagManager\Framework\Cookie\CustomCookieProvider.inner" />
+            <argument type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService" />
+            <argument type="service" id="request_stack" />
+
         </service>
 
         <!-- Twig Functionr -->

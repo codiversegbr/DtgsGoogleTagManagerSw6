@@ -7,6 +7,17 @@
         <title lang="de-DE">Basis-Konfiguration</title>
         <title lang="nl-NL">Basisconfiguratie</title>
 
+        <input-field type="bool">
+            <name>pluginActiveInSaleschannel</name>
+            <label lang="de-DE">Plugin im Saleschannel aktivieren?</label>
+            <label lang="nl-NL">Plugin activeren in saleschannel?</label>
+            <label>Activate plugin in saleschannel?</label>
+            <defaultValue>true</defaultValue>
+            <helpText lang="de-DE">Mit dieser Option kann die Funktionalität vollständig für den aktuellen Saleschannel entfernt werden.</helpText>
+            <helpText lang="nl-NL">Met deze optie kan de functionaliteit voor het huidige saleschannel volledig worden verwijderd.</helpText>
+            <helpText>This option allows the functionality to be completely removed for the current saleschannel.</helpText>
+        </input-field>
+
         <input-field>
             <name>googleId</name>
             <label>Google Tag Manager ID</label>
