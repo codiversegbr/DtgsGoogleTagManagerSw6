@@ -335,7 +335,7 @@ class Ga4Service
         if($customer) {
             $customerData = $customer->getCustomer();
             $customerOrderStatistics = $this->customerHelper->getCustomerOrderStatisticsByCustomerId($customer->getCustomerId(), $context);
-            $isGuest = $customerData->getGuest();
+            $isGuest = !($customerData != null) || $customerData->getGuest();
             if(!$isGuest) {
                 /** new_customer should only be specified if there is certainty about the customer, not if it is a guest account */
                 $ga4_tags['new_customer'] = !(($customerOrderStatistics['orderCount'] > 1));
