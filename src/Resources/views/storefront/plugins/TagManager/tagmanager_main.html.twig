@@ -1,12 +1,12 @@
 {% set gtmConfig = config('DtgsGoogleTagManagerSw6.config') %}
 
-{% if gtmIsActive(gtmConfig.googleId) %}
+{% if gtmConfig.pluginActiveInSaleschannel and gtmIsActive(gtmConfig.googleId) %}
     <script{% if app.request.attributes.get('_cspNonce') %} nonce="{{ app.request.attributes.get('_cspNonce') }}"{% endif %}>
         (function e(){window.document.$emitter&&typeof window.document.$emitter.subscribe==="function"?window.document.$emitter.subscribe("CookieConfiguration_Update",t=>{t&&t.detail&&Object.prototype.hasOwnProperty.call(t.detail,"dtgsAllowGtmTracking")&&window.location.reload()}):setTimeout(e,100)})();
     </script>
 {% endif %}
 
-{% if gtmIsActive(gtmConfig.googleId) and page.extensions.dtgsAllowGtmTracking.gtmConsent %}
+{% if gtmConfig.pluginActiveInSaleschannel and gtmIsActive(gtmConfig.googleId) and page.extensions.dtgsAllowGtmTracking.gtmConsent %}
     {% for containerId in gtmGetContainerIds(gtmConfig.googleId) %}
         <script{% if app.request.attributes.get('_cspNonce') %} nonce="{{ app.request.attributes.get('_cspNonce') }}"{% endif %}{{ page.extensions.GoogleTagManagerConfig.additionalServiceCode|raw }}>
             window.dataLayer = window.dataLayer || [];

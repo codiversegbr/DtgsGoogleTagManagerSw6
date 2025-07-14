@@ -176,6 +176,9 @@ class GeneralSubscriber implements EventSubscriberInterface
             $status = 'disabled';
         }
 
+        /** GITHUB-26: Option to completely remove functionality from saleschannel */
+        if(!$tagManagerConfig['pluginActiveInSaleschannel']) return;
+
         // Include GTM script in HTML if config is off or consent cookie is true
         $gtmConsent = true;
         if ($this->requestStack
@@ -189,9 +192,6 @@ class GeneralSubscriber implements EventSubscriberInterface
         $event->getPage()->addExtension('dtgsAllowGtmTracking', new ArrayStruct([
             'gtmConsent' => $gtmConsent
         ]));
-
-        /** GITHUB-26: Option to completely remove functionality from saleschannel */
-        if(!$tagManagerConfig['pluginActiveInSaleschannel']) return;
 
         //The following tags will always be there
         $generalTags = $this->generalTagsService->getGeneralTags($page, $event->getSalesChannelContext()->getContext(), $event->getRequest());
