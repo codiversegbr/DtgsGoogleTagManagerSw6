@@ -1,3 +1,9 @@
+# 6.3.25
+- New: Add option to load gtm.js after user gave cookie consent (GTM-GH-27)
+- New: Add option to completely deactivate plugin functionality per saleschannel (GTM-GH-26)
+- Bugfix: Error „Call to a member function getGuest() on null“ in Checkout when using B2B Suite (GTM-GH-34)
+- Bugfix: Add null check to all $item->getPrice() calls (GTM-GH-35)
+
 # 6.3.24
 - Bugfix: use sales channel context for price type configuration (GTM-GH-PR #30, thanks to @bethlehemit)
 - New: Events add_payment_info & add_shipping_info (GTM-GH-14)

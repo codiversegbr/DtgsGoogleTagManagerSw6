@@ -1,3 +1,9 @@
+# 6.3.25
+- Neu: Option, gtm.js erst nach User Consent zu laden (GTM-GH-27)
+- Neu: Option, die Plugin Funktionalität vollständig pro Saleschannel zu aktivieren/deaktivieren (GTM-GH-26)
+- Bugfix: Fehler „Call to a member function getGuest() on null“ im Checkout für Nutzer*innen der B2B Suite (GTM-GH-34)
+- Bugfix: null check zu allen $item->getPrice() calls hinzugefügt (GTM-GH-35)
+
 # 6.3.24
 - Bugfix: Abfrage des Preistypen berücksichtigt jetzt auch Subshops (GTM-GH-PR #30, thanks to @bethlehemit)
 - Neu: Events add_payment_info & add_shipping_info (GTM-GH-14)
