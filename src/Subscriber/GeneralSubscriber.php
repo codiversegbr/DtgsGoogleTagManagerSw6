@@ -212,12 +212,21 @@ class GeneralSubscriber implements EventSubscriberInterface
                 $page->addExtension('GtmAddToCartInfo', $addToCartInfo);
                 break;
             case CheckoutCartPageLoadedEvent::class:
-            case CheckoutConfirmPageLoadedEvent::class:
             case CheckoutRegisterPageLoadedEvent::class:
             case OffcanvasCartPageLoadedEvent::class:
                 $checkoutTags = $this->datalayerService->getCheckoutTags($page->getCart(), $event->getSalesChannelContext());
                 $remarketingTags = $this->remarketingService->getCheckoutTags($page->getCart(), $event->getSalesChannelContext());
                 $ga4Tags = $this->ga4Service->getCheckoutTags($page->getCart(), $event);
+                break;
+            case CheckoutConfirmPageLoadedEvent::class:
+                $checkoutTags = $this->datalayerService->getCheckoutTags($page->getCart(), $event->getSalesChannelContext());
+                $remarketingTags = $this->remarketingService->getCheckoutTags($page->getCart(), $event->getSalesChannelContext());
+                $ga4Tags = $this->ga4Service->getCheckoutTags($page->getCart(), $event);
+                /**
+                 * CDVRS-GH-14: add events add_payment_info and and add_shipping_info
+                 */
+                $additionalEvents[] = $this->ga4Service->getAddPaymentInfoTags($page->getCart(), $event->getSalesChannelContext());
+                $additionalEvents[] = $this->ga4Service->getAddShippingInfoTags($page->getCart(), $event->getSalesChannelContext());
                 break;
             case CheckoutFinishPageLoadedEvent::class:
                 $checkoutTags = $this->datalayerService->getFinishTags($page->getOrder(), $event->getSalesChannelContext());
