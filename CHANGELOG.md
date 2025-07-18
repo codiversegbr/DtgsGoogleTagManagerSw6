@@ -1,4 +1,6 @@
 # 6.4.1
+- 2 TICKETS MISSING + GERMAN CHANGELOG
+- New: Add option to completely deactivate plugin functionality per saleschannel (GTM-GH-26)
 - Bugfix: Error „Call to a member function getGuest() on null“ in Checkout when using B2B Suite (GTM-GH-34)
 - Bugfix: Add null check to all $item->getPrice() calls (GTM-GH-35)
 - Bugfix: use sales channel context for price type configuration (GTM-GH-PR #30, thanks to @bethlehemit)
