@@ -3,7 +3,9 @@
 {% set gtmConfig = config('DtgsGoogleTagManagerSw6.config') %}
 
 {% block component_head_analytics_gtag_consent %}
-    {% if gtmConfig.consentModeImplementation == 'shopwareCmp' %}
+    {% if not gtmConfig.pluginActiveInSaleschannel %}
+    {{ parent() }}
+    {% elseif gtmConfig.consentModeImplementation == 'shopwareCmp' %}
         <script{% if app.request.attributes.get('_cspNonce') %} nonce="{{ app.request.attributes.get('_cspNonce') }}"{% endif %}>
             window.dataLayer = window.dataLayer || [];
             function gtag() { dataLayer.push(arguments); }

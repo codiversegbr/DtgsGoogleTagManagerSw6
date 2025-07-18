@@ -1,6 +1,6 @@
 {% set gtmConfig = config('DtgsGoogleTagManagerSw6.config') %}
 
-{% if gtmIsActive(gtmConfig.googleId) and not gtmConfig.removeContainerCode %}
+{% if gtmConfig.pluginActiveInSaleschannel and gtmIsActive(gtmConfig.googleId) and not gtmConfig.removeContainerCode %}
     <!-- Google Tag Manager Noscript -->
     {% for containerId in gtmGetContainerIds(gtmConfig.googleId) %}
         <noscript class="noscript-gtm">
