@@ -171,14 +171,14 @@ class RemarketingService
                     if ($child->getType() == 'product') {
                         $skuAsArray[] = $child->getPayload()['productNumber'];
                         $namesAsArray[] = $child->getLabel();
-                        $valuesAsArray[] = (float)$this->priceHelper->getPrice($item->getPrice()->getUnitPrice(), $tax, $context);
+                        $valuesAsArray[] = (float)$this->priceHelper->getPrice($item->getPrice()?->getUnitPrice(), $tax, $context);
                     }
                 }
             }
             elseif($item->getType() == 'customized-products-option') {
                 $skuAsArray[] = 'customized-product-option-' . strtolower($item->getLabel());
                 $namesAsArray[] = $item->getLabel();
-                $valuesAsArray[] = (float) $this->priceHelper->getPrice($item->getPrice()->getUnitPrice(), $tax, $context);
+                $valuesAsArray[] = (float) $this->priceHelper->getPrice($item->getPrice()?->getUnitPrice(), $tax, $context);
             }
             elseif($item->getType() == 'option-values' || $item->getType() == 'customized-products') {
                 continue;
@@ -188,7 +188,7 @@ class RemarketingService
                 if(isset($item->getPayload()['productNumber'])) {
                     $skuAsArray[] = $item->getPayload()['productNumber'];
                     $namesAsArray[] = $item->getLabel();
-                    $valuesAsArray[] = (float) $this->priceHelper->getPrice($item->getPrice()->getUnitPrice(), $tax, $context);
+                    $valuesAsArray[] = (float) $this->priceHelper->getPrice($item->getPrice()?->getUnitPrice(), $tax, $context);
                 }
             }
         }

@@ -340,7 +340,7 @@ class DatalayerService
                     'name' => $productName,
                     'sku' => $productNumber,
                     //'category' => '', //nicht vorhanden im Array
-                    'price' => $this->priceHelper->getPrice($item->getPrice()->getUnitPrice(), $tax, $context),
+                    'price' => $this->priceHelper->getPrice($item->getPrice()?->getUnitPrice(), $tax, $context),
                     'quantity' => $item->getQuantity(),
                 );
                 //GH-10 - more information in transactionProducts
