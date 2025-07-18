@@ -1,3 +1,6 @@
+# 6.3.26
+- Neu: Zahlungsstatus bei Käufen im Datalayer ausgeben (Key: "transactionPaymentStatus") (GTM-GH-36)
+
 # 6.3.25
 - Neu: Option, gtm.js erst nach User Consent zu laden (GTM-GH-27)
 - Neu: Option, die Plugin Funktionalität vollständig pro Saleschannel zu aktivieren/deaktivieren (GTM-GH-26)

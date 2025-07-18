@@ -1,3 +1,6 @@
+# 6.3.26
+- New: Display payment status in purchase event (key in datalayer: "transactionPaymentStatus") (GTM-GH-36)
+
 # 6.3.25
 - New: Add option to load gtm.js after user gave cookie consent (GTM-GH-27)
 - New: Add option to completely deactivate plugin functionality per saleschannel (GTM-GH-26)
