@@ -1,4 +1,5 @@
 # 6.4.1
+- Bugfix: Error „Call to a member function getGuest() on null“ in Checkout when using B2B Suite (GTM-GH-34)
 - Bugfix: Add null check to all $item->getPrice() calls (GTM-GH-35)
 - Bugfix: use sales channel context for price type configuration (GTM-GH-PR #30, thanks to @bethlehemit)
 - New: Events add_payment_info & add_shipping_info (GTM-GH-14)
