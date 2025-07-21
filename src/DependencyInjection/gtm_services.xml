@@ -13,6 +13,7 @@
             <argument type="service" id="Dtgs\GoogleTagManager\Components\Helper\PriceHelper" />
             <argument type="service" id="Dtgs\GoogleTagManager\Components\Helper\ProductHelper" />
             <argument type="service" id="Dtgs\GoogleTagManager\Components\Helper\LoggingHelper" />
+            <argument type="service" id="state_machine_state.repository" />
         </service>
 
         <service id="Dtgs\GoogleTagManager\Services\Ga4Service">

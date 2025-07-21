@@ -2,10 +2,10 @@
 - New: Display payment status in purchase event (key in datalayer: "transactionPaymentStatus") (GTM-GH-36)
 - New: Add option to load gtm.js after user gave cookie consent (GTM-GH-27)
 - New: Add option to completely deactivate plugin functionality per saleschannel (GTM-GH-26)
+- New: Events add_payment_info & add_shipping_info (GTM-GH-14)
 - Bugfix: Error „Call to a member function getGuest() on null“ in Checkout when using B2B Suite (GTM-GH-34)
 - Bugfix: Add null check to all $item->getPrice() calls (GTM-GH-35)
 - Bugfix: use sales channel context for price type configuration (GTM-GH-PR #30, thanks to @bethlehemit)
-- New: Events add_payment_info & add_shipping_info (GTM-GH-14)
 
 # 6.4.0
 - Bugfix: JS Error on listing pages when showing off-canvas cart and cart is empty (GTM-GH-16)

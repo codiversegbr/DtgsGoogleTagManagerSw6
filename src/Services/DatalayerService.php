@@ -13,6 +13,7 @@ use Shopware\Core\Checkout\Order\OrderEntity;
 use Shopware\Core\Content\Category\CategoryCollection;
 use Shopware\Core\Content\Product\SalesChannel\Listing\ProductListingResult;
 use Shopware\Core\Content\Product\SalesChannel\SalesChannelProductEntity;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\InvalidCriteriaIdsException;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\Uuid\Exception\InvalidUuidException;
@@ -31,18 +32,21 @@ class DatalayerService
      * @var CategoryHelper
      */
     private $categoryHelper;
+    private $stateMachineStateRepository;
 
     public function __construct(SystemConfigService $systemConfigService,
                                 CategoryHelper $categoryHelper,
                                 PriceHelper $priceHelper,
                                 ProductHelper $productHelper,
-                                LoggingHelper $loggingHelper)
+                                LoggingHelper $loggingHelper,
+                                EntityRepository $stateMachineStateRepository)
     {
         $this->systemConfigService = $systemConfigService;
         $this->categoryHelper = $categoryHelper;
         $this->priceHelper = $priceHelper;
         $this->loggingHelper = $loggingHelper;
         $this->productHelper = $productHelper;
+        $this->stateMachineStateRepository = $stateMachineStateRepository;
     }
 
     /**
@@ -389,6 +393,9 @@ class DatalayerService
         $checkoutTags['conversionId'] = $order->getOrderNumber();
         $checkoutTags['transactionId'] = $order->getOrderNumber();
 
+        //Transaction State - GTM-GH-36
+        $checkoutTags['transactionPaymentStatus'] = $this->getTechnicalNameFromStateId($order->getTransactions()?->first()?->getStateId(), $context) ?? 'failed';
+
         if(isset($pluginConfig['eeEnhancedConversions'])) {
             $ee_ec_setting = $pluginConfig['eeEnhancedConversions'];
             $ee_ec_hash_setting = $pluginConfig['eeEnhancedConversionHashing'] ?? false;
@@ -527,6 +534,26 @@ class DatalayerService
         }
 
         return trim($variantName);
+    }
+
+    /**
+     * Get the technical name of a state by its ID.
+     *
+     * @param string|null $stateId
+     * @param SalesChannelContext $context
+     * @return string|null
+     */
+    private function getTechnicalNameFromStateId($stateId, SalesChannelContext $context): ?string
+    {
+        if(!$stateId) {
+            return null;
+        }
+
+        // $stateId enthält die StateID
+        $criteria = new Criteria([$stateId]);
+        $state = $this->stateMachineStateRepository->search($criteria, $context->getContext())->first();
+
+        return $state ? $state->getTechnicalName() : null;
     }
 
 }

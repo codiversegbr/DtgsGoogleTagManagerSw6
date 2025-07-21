@@ -1,3 +1,12 @@
+# 6.4.1
+- Neu: Zahlungsstatus bei Käufen im Datalayer ausgeben (Key: "transactionPaymentStatus") (GTM-GH-36)
+- Neu: Option, gtm.js erst nach User Consent zu laden (GTM-GH-27)
+- Neu: Option, die Plugin Funktionalität vollständig pro Saleschannel zu aktivieren/deaktivieren (GTM-GH-26)
+- Neu: Events add_payment_info & add_shipping_info (GTM-GH-14)
+- Bugfix: Fehler „Call to a member function getGuest() on null“ im Checkout für Nutzer*innen der B2B Suite (GTM-GH-34)
+- Bugfix: null check zu allen $item->getPrice() calls hinzugefügt (GTM-GH-35)
+- Bugfix: Abfrage des Preistypen berücksichtigt jetzt auch Subshops (GTM-GH-PR #30, thanks to @bethlehemit)
+
 # 6.4.0
 - Bugfix: JS Error: auf Listenseite bei leerem Offcanvas WK (GTM-GH-16)
 - Bugfix: Nullsafe operator anwenden wenn der Preis im Checkout gezogen wird (GTM-GH-24)
