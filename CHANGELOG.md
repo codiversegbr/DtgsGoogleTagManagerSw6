@@ -1,5 +1,6 @@
 # 6.4.1
-- 2 TICKETS MISSING + GERMAN CHANGELOG
+- New: Display payment status in purchase event (key in datalayer: "transactionPaymentStatus") (GTM-GH-36)
+- New: Add option to load gtm.js after user gave cookie consent (GTM-GH-27)
 - New: Add option to completely deactivate plugin functionality per saleschannel (GTM-GH-26)
 - Bugfix: Error „Call to a member function getGuest() on null“ in Checkout when using B2B Suite (GTM-GH-34)
 - Bugfix: Add null check to all $item->getPrice() calls (GTM-GH-35)
