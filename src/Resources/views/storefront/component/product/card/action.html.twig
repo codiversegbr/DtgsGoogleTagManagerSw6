@@ -8,6 +8,9 @@
             {{ "listing.boxProductDetails"|trans|sw_sanitize }}
         </a>
     </div>
+    <input type="hidden"
+           name="product-name"
+           value="{{ product.translated.name }}">
 {% endblock %}
 
 {% block component_product_box_action_inner %}
