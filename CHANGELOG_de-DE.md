@@ -6,6 +6,7 @@
 - Bugfix: Fehler „Call to a member function getGuest() on null“ im Checkout für Nutzer*innen der B2B Suite (GTM-GH-34)
 - Bugfix: null check zu allen $item->getPrice() calls hinzugefügt (GTM-GH-35)
 - Bugfix: Abfrage des Preistypen berücksichtigt jetzt auch Subshops (GTM-GH-PR #30, thanks to @bethlehemit)
+- Bugfix: JS Fehler beim select_item für Produkte ohne Warenkorb-Button
 
 # 6.4.0
 - Bugfix: JS Error: auf Listenseite bei leerem Offcanvas WK (GTM-GH-16)
