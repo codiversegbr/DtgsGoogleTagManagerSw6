@@ -2,10 +2,10 @@
 
 namespace Dtgs\GoogleTagManager\Subscriber;
 
-use Dtgs\GoogleTagManager\Services\CustomerTagsService;
-use Dtgs\GoogleTagManager\Services\DatalayerService;
-use Dtgs\GoogleTagManager\Services\Ga4Service;
-use Dtgs\GoogleTagManager\Services\GeneralTagsService;
+use Dtgs\GoogleTagManager\Services\Interfaces\CustomerTagsServiceInterface;
+use Dtgs\GoogleTagManager\Services\Interfaces\DatalayerServiceInterface;
+use Dtgs\GoogleTagManager\Services\Interfaces\Ga4ServiceInterface;
+use Dtgs\GoogleTagManager\Services\Interfaces\GeneralTagsServiceInterface;
 use Dtgs\GoogleTagManager\Services\RemarketingService;
 use Exception;
 use Shopware\Core\Content\Cms\Aggregate\CmsSlot\CmsSlotEntity;
@@ -51,11 +51,11 @@ class GeneralSubscriber implements EventSubscriberInterface
      */
     private $systemConfigService;
     /**
-     * @var DatalayerService
+     * @var DatalayerServiceInterface
      */
     private $datalayerService;
     /**
-     * @var Ga4Service
+     * @var Ga4ServiceInterface
      */
     private $ga4Service;
     /**
@@ -63,11 +63,11 @@ class GeneralSubscriber implements EventSubscriberInterface
      */
     private $remarketingService;
     /**
-     * @var GeneralTagsService
+     * @var GeneralTagsServiceInterface
      */
     private $generalTagsService;
     /**
-     * @var CustomerTagsService
+     * @var CustomerTagsServiceInterface
      */
     private $customerTagsService;
     /**
@@ -76,11 +76,11 @@ class GeneralSubscriber implements EventSubscriberInterface
     private $requestStack;
 
     public function __construct(SystemConfigService $systemConfigService,
-                                DatalayerService $datalayerService,
-                                Ga4Service $ga4Service,
+                                DatalayerServiceInterface $datalayerService,
+                                Ga4ServiceInterface $ga4Service,
                                 RemarketingService $remarketingService,
-                                GeneralTagsService $generalTagsService,
-                                CustomerTagsService $customerTagsService,
+                                GeneralTagsServiceInterface $generalTagsService,
+                                CustomerTagsServiceInterface $customerTagsService,
                                 RequestStack $requestStack
     )
     {

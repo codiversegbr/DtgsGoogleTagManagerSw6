@@ -5,6 +5,7 @@ namespace Dtgs\GoogleTagManager\Services;
 use Dtgs\GoogleTagManager\Components\Helper\CategoryHelper;
 use Dtgs\GoogleTagManager\Components\Helper\LoggingHelper;
 use Dtgs\GoogleTagManager\Components\Helper\PriceHelper;
+use Dtgs\GoogleTagManager\Services\Interfaces\RemarketingServiceInterface;
 use Shopware\Core\Checkout\Cart\Cart;
 use Shopware\Core\Checkout\Cart\LineItem\LineItem;
 use Shopware\Core\Checkout\Order\OrderEntity;
@@ -17,7 +18,7 @@ use Symfony\Component\HttpFoundation\Request;
 /**
  * @deprecated
  */
-class RemarketingService
+class RemarketingService implements RemarketingServiceInterface
 {
     private $systemConfigService;
     private $priceHelper;
@@ -73,8 +74,8 @@ class RemarketingService
      * @return array
      * @throws \Exception
      */
-    public function getDetailTags(SalesChannelProductEntity $product, SalesChannelContext $context) {
-
+    public function getDetailTags(SalesChannelProductEntity $product, SalesChannelContext $context)
+    {
         $remarketing_tags = array();
 
         //New in 1.3.5 - select if brutto/netto
@@ -210,11 +211,12 @@ class RemarketingService
      * SW6 ready
      *
      * @param OrderEntity $order
+     * @param SalesChannelContext $context
      * @return array
      * @throws \Exception
      */
-    public function getPurchaseConfirmationTags(OrderEntity $order, SalesChannelContext $context) {
-
+    public function getPurchaseConfirmationTags(OrderEntity $order, SalesChannelContext $context)
+    {
         $remarketing_tags = $this->getCheckoutTags($order, $context);
         //Hier muss nur ein Wert überschrieben werden
         $remarketing_tags['ecomm_pagetype'] = 'purchase';

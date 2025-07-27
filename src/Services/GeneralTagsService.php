@@ -2,6 +2,7 @@
 
 namespace Dtgs\GoogleTagManager\Services;
 
+use Dtgs\GoogleTagManager\Services\Interfaces\GeneralTagsServiceInterface;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
@@ -11,7 +12,7 @@ use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Shopware\Storefront\Page\Page;
 use Symfony\Component\HttpFoundation\Request;
 
-class GeneralTagsService
+class GeneralTagsService implements GeneralTagsServiceInterface
 {
 
     private $systemConfigService;
@@ -31,6 +32,7 @@ class GeneralTagsService
      *
      * @param Page $page
      * @param Context $context
+     * @param Request $request
      * @return array
      */
     public function getGeneralTags(Page $page, Context $context, Request $request)
@@ -75,8 +77,8 @@ class GeneralTagsService
      * @param Request $request
      * @return array
      */
-    public function getUtmTags(Request $request) {
-
+    public function getUtmTags(Request $request)
+    {
         $tags = array();
 
         #UTMsource

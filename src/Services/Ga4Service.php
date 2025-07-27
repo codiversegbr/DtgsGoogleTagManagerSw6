@@ -8,6 +8,8 @@ use Dtgs\GoogleTagManager\Components\Helper\LoggingHelper;
 use Dtgs\GoogleTagManager\Components\Helper\ManufacturerHelper;
 use Dtgs\GoogleTagManager\Components\Helper\PriceHelper;
 use Dtgs\GoogleTagManager\Components\Helper\ProductHelper;
+use Dtgs\GoogleTagManager\Services\Interfaces\Ga4ServiceInterface;
+use Dtgs\GoogleTagManager\Services\Interfaces\GeneralTagsServiceInterface;
 use Shopware\Core\Checkout\Cart\Cart;
 use Shopware\Core\Checkout\Cart\LineItem\LineItem;
 use Shopware\Core\Checkout\Cart\LineItem\LineItemCollection;
@@ -26,7 +28,7 @@ use Shopware\Storefront\Page\Checkout\Confirm\CheckoutConfirmPageLoadedEvent;
 use Shopware\Storefront\Page\Checkout\Register\CheckoutRegisterPageLoadedEvent;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
-class Ga4Service
+class Ga4Service implements Ga4ServiceInterface
 {
     private $systemConfigService;
     private $generalTagsService;
@@ -55,7 +57,7 @@ class Ga4Service
     private $customerHelper;
 
     public function __construct(SystemConfigService $systemConfigService,
-                                GeneralTagsService  $generalTagsService,
+                                GeneralTagsServiceInterface  $generalTagsService,
                                 ContainerInterface  $container,
                                 ProductHelper       $productHelper,
                                 CategoryHelper      $categoryHelper,
@@ -82,7 +84,8 @@ class Ga4Service
      *
      * @return array|mixed|null
      */
-    public function getGtmConfig($salesChannelId) {
+    public function getGtmConfig($salesChannelId)
+    {
         return $tagManagerConfig = $this->systemConfigService->get('DtgsGoogleTagManagerSw6.config', $salesChannelId);
     }
 
@@ -90,8 +93,8 @@ class Ga4Service
      * SW6 ready
      *
      */
-    public function getAdwordsId($salesChannelId) {
-
+    public function getAdwordsId($salesChannelId)
+    {
         $tagManagerConfig = $this->getGtmConfig($salesChannelId);
 
         if(isset($tagManagerConfig['googleAdwordsId'])) {
@@ -102,7 +105,8 @@ class Ga4Service
 
     }
 
-    public function remarketingEnabled($salesChannelId) {
+    public function remarketingEnabled($salesChannelId)
+    {
         $tagManagerConfig = $this->getGtmConfig($salesChannelId);
         return (isset($tagManagerConfig['remarketingIntegration']) && $tagManagerConfig['remarketingIntegration'] == 'enable');
     }
@@ -113,8 +117,8 @@ class Ga4Service
      * @param $salesChannelId
      * @return bool
      */
-    public function addDatabaseProductId($salesChannelId) {
-
+    public function addDatabaseProductId($salesChannelId)
+    {
         $tagManagerConfig = $this->getGtmConfig($salesChannelId);
 
         if(isset($tagManagerConfig['addProductDatabaseIds'])) {
@@ -158,8 +162,8 @@ class Ga4Service
      * @return mixed
      * @throws \Exception
      */
-    public function getDetailTags(SalesChannelProductEntity $product, SalesChannelContext $context) {
-
+    public function getDetailTags(SalesChannelProductEntity $product, SalesChannelContext $context)
+    {
         $ga4_tags = [];
         //Currency Code
         $ga4_tags['currency'] = $context->getCurrency()->getIsoCode();
@@ -230,13 +234,14 @@ class Ga4Service
      * SW6 ready
      *
      * @param $navigationId
-     * @param EntitySearchResult $result
+     * @param $listing
      * @param SalesChannelContext $context
+     * @param string $listName
      * @return array
      * @throws \Exception
      */
-    public function getNavigationTags($navigationId, $listing, SalesChannelContext $context, $listName = 'Category') {
-
+    public function getNavigationTags($navigationId, $listing, SalesChannelContext $context, $listName = 'Category')
+    {
         $pluginConfig = $this->getGtmConfig($context->getSalesChannel()->getId());
         $eeMaxAmountCategoriesForImpressions = (isset($pluginConfig['eeMaxAmountCategoriesForImpressions'])) ? $pluginConfig['eeMaxAmountCategoriesForImpressions'] : 0;
 
@@ -265,8 +270,8 @@ class Ga4Service
      * @return array
      * @throws \Exception
      */
-    public function getCheckoutTags($cartOrOrder, $event) {
-
+    public function getCheckoutTags($cartOrOrder, $event)
+    {
         $pluginConfig = $this->getGtmConfig($event->getSalesChannelContext()->getSalesChannel()->getId());
         $addCategoryNames = (isset($pluginConfig['eeAddCategorynameInCheckout'])) ? $pluginConfig['eeAddCategorynameInCheckout'] : false;
         $useNetPrices = isset($pluginConfig['showPriceType']) && $pluginConfig['showPriceType'] == 'netto';

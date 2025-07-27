@@ -6,6 +6,7 @@ use Dtgs\GoogleTagManager\Components\Helper\CategoryHelper;
 use Dtgs\GoogleTagManager\Components\Helper\LoggingHelper;
 use Dtgs\GoogleTagManager\Components\Helper\PriceHelper;
 use Dtgs\GoogleTagManager\Components\Helper\ProductHelper;
+use Dtgs\GoogleTagManager\Services\Interfaces\DatalayerServiceInterface;
 use Exception;
 use Shopware\Core\Checkout\Cart\LineItem\LineItem;
 use Shopware\Core\Checkout\Cart\Tax\Struct\CalculatedTax;
@@ -21,7 +22,7 @@ use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Symfony\Component\HttpFoundation\Request;
 
-class DatalayerService
+class DatalayerService implements DatalayerServiceInterface
 {
 
     private $systemConfigService;
@@ -56,7 +57,8 @@ class DatalayerService
      *
      * @return array|mixed|null
      */
-    public function getGtmConfig($salesChannelId) {
+    public function getGtmConfig($salesChannelId)
+    {
         return $tagManagerConfig = $this->systemConfigService->get('DtgsGoogleTagManagerSw6.config', $salesChannelId);
     }
 
@@ -82,7 +84,7 @@ class DatalayerService
         array $customerTags,
         array $utmTags,
         array $searchTags
-        )
+    )
     {
         $return = array_merge(
             $generalTags,
@@ -105,8 +107,8 @@ class DatalayerService
      * multiple Tag Manager Container IDs
      * @return array|bool
      */
-    public function getContainerIds($salesChannelId) {
-
+    public function getContainerIds($salesChannelId)
+    {
         $tagManagerConfig = $this->getGtmConfig($salesChannelId);
 
         if(isset($tagManagerConfig['googleId']) && $tagManagerConfig['googleId'] != '') {
@@ -126,8 +128,8 @@ class DatalayerService
      * @return array
      * @throws Exception
      */
-	public function getDetailTags(SalesChannelProductEntity $product, SalesChannelContext $context) {
-
+	public function getDetailTags(SalesChannelProductEntity $product, SalesChannelContext $context)
+    {
 		$detailTags = [];
 
 	    if($product->getId()) {
@@ -215,8 +217,8 @@ class DatalayerService
      * @return array
      * @throws Exception
      */
-	public function getCheckoutTags($cartOrOrder, SalesChannelContext $context, $isFinish = false) {
-
+	public function getCheckoutTags($cartOrOrder, SalesChannelContext $context, $isFinish = false)
+    {
         $pluginConfig = $this->getGtmConfig($context->getSalesChannel()->getId());
         $useNetPrices = isset($pluginConfig['showPriceType']) && $pluginConfig['showPriceType'] == 'netto';
 
@@ -380,12 +382,11 @@ class DatalayerService
      *
      * @param OrderEntity $order
      * @param SalesChannelContext $context
-     * @param Request $request
      * @return array
      * @throws Exception
      */
-	public function getFinishTags(OrderEntity $order, SalesChannelContext $context) {
-
+	public function getFinishTags(OrderEntity $order, SalesChannelContext $context)
+    {
         $pluginConfig = $this->getGtmConfig($context->getSalesChannel()->getId());
 	    $checkoutTags = $this->getCheckoutTags($order, $context, true);
         $finishTags = [];
@@ -453,8 +454,8 @@ class DatalayerService
      * @param ProductListingResult $listing
      * @return array
      */
-	public function getSearchTags($searchTerm, ProductListingResult $listing) {
-
+	public function getSearchTags($searchTerm, ProductListingResult $listing)
+    {
         $tags = array();
 
 	    $tags['siteSearchTerm'] = $searchTerm;
@@ -479,7 +480,8 @@ class DatalayerService
         string $hashAlgorithm,
         string $value,
         bool $trimIntermediateSpaces
-    ): string {
+    ): string
+    {
         // Normalizes by first converting all characters to lowercase, then trimming spaces.
         $normalized = strtolower($value);
         if ($trimIntermediateSpaces === true) {
