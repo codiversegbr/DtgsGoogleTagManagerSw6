@@ -1,3 +1,7 @@
+# 6.3.27
+- Neu: Plugin services können nun über eigene Plugins per ServiceDecorator erweitert werden. Ein Tutorial finden Sie auf unserer Website (GTM-GH-33)
+- Neu: add_to_cart und remove_from_cart werden nun gefeuert, wenn die + und - Buttons im WK benutzt werden (GTM-GH-23)
+
 # 6.3.26
 - Neu: Zahlungsstatus bei Käufen im Datalayer ausgeben (Key: "transactionPaymentStatus") (GTM-GH-36)
 
