@@ -3,6 +3,7 @@ import { COOKIE_CONFIGURATION_UPDATE } from 'src/plugin/cookie/cookie-configurat
 
 import GtmAddToCartEvent from './events/add-to-cart.event';
 import GtmRemoveFromCartEvent from './events/remove-from-cart.event';
+import GtmQuantityChangeEvent from './events/quantity-change.event';
 import CookieStorageHelper from 'src/helper/storage/cookie-storage.helper';
 import LineItemHelper from 'src/plugin/google-analytics/line-item.helper';
 import DomAccessHelper from 'src/helper/dom-access.helper';
@@ -18,6 +19,13 @@ export default class DtgsGoogleTagManagerPlugin extends Plugin
         this.startGoogleTagManager();
 
         if (!CookieStorageHelper.getItem(this.cookieEnabledName)) {
+
+            const offCanvasCartElement = document.querySelector('[data-off-canvas-cart]');
+            if(offCanvasCartElement) {
+                const offCanvasCartPlugin = window.PluginManager.getPluginInstanceFromElement(offCanvasCartElement, 'OffCanvasCart');
+                if(offCanvasCartPlugin) offCanvasCartPlugin.$emitter.subscribe('offCanvasOpened', this.onOffCanvasOpenedForInitialQuantities.bind(this));
+            }
+
             return;
         }
 
@@ -116,6 +124,7 @@ export default class DtgsGoogleTagManagerPlugin extends Plugin
     registerDefaultEvents() {
         this.registerEvent(GtmAddToCartEvent);
         this.registerEvent(GtmRemoveFromCartEvent);
+        this.registerEvent(GtmQuantityChangeEvent);
         this.registerSelectItemEvent();
     }
 
@@ -280,6 +289,22 @@ export default class DtgsGoogleTagManagerPlugin extends Plugin
             }
         });
 
+        // store initial quantities
+        this.events.forEach(event => {
+            if (event.hasOwnProperty("quantityBeforeChange")) {
+                event.storeInitialQuantities();
+            }
+        });
+
+    }
+
+    onOffCanvasOpenedForInitialQuantities() {
+        // store initial quantities
+        this.events.forEach(event => {
+            if (event.hasOwnProperty("quantityBeforeChange")) {
+                event.storeInitialQuantities();
+            }
+        });
     }
 
     getLineItems() {
