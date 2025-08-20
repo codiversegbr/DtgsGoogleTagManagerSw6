@@ -177,7 +177,7 @@ class GeneralSubscriber implements EventSubscriberInterface
         }
 
         /** GITHUB-26: Option to completely remove functionality from saleschannel */
-        if(!$tagManagerConfig['pluginActiveInSaleschannel']) return;
+        if(isset($tagManagerConfig['pluginActiveInSaleschannel']) && !$tagManagerConfig['pluginActiveInSaleschannel']) return;
 
         // Include GTM script in HTML if config is off or consent cookie is true
         $gtmConsent = true;
