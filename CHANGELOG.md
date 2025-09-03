@@ -1,3 +1,6 @@
+# 6.4.2
+- New: plugin services are now extensible through decorator pattern. A tutorial is available on our website (GTM-GH-33)
+
 # 6.4.1
 - New: Display payment status in purchase event (key in datalayer: "transactionPaymentStatus") (GTM-GH-36)
 - New: Add option to load gtm.js after user gave cookie consent (GTM-GH-27)

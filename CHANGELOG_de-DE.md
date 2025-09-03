@@ -1,3 +1,6 @@
+# 6.4.2
+- Neu: Plugin services können nun über eigene Plugins per ServiceDecorator erweitert werden. Ein Tutorial finden Sie auf unserer Website (GTM-GH-33)
+
 # 6.4.1
 - Neu: Zahlungsstatus bei Käufen im Datalayer ausgeben (Key: "transactionPaymentStatus") (GTM-GH-36)
 - Neu: Option, gtm.js erst nach User Consent zu laden (GTM-GH-27)
