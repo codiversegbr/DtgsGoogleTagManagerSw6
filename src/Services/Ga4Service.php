@@ -8,6 +8,8 @@ use Dtgs\GoogleTagManager\Components\Helper\LoggingHelper;
 use Dtgs\GoogleTagManager\Components\Helper\ManufacturerHelper;
 use Dtgs\GoogleTagManager\Components\Helper\PriceHelper;
 use Dtgs\GoogleTagManager\Components\Helper\ProductHelper;
+use Dtgs\GoogleTagManager\Services\Interfaces\Ga4ServiceInterface;
+use Dtgs\GoogleTagManager\Services\Interfaces\GeneralTagsServiceInterface;
 use Shopware\Core\Checkout\Cart\LineItem\LineItem;
 use Shopware\Core\Checkout\Cart\LineItem\LineItemCollection;
 use Shopware\Core\Checkout\Cart\Price\Struct\CalculatedPrice;
@@ -25,7 +27,7 @@ use Shopware\Storefront\Page\Checkout\Confirm\CheckoutConfirmPageLoadedEvent;
 use Shopware\Storefront\Page\Checkout\Register\CheckoutRegisterPageLoadedEvent;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
-class Ga4Service
+class Ga4Service implements Ga4ServiceInterface
 {
     private $systemConfigService;
     private $generalTagsService;
@@ -54,7 +56,7 @@ class Ga4Service
     private $customerHelper;
 
     public function __construct(SystemConfigService $systemConfigService,
-                                GeneralTagsService  $generalTagsService,
+                                GeneralTagsServiceInterface  $generalTagsService,
                                 ContainerInterface  $container,
                                 ProductHelper       $productHelper,
                                 CategoryHelper      $categoryHelper,

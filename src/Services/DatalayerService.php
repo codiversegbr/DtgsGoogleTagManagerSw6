@@ -6,6 +6,7 @@ use Dtgs\GoogleTagManager\Components\Helper\CategoryHelper;
 use Dtgs\GoogleTagManager\Components\Helper\LoggingHelper;
 use Dtgs\GoogleTagManager\Components\Helper\PriceHelper;
 use Dtgs\GoogleTagManager\Components\Helper\ProductHelper;
+use Dtgs\GoogleTagManager\Services\Interfaces\DatalayerServiceInterface;
 use Exception;
 use Shopware\Core\Checkout\Cart\LineItem\LineItem;
 use Shopware\Core\Checkout\Cart\Tax\Struct\CalculatedTax;
@@ -21,7 +22,7 @@ use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Symfony\Component\HttpFoundation\Request;
 
-class DatalayerService
+class DatalayerService implements DatalayerServiceInterface
 {
 
     private $systemConfigService;

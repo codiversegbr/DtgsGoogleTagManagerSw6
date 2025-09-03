@@ -4,6 +4,7 @@ namespace Dtgs\GoogleTagManager\Services;
 
 use Dtgs\GoogleTagManager\Components\Helper\CustomerHelper;
 use Dtgs\GoogleTagManager\Components\Helper\LoggingHelper;
+use Dtgs\GoogleTagManager\Services\Interfaces\CustomerTagsServiceInterface;
 use Shopware\Core\Checkout\Customer\Aggregate\CustomerGroup\CustomerGroupCollection;
 use Shopware\Core\Checkout\Order\OrderCollection;
 use Shopware\Core\Checkout\Order\OrderEntity;
@@ -14,7 +15,7 @@ use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 
-class CustomerTagsService
+class CustomerTagsService implements CustomerTagsServiceInterface
 {
 
     private $loggingHelper;
