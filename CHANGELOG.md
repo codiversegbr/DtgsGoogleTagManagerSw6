@@ -1,5 +1,6 @@
 # 6.4.2
 - New: plugin services are now extensible through decorator pattern. A tutorial is available on our website (GTM-GH-33)
+- New: fire add_to_cart and remove_from_cart when using + and - buttons in cart (GTM-GH-23)
 
 # 6.4.1
 - New: Display payment status in purchase event (key in datalayer: "transactionPaymentStatus") (GTM-GH-36)
