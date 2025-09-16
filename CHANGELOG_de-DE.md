@@ -1,3 +1,6 @@
+# 6.2.21
+- Bugfix: Fehler „Call to a member function getGuest() on null“ im Checkout für Nutzer*innen der B2B Suite (GTM-GH-34)
+
 # 6.2.20
 - Neu: PCI konforme Script Einbindung (GH-12)
 - Neu: Leerzeichen bei mehreren GTM IDs trimmen (CDVRS-61)
