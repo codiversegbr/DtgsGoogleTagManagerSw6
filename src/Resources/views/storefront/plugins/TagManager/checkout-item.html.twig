@@ -1,19 +1,23 @@
-<input type="hidden"
-       name="dtgs-gtm-product-sku"
-       value="{{ lineItem.payload.productNumber }}">
-<input type="hidden"
-       name="dtgs-gtm-product-name"
-       value="{{ lineItem.label|trans|sw_sanitize }}">
-{# added in version 6.3.11 #}
-<input type="hidden"
-       name="dtgs-gtm-product-quantity"
-       value="{{ lineItem.quantity }}">
-<input type="hidden"
-       name="dtgs-gtm-currency-code"
-       value="{{ context.currency.isoCode }}">
-<input type="hidden"
-       name="dtgs-gtm-product-price"
-       value="{{ lineItem.price.unitPrice }}">
-<input type="hidden"
-       name="dtgs-gtm-total-price"
-       value="{{ lineItem.price.totalPrice }}">
+{% set gtmConfig = config('DtgsGoogleTagManagerSw6.config') %}
+
+{% if gtmConfig.pluginActiveInSaleschannel %}
+    <input type="hidden"
+           name="dtgs-gtm-product-sku"
+           value="{{ lineItem.payload.productNumber }}">
+    <input type="hidden"
+           name="dtgs-gtm-product-name"
+           value="{{ lineItem.label|trans|sw_sanitize }}">
+    {# added in version 6.3.11 #}
+    <input type="hidden"
+           name="dtgs-gtm-product-quantity"
+           value="{{ lineItem.quantity }}">
+    <input type="hidden"
+           name="dtgs-gtm-currency-code"
+           value="{{ context.currency.isoCode }}">
+    <input type="hidden"
+           name="dtgs-gtm-product-price"
+           value="{{ lineItem.price.unitPrice }}">
+    <input type="hidden"
+           name="dtgs-gtm-total-price"
+           value="{{ lineItem.price.totalPrice }}">
+{%  endif %}
