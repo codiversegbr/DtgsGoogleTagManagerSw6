@@ -14,9 +14,11 @@
 
     {{ parent() }}
 
-    <input type="hidden"
-           name="dtgs-gtm-product-sku"
-           value="{{ product.productNumber }}">
+    {% if gtmConfig.pluginActiveInSaleschannel %}
+        <input type="hidden"
+               name="dtgs-gtm-product-sku"
+               value="{{ product.productNumber }}">
+    {%  endif %}
 
 {% endblock %}
 
