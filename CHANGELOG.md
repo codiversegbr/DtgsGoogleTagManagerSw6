@@ -1,3 +1,7 @@
+# 6.3.28
+- Bugfix: SEO URLs will now be filtered by sales channel id (GTM-GH-42)
+- Bugfix: twig data and hidden fields will not be included in template if plugin is not active for saleschannel (GTM-GH-41)
+
 # 6.3.27
 - New: plugin services are now extensible through decorator pattern. A tutorial is available on our website (GTM-GH-33)
 - New: fire add_to_cart and remove_from_cart when using + and - buttons in cart (GTM-GH-23)
