@@ -72,6 +72,6 @@ class CustomCookieProvider implements CookieProviderInterface {
         $salesChannelId = $salesChannelContext->getSalesChannel()->getId();
         $tagManagerConfig = $this->systemConfigService->get('DtgsGoogleTagManagerSw6.config', $salesChannelId);
 
-        return $tagManagerConfig['pluginActiveInSaleschannel'];
+        return $tagManagerConfig['pluginActiveInSaleschannel'] ?? true;
     }
 }
