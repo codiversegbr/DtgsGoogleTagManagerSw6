@@ -1,3 +1,8 @@
+# 6.4.3
+- Bugfix: SEO URLs werden nun nach SalesChannel gefiltert ausgegeben (GTM-GH-42)
+- Bugfix: Twig Daten werden nun unterdrückt, wenn das Plugin im Saleschannel deaktiviert ist (GTM-GH-41)
+- Bugfix: Zusätzliche Abfragen, ob Config Variable gesetzt ist (GTM-GH-40)
+
 # 6.4.2
 - Neu: Plugin services können nun über eigene Plugins per ServiceDecorator erweitert werden. Ein Tutorial finden Sie auf unserer Website (GTM-GH-33)
 - Neu: add_to_cart und remove_from_cart werden nun gefeuert, wenn die + und - Buttons im WK benutzt werden (GTM-GH-23)
