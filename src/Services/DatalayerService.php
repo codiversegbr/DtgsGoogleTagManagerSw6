@@ -358,7 +358,9 @@ class DatalayerService implements DatalayerServiceInterface
                         $transactionProduct['ean'] = $product->getEan();
                     }
                     if($product && $product->getSeoUrls()) {
-                        $transactionProduct['product_url'] = $product->getSeoUrls()->first()?->getSeoPathInfo();
+                        //Nach aktueller Sales Channel ID filtern
+                        $currentSeoUrl = $product->getSeoUrls()->filterBySalesChannelId($context->getSalesChannel()->getId())->first();
+                        $transactionProduct['product_url'] = $currentSeoUrl?->getSeoPathInfo();
                     }
                 } catch (Exception $exception) {
                     //Custom Products werden als eigene Items im WK gehandlet, haben aber ggf.
