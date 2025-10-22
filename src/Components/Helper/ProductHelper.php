@@ -36,22 +36,21 @@ class ProductHelper
         return $productCollection->get($productId);
     }
 
-    /**
-     * @param $productId
-     * @param $context
-     */
-    public function getSalesChannelSeoCategoryByProductId($productId, $context): ?CategoryEntity
+    public function getProductsById($productIds, $context): ProductCollection
     {
-        $criteria = new Criteria();
-        $criteria->setIds([$productId]);
-        $criteria->setTitle('product-detail-route');
+        $criteria = new Criteria($productIds);
+        $criteria->addAssociation('seoUrls');
 
-        $product = $this->productRepository->search($criteria, $context)->getEntities()->first();
+        /** @var ProductCollection $productCollection */
+        return $this->productRepository->search($criteria, $context->getContext())->getEntities();
+    }
 
-        if ($product === null) {
-            return null;
-        }
-
+    /**
+     * @param ProductEntity $product
+     * @param SalesChannelContext $context
+     */
+    public function getSalesChannelSeoCategoryByProduct($product, $context): ?CategoryEntity
+    {
         return $this->breadcrumbBuilder->getProductSeoCategory($product, $context);
     }
 
