@@ -39,7 +39,6 @@ class ProductHelper
     /**
      * @param $productId
      * @param $context
-     * @return SalesChannelProductEntity|null
      */
     public function getSalesChannelSeoCategoryByProductId($productId, $context): ?CategoryEntity
     {
