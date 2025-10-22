@@ -4,35 +4,22 @@
  */
 namespace Dtgs\GoogleTagManager\Components\Helper;
 
-use Shopware\Core\Content\Product\Exception\ProductNotFoundException;
+use Shopware\Core\Content\Category\CategoryEntity;
+use Shopware\Core\Content\Category\Service\CategoryBreadcrumbBuilder;
 use Shopware\Core\Content\Product\ProductCollection;
 use Shopware\Core\Content\Product\ProductEntity;
-use Shopware\Core\Content\Product\SalesChannel\Detail\AbstractProductDetailRoute;
 use Shopware\Core\Content\Product\SalesChannel\SalesChannelProductEntity;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
-use Shopware\Core\Framework\Uuid\Exception\InvalidUuidException;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
-use Symfony\Component\HttpFoundation\Request;
 
 class ProductHelper
 {
-
-    /**
-     * @var EntityRepository
-     */
-    private EntityRepository $productRepository;
-
-    /**
-     * @var AbstractProductDetailRoute
-     */
-    private AbstractProductDetailRoute $productDetailRoute;
-
-    public function __construct(EntityRepository $productRepository,
-                                AbstractProductDetailRoute $productDetailRoute)
+    public function __construct(
+        private EntityRepository $productRepository,
+        private CategoryBreadcrumbBuilder $breadcrumbBuilder,
+    )
     {
-        $this->productRepository = $productRepository;
-        $this->productDetailRoute = $productDetailRoute;
     }
 
     /**
@@ -54,15 +41,19 @@ class ProductHelper
      * @param $context
      * @return SalesChannelProductEntity|null
      */
-    public function getSalesChannelProductEntityByProductId($productId, $context)
+    public function getSalesChannelSeoCategoryByProductId($productId, $context): ?CategoryEntity
     {
-        try {
-            $result = $this->productDetailRoute->load($productId, new Request(), $context, new Criteria());
-        }
-        catch (InvalidUuidException|ProductNotFoundException|\Exception $exception) {
+        $criteria = new Criteria();
+        $criteria->setIds([$productId]);
+        $criteria->setTitle('product-detail-route');
+
+        $product = $this->productRepository->search($criteria, $context)->getEntities()->first();
+
+        if ($product === null) {
             return null;
         }
-        return $result->getProduct();
+
+        return $this->breadcrumbBuilder->getProductSeoCategory($product, $context);
     }
 
 }

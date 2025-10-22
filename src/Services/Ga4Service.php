@@ -502,9 +502,9 @@ class Ga4Service
             if($addCategoryNames) {
                 if($product->getType() == 'promotion') continue;
                 if($product->getReferencedId()) {
-                    $salesChannelProduct = $this->productHelper->getSalesChannelProductEntityByProductId($product->getReferencedId(), $context);
-                    if($salesChannelProduct !== null && $salesChannelProduct->getSeoCategory() !== null) {
-                        $item['item_category'] = $salesChannelProduct->getSeoCategory()->getTranslation('name');
+                    $seoCategory = $this->productHelper->getSalesChannelSeoCategoryByProductId($product->getReferencedId(), $context);
+                    if($seoCategory !== null) {
+                        $item['item_category'] = $seoCategory->getTranslation('name');
                     }
                 }
             }
