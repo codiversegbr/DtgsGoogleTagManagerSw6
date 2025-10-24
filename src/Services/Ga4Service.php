@@ -172,7 +172,7 @@ class Ga4Service implements Ga4ServiceInterface
         $price = ($product->getCalculatedPrices()->count()) ? $product->getCalculatedPrices()->first()->getUnitPrice() : $product->getCalculatedPrice()->getUnitPrice();
         $brutto_price = (is_float($price)) ? $price : str_replace(',', '.', $price);
 
-        $taxRate = $product->getCalculatedPrice()->getTaxRules()->first();
+        $taxRate = $product->getCalculatedPrice()?->getTaxRules()->first();
         if($taxRate) {
             $tax = $taxRate->getTaxRate();
         }
@@ -423,7 +423,7 @@ class Ga4Service implements Ga4ServiceInterface
             $price = ($product->getCalculatedPrices()->count()) ? $product->getCalculatedPrices()->first()->getUnitPrice() : $product->getCalculatedPrice()->getUnitPrice();
             $brutto_price = (is_float($price)) ? $price : str_replace(',', '.', $price);
 
-            $taxRate = $product->getCalculatedPrice()->getTaxRules()->first();
+            $taxRate = $product->getCalculatedPrice()?->getTaxRules()->first();
             if($taxRate) {
                 $tax = $taxRate->getTaxRate();
             }
@@ -486,7 +486,7 @@ class Ga4Service implements Ga4ServiceInterface
 
         foreach($listing as $product) {
             /** @var LineItem $product */
-            $taxRate = $product->getPrice()->getTaxRules()->first();
+            $taxRate = $product->getPrice()?->getTaxRules()->first();
             if($taxRate) {
                 $tax = $taxRate->getTaxRate();
             }

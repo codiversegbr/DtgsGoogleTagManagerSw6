@@ -82,7 +82,7 @@ class RemarketingService implements RemarketingServiceInterface
         $price = ($product->getCalculatedPrices()->count()) ? $product->getCalculatedPrices()->first()->getUnitPrice() : $product->getCalculatedPrice()->getUnitPrice();
         $brutto_price = (is_float($price)) ? $price : str_replace(',', '.', $price);
 
-        $taxRate = $product->getCalculatedPrice()->getTaxRules()->first();
+        $taxRate = $product->getCalculatedPrice()?->getTaxRules()->first();
         if($taxRate) {
             $tax = $taxRate->getTaxRate();
         }
@@ -156,7 +156,7 @@ class RemarketingService implements RemarketingServiceInterface
         $namesAsArray = array();
         $valuesAsArray = array();
 
-        $taxRate = $cartOrOrder->getPrice()->getTaxRules()->first();
+        $taxRate = $cartOrOrder->getPrice()?->getTaxRules()->first();
         if($taxRate) {
             $tax = $taxRate->getTaxRate();
         }

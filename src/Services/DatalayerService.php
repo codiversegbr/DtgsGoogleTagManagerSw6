@@ -137,7 +137,7 @@ class DatalayerService implements DatalayerServiceInterface
             $price = ($product->getCalculatedPrices()->count()) ? $product->getCalculatedPrices()->first()->getUnitPrice() : $product->getCalculatedPrice()->getUnitPrice();
             $brutto_price = (is_float($price)) ? $price : str_replace(',', '.', $price);
 
-            $taxRate = $product->getCalculatedPrice()->getTaxRules()->first();
+            $taxRate = $product->getCalculatedPrice()?->getTaxRules()->first();
             if($taxRate) {
                 $tax = $taxRate->getTaxRate();
             }
@@ -258,7 +258,7 @@ class DatalayerService implements DatalayerServiceInterface
 
 		//New in 1.3.5 - select if brutto/netto
 		if($useNetPrices) {
-            $taxRate = $cartOrOrder->getShippingCosts()->getTaxRules()->first();
+            $taxRate = $cartOrOrder->getShippingCosts()?->getTaxRules()->first();
             if($taxRate) {
                 $tax = $taxRate->getTaxRate();
             }
