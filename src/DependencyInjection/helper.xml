@@ -17,7 +17,7 @@
         </service>
         <service id="Dtgs\GoogleTagManager\Components\Helper\ProductHelper">
             <argument type="service" id="product.repository"/>
-            <argument type="service" id="Shopware\Core\Content\Product\SalesChannel\Detail\ProductDetailRoute"/>
+            <argument type="service" id="Shopware\Core\Content\Category\Service\CategoryBreadcrumbBuilder" />
         </service>
         <service id="Dtgs\GoogleTagManager\Components\Helper\ManufacturerHelper">
             <argument type="service" id="product_manufacturer.repository"/>

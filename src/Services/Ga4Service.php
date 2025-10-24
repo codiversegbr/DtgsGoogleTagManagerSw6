@@ -480,6 +480,21 @@ class Ga4Service implements Ga4ServiceInterface
         $tags = array();
         if(empty($listing)) return $tags;
 
+        $realProductIds = [];
+        if ($addCategoryNames) {
+            foreach ($listing as $lineItem) {
+                /** @var LineItem $lineItem */
+                if ($lineItem->getReferencedId()) {
+                    $realProductIds[] = $lineItem->getReferencedId();
+                }
+            }
+        }
+
+        $realProducts = null;
+        if (count($realProductIds)) {
+            $realProducts = $this->productHelper->getProductsById($realProductIds, $context);
+        }
+
         foreach($listing as $product) {
             /** @var LineItem $product */
             $taxRate = $product->getPrice()->getTaxRules()->first();
@@ -541,10 +556,13 @@ class Ga4Service implements Ga4ServiceInterface
             //Product Category - Changed to SEO Category in V6.1.22
             if($addCategoryNames) {
                 if($product->getType() == 'promotion') continue;
-                if($product->getReferencedId()) {
-                    $salesChannelProduct = $this->productHelper->getSalesChannelProductEntityByProductId($product->getReferencedId(), $context);
-                    if($salesChannelProduct !== null && $salesChannelProduct->getSeoCategory() !== null) {
-                        $item['item_category'] = $salesChannelProduct->getSeoCategory()->getTranslation('name');
+                if($product->getReferencedId() && $realProducts && $realProducts->has($product->getReferencedId())) {
+                    $seoCategory = $this->productHelper->getSalesChannelSeoCategoryByProductId(
+                        $realProducts->get($product->getReferencedId()),
+                        $context,
+                    );
+                    if($seoCategory !== null) {
+                        $item['item_category'] = $seoCategory->getTranslation('name');
                     }
                 }
             }
