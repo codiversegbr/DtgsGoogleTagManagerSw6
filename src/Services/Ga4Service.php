@@ -20,6 +20,7 @@ use Shopware\Core\Content\Category\CategoryEntity;
 use Shopware\Core\Content\Product\SalesChannel\Listing\ProductListingResult;
 use Shopware\Core\Content\Product\SalesChannel\SalesChannelProductEntity;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\EntitySearchResult;
+use Shopware\Core\Framework\Uuid\Uuid;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Shopware\Storefront\Page\Checkout\Cart\CheckoutCartPageLoadedEvent;
@@ -484,7 +485,7 @@ class Ga4Service implements Ga4ServiceInterface
         if ($addCategoryNames) {
             foreach ($listing as $lineItem) {
                 /** @var LineItem $lineItem */
-                if ($lineItem->getReferencedId()) {
+                if ($lineItem->getReferencedId() && Uuid::isValid($lineItem->getReferencedId())) {
                     $realProductIds[] = $lineItem->getReferencedId();
                 }
             }
@@ -555,9 +556,8 @@ class Ga4Service implements Ga4ServiceInterface
 
             //Product Category - Changed to SEO Category in V6.1.22
             if($addCategoryNames) {
-                if($product->getType() == 'promotion') continue;
-                if($product->getReferencedId() && $realProducts && $realProducts->has($product->getReferencedId())) {
-                    $seoCategory = $this->productHelper->getSalesChannelSeoCategoryByProductId(
+                if($product->getType() != 'promotion' && $product->getReferencedId() && $realProducts && $realProducts->has($product->getReferencedId())) {
+                    $seoCategory = $this->productHelper->getSalesChannelSeoCategoryByProduct(
                         $realProducts->get($product->getReferencedId()),
                         $context,
                     );
