@@ -1,3 +1,8 @@
+# 6.4.4
+- Kleinere Anpassungen für das Decorator Pattern (GTM-GH-44)
+- Sicherheitschecks für getTaxRules hinzugefügt (GTM-GH-43)
+- Optimierung: ProductDetailRoute::load aus ProductHelper entfernt für bessere Performance (Danke an @beberlei!)
+
 # 6.4.3
 - Bugfix: SEO URLs werden nun nach SalesChannel gefiltert ausgegeben (GTM-GH-42)
 - Bugfix: Twig Daten werden nun unterdrückt, wenn das Plugin im Saleschannel deaktiviert ist (GTM-GH-41)
