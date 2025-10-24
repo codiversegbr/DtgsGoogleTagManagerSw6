@@ -1,3 +1,7 @@
+# 6.3.29
+- Minor optimizations for decorator pattern (GTM-GH-44)
+- Added safety checks for getTaxRules() calls (GTM-GH-43)
+ 
 # 6.3.28
 - Bugfix: SEO URLs will now be filtered by sales channel id (GTM-GH-42)
 - Bugfix: twig data and hidden fields will not be included in template if plugin is not active for saleschannel (GTM-GH-41)

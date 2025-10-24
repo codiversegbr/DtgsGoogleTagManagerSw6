@@ -1,3 +1,7 @@
+# 6.3.29
+- Kleiner Anpassungen für das Decorator Pattern (GTM-GH-44)
+- Sicherheitschecks für getTaxRules hinzugefügt (GTM-GH-43)
+
 # 6.3.28
 - Bugfix: SEO URLs werden nun nach SalesChannel gefiltert ausgegeben (GTM-GH-42)
 - Bugfix: Twig Daten werden nun unterdrückt, wenn das Plugin im Saleschannel deaktiviert ist (GTM-GH-41)
