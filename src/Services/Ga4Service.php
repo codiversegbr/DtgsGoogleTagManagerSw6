@@ -477,7 +477,7 @@ class Ga4Service implements Ga4ServiceInterface
      * @return array
      * @throws \Exception
      */
-    private function getBasketItems($listing, SalesChannelContext $context, $addCategoryNames = false, $location = 'checkout'): array
+    public function getBasketItems($listing, SalesChannelContext $context, $addCategoryNames = false, $location = 'checkout'): array
     {
 
         $i = 0;
