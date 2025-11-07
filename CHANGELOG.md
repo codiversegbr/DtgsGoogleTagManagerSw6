@@ -1,7 +1,8 @@
 # 6.4.4
-- Minor optimizations for decorator pattern (GTM-GH-44)
-- Added safety checks for getTaxRules() calls (GTM-GH-43)
+- Change: Minor optimizations for decorator pattern (GTM-GH-44)
+- Bugfix: Added safety checks for getTaxRules() calls (GTM-GH-43)
 - Optimization: Remove use of ProductDetailRoute::load in ProductHelper to increase performance (thanks to @beberlei!)
+- Bugfix: delayed loading of gtm.js is now working correcly in prod mode (GTM-GH-46)
 
 # 6.4.3
 - Bugfix: SEO URLs will now be filtered by sales channel id (GTM-GH-42)
