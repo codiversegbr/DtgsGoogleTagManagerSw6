@@ -202,8 +202,24 @@ class Ga4Service implements Ga4ServiceInterface
         //Product Category - Changed to SEO Category in V6.1.22
         $seoCategory = $product->getSeoCategory();
         if($seoCategory) {
-            $product_data['item_category'] = $seoCategory->getTranslation('name');
-            $product_data['item_list_id'] = $seoCategory->getId();
+            $breadcrumb = $seoCategory->getTranslation('breadcrumb');
+
+            if (!empty($breadcrumb) && is_array($breadcrumb)) {
+                // Remove the first element (entry point category)
+                $visibleCategories = array_values(array_slice($breadcrumb, 1));
+
+                // Assign category levels dynamically
+                foreach ($visibleCategories as $index => $categoryName) {
+                    $key = 'item_category' . ($index === 0 ? '' : (string)($index + 1));
+                    $product_data[$key] = $categoryName;
+                }
+
+                // Optional: the last visible category can be used for list ID
+                $product_data['item_list_id'] = $seoCategory->getId();
+            } else {
+                $product_data['item_category'] = '';
+            }
+
         } else {
             $product_data['item_category'] = '';
         }
