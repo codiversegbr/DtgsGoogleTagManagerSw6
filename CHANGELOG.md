@@ -1,6 +1,7 @@
 # 6.3.29
 - Minor optimizations for decorator pattern (GTM-GH-44)
 - Added safety checks for getTaxRules() calls (GTM-GH-43)
+- Bugfix: delayed loading of gtm.js is now working correcly in prod mode (GTM-GH-46)
  
 # 6.3.28
 - Bugfix: SEO URLs will now be filtered by sales channel id (GTM-GH-42)
