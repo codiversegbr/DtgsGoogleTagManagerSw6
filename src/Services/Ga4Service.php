@@ -208,6 +208,9 @@ class Ga4Service implements Ga4ServiceInterface
                 // Remove the first element (entry point category)
                 $visibleCategories = array_values(array_slice($breadcrumb, 1));
 
+                // Reverse the order: make leaf category first
+                $visibleCategories = array_reverse($visibleCategories);
+
                 // Assign category levels dynamically
                 foreach ($visibleCategories as $index => $categoryName) {
                     $key = 'item_category' . ($index === 0 ? '' : (string)($index + 1));
