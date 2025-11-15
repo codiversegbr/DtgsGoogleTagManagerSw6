@@ -208,11 +208,12 @@ class Ga4Service implements Ga4ServiceInterface
 
                 $product_data = $this->mapBreadcrumbCategories($breadcrumb, $product_data);
 
-                // Optional: the last visible category can be used for list ID
-                $product_data['item_list_id'] = $seoCategory->getId();
             } else {
-                $product_data['item_category'] = '';
+                $product_data['item_category'] = $seoCategory->getTranslation('name');
             }
+
+            // Optional: the last visible category can be used for list ID
+            $product_data['item_list_id'] = $seoCategory->getId();
 
         } else {
             $product_data['item_category'] = '';
