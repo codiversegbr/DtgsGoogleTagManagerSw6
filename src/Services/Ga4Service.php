@@ -205,17 +205,8 @@ class Ga4Service implements Ga4ServiceInterface
             $breadcrumb = $seoCategory->getTranslation('breadcrumb');
 
             if (!empty($breadcrumb) && is_array($breadcrumb)) {
-                // Remove the first element (entry point category)
-                $visibleCategories = array_values(array_slice($breadcrumb, 1));
 
-                // Reverse the order: make leaf category first
-                $visibleCategories = array_reverse($visibleCategories);
-
-                // Assign category levels dynamically
-                foreach ($visibleCategories as $index => $categoryName) {
-                    $key = 'item_category' . ($index === 0 ? '' : (string)($index + 1));
-                    $product_data[$key] = $categoryName;
-                }
+                $product_data = $this->mapBreadcrumbCategories($breadcrumb, $product_data);
 
                 // Optional: the last visible category can be used for list ID
                 $product_data['item_list_id'] = $seoCategory->getId();
@@ -581,7 +572,15 @@ class Ga4Service implements Ga4ServiceInterface
                         $context,
                     );
                     if($seoCategory !== null) {
-                        $item['item_category'] = $seoCategory->getTranslation('name');
+                        $breadcrumb = $seoCategory->getTranslation('breadcrumb');
+                        if (!empty($breadcrumb) && is_array($breadcrumb)) {
+                            $item = $this->mapBreadcrumbCategories($breadcrumb, $item);
+
+                            // Optional: provide list id for consistency
+                            $item['item_list_id'] = $seoCategory->getId();
+                        } else {
+                            $item['item_category'] = $seoCategory->getTranslation('name');
+                        }
                     }
                 }
             }
@@ -656,6 +655,28 @@ class Ga4Service implements Ga4ServiceInterface
         }
 
         return trim($variantName);
+    }
+
+    /**
+     * @param array $breadcrumb
+     * @param array $item_data
+     * @return array
+     */
+    private function mapBreadcrumbCategories(array $breadcrumb, array $item_data): array
+    {
+        // Remove the first element (entry point category)
+        $visibleCategories = array_values(array_slice($breadcrumb, 1));
+
+        // Reverse the order: make the leaf category first
+        $visibleCategories = array_reverse($visibleCategories);
+
+        // Assign category levels dynamically
+        foreach ($visibleCategories as $index => $categoryName) {
+            $key = 'item_category' . ($index === 0 ? '' : (string)($index + 1));
+            $item_data[$key] = $categoryName;
+        }
+
+        return $item_data;
     }
 
 }
