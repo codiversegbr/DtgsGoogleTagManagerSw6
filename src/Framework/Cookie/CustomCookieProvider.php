@@ -2,24 +2,38 @@
 
 namespace Dtgs\GoogleTagManager\Framework\Cookie;
 
+use Dtgs\GoogleTagManager\Core\Content\DtgsGtmCustomService\CustomServiceEntity;
+use Shopware\Core\Framework\Context;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Shopware\Storefront\Framework\Cookie\CookieProviderInterface;
 use Symfony\Component\HttpFoundation\RequestStack;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 class CustomCookieProvider implements CookieProviderInterface {
 
     private $originalService;
     private SystemConfigService $systemConfigService;
     private $requestStack;
+    private $customServiceRepository;
+    private $translator;
 
-    public function __construct(CookieProviderInterface $service,
-                                SystemConfigService $systemConfigService,
-                                RequestStack $requestStack)
+    public function __construct(
+        CookieProviderInterface $service,
+        SystemConfigService     $systemConfigService,
+        RequestStack            $requestStack,
+        EntityRepository        $customServiceRepository,
+        TranslatorInterface     $translator,
+    )
     {
         $this->originalService = $service;
         $this->systemConfigService = $systemConfigService;
         $this->requestStack = $requestStack;
+        $this->customServiceRepository = $customServiceRepository;
+        $this->translator = $translator;
     }
 
     private const cookie = [
@@ -61,7 +75,100 @@ class CustomCookieProvider implements CookieProviderInterface {
             );
         }
 
+        $cookieGroups = $this->customServiceCookieGroups($cookieGroups);
+
         return $cookieGroups;
+    }
+
+    private function customServiceCookieGroups(array $groups): array
+    {
+        $context = Context::createDefaultContext();
+        if ($this->requestStack
+            && ($request = $this->requestStack->getCurrentRequest())
+            && $request->attributes->has('sw-sales-channel-context')
+        ) {
+            $context = $request->attributes->get('sw-sales-channel-context')->getContext();
+        }
+
+        $criteria = (new Criteria())->addFilter(new EqualsFilter('active', true));
+        $services = $this->customServiceRepository->search($criteria, $context);
+        if ($services->getTotal() === 0) {
+            return $groups;
+        }
+
+        // Find indices of Statistical and Marketing groups if present
+        $statIndex = null;
+        $marketingIndex = null;
+        foreach ($groups as $idx => $group) {
+            if (($group['snippet_name'] ?? '') === 'cookie.groupStatistical') {
+                $statIndex = $idx;
+            }
+            if (($group['snippet_name'] ?? '') === 'cookie.groupMarketing') {
+                $marketingIndex = $idx;
+            }
+        }
+
+        /** @var CustomServiceEntity $entity */
+        foreach ($services->getElements() as $entity) {
+            $name = $entity->getName() ?: ($entity->getTranslated()['name'] ?? '');
+            $eventName = method_exists($entity, 'getEventName') ? (string) $entity->getEventName() : (string) ($entity->getTranslated()['eventName'] ?? '');
+            $category = method_exists($entity, 'getCategory') ? (string) $entity->getCategory() : (string) ($entity->getTranslated()['category'] ?? '');
+
+            // Derive a cookie key for this service
+            $cookie = self::buildCookieKey($eventName);
+
+            $label = $this->translator->trans(
+                'cookie.dtgs-gtm-svc-generic-service.label',
+                ['%name%' => $name]
+            );
+
+            $description = $eventName ?
+                $this->translator->trans('cookie.dtgs-gtm-svc-generic-service.description', [
+                    '%event%' => $eventName
+                ]) : null;
+
+            $entry = [
+                'snippet_name'            => $label,
+                'cookie'                  => $cookie,
+                'expiration'              => '30',
+                'value'                   => '1',
+                'snippet_description'     => $description
+            ];
+
+            $targetIdx = null;
+            if (strtolower($category) === 'statistic' || strtolower($category) === 'statistical') {
+                $targetIdx = $statIndex;
+            } else {
+                // default to Marketing if unknown
+                $targetIdx = $marketingIndex;
+            }
+
+            if ($targetIdx === null) {
+                // If no target group exists, append under a Marketing-like custom group
+                $groups[] = [
+                    'snippet_name' => 'cookie.groupMarketing',
+                    'entries' => [ $entry ],
+                ];
+            } else {
+                if (!isset($groups[$targetIdx]['entries']) || !is_array($groups[$targetIdx]['entries'])) {
+                    $groups[$targetIdx]['entries'] = [];
+                }
+                $groups[$targetIdx]['entries'][] = $entry;
+            }
+        }
+
+        return $groups;
+    }
+
+    public static function buildCookieKey(string $name): string
+    {
+        $slug = strtolower(trim($name));
+        $slug = preg_replace('~[^a-z0-9]+~', '-', $slug ?? '');
+        $slug = trim((string) $slug, '-');
+        if ($slug === '') {
+            $slug = 'custom-service';
+        }
+        return 'dtgs-gtm-svc-' . $slug;
     }
 
     private function gtmPluginActiveInSaleschannel()

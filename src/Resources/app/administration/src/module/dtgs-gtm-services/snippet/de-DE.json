@@ -1,0 +1,37 @@
+{
+    "dtgs-gtm-services": {
+        "general": {
+            "mainMenuItemGeneral": "GTM Custom Services",
+            "descriptionTextModule": "Eigene GTM-Dienste für Consent & Event-Trigger verwalten"
+        },
+        "list": {
+            "title": "GTM Custom Services",
+            "cardTitle": "Dienste",
+            "add": "Dienst anlegen",
+            "edit": "Bearbeiten",
+            "delete": "Löschen",
+            "columnName": "Dienstname",
+            "columnEventName": "Event-Name",
+            "columnCategory": "Kategorie",
+            "columnActive": "Aktiv"
+        },
+        "detail": {
+            "createTitle": "Dienst anlegen",
+            "editTitle": "Dienst bearbeiten",
+            "cardTitle": "Dienstdetails",
+            "saveSuccess": "Dienst erfolgreich gespeichert.",
+            "saveError": "Dienst konnte nicht gespeichert werden.",
+            "fields": {
+                "name": "Dienstname",
+                "eventName": "GTM Event-Name",
+                "category": "Kategorie",
+                "description": "Beschreibung",
+                "active": "Aktiv"
+            },
+            "category": {
+                "statistic": "Statistik",
+                "marketing": "Marketing"
+            }
+        }
+    }
+}

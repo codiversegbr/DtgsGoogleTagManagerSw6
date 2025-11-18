@@ -2,6 +2,9 @@
 
 namespace Dtgs\GoogleTagManager;
 
+use Doctrine\DBAL\Connection;
+use Dtgs\GoogleTagManager\Core\Content\DtgsGtmCustomService\CustomServiceDefinition;
+use Dtgs\GoogleTagManager\Core\Content\DtgsGtmCustomService\Translation\ServiceTranslationDefinition;
 use Shopware\Core\Framework\Plugin;
 
 use Shopware\Core\Framework\Plugin\Context\InstallContext;
@@ -12,6 +15,11 @@ use Symfony\Component\DependencyInjection\Loader\XmlFileLoader;
 
 class DtgsGoogleTagManagerSw6 extends Plugin
 {
+    public const CUSTOM_TABLES = [
+        ServiceTranslationDefinition::ENTITY_NAME,
+        CustomServiceDefinition::ENTITY_NAME
+    ];
+
     /**
      * {@inheritdoc}
      */
@@ -42,6 +50,19 @@ class DtgsGoogleTagManagerSw6 extends Plugin
 
         if ($context->keepUserData()) {
             return;
+        }
+
+        $this->deleteTables();
+    }
+
+    private function deleteTables(): void
+    {
+        $connection = $this->container->get(Connection::class);
+        foreach (self::CUSTOM_TABLES as $table) {
+            try {
+                $connection->executeStatement('DROP TABLE IF EXISTS `' . $table. '`;');
+            } catch (\Exception $exception) {
+            }
         }
     }
 }
