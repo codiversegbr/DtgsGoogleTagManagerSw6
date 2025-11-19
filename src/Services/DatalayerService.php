@@ -349,8 +349,9 @@ class DatalayerService implements DatalayerServiceInterface
                     'quantity' => $item->getQuantity(),
                 );
                 //GTM-GH-52 - purchase price
-                if($product->getPurchasePrices()?->first()?->getGross()) {
-                    $transactionProduct['purchase_price'] = $this->priceHelper->getPrice($product->getPurchasePrices()?->first()->getGross(), $tax, $context);
+                $purchasePrice = $product->getPurchasePrices()?->first()?->getGross();
+                if(is_float($purchasePrice) && $purchasePrice > 0) {
+                    $transactionProduct['purchase_price'] = $this->priceHelper->getPrice($purchasePrice, $tax, $context);
                 }
                 //GH-10 - more information in transactionProducts
                 if(isset($payLoad['options']) && $this->getVariantName($payLoad['options'])) {
