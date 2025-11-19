@@ -128,7 +128,6 @@ class TwigExtension extends AbstractExtension
      */
     public function getCalculatedProductPrice($lineItem, $ga4tags, $cmsGa4tags = null): mixed
     {
-        if ($ga4tags === null && $cmsGa4tags === null) return '';
         if ($ga4tags === null && $cmsGa4tags) $ga4tags = $cmsGa4tags;
 
         $ga4tagsAsObject = json_decode($ga4tags);
@@ -145,6 +144,12 @@ class TwigExtension extends AbstractExtension
             foreach ($items as $item) {
                 if(!is_object($item)) return '';
                 if($item->item_id == $sku) return $item->price;
+            }
+
+            // Fallback: try to get price from line item directly
+            // this needs to reworked to include net/gross switch
+            if(get_class($lineItem) == SalesChannelProductEntity::class) {
+                return number_format($lineItem->getPrice()->first()->getGross(), 2, '.', '');
             }
         }
         catch (\Exception $exception) {
