@@ -1,3 +1,6 @@
+# 6.4.5
+- tbd
+
 # 6.4.4
 - Änderung: Kleinere Anpassungen für das Decorator Pattern (GTM-GH-44)
 - Bugfix: Sicherheitschecks für getTaxRules hinzugefügt (GTM-GH-43)
