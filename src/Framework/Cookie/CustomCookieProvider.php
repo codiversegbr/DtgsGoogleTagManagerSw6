@@ -132,7 +132,7 @@ class CustomCookieProvider implements CookieProviderInterface {
                 'cookie'                  => $cookie,
                 'expiration'              => '30',
                 'value'                   => '1',
-                'snippet_description'     => $description
+//                'snippet_description'     => $description
             ];
 
             $targetIdx = null;
