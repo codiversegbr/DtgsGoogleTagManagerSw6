@@ -1,0 +1,74 @@
+{% block dtgs_gtm_services_detail %}
+    <sw-page class="dtgs-gtm-services-detail">
+        {% block dtgs_gtm_services_detail_smart_bar_header %}
+            <template #smart-bar-header>
+                <h2>{{ pageTitle }}</h2>
+            </template>
+        {% endblock %}
+
+        {% block dtgs_gtm_services_detail_language_switch %}
+            <template #language-switch>
+                {% block dtgs_gtm_services_detail_language_switch_component %}
+                    <sw-language-switch
+                            :disabled="serviceId == null"
+                            :saveChangesFunction="saveOnLanguageChange"
+                            :abortChangeFunction="abortOnLanguageChange"
+                            @on-change="onChangeLanguage">
+                    </sw-language-switch>
+                {% endblock %}
+            </template>
+        {% endblock %}
+
+        {% block dtgs_gtm_services_detail_smart_bar_actions %}
+            <template #smart-bar-actions>
+                <sw-button variant="primary" @click="onSave" :disabled="isDisableSaveButton">
+                    {{ $tc('global.default.save') }}
+                </sw-button>
+                <sw-button @click="onCancel">
+                    {{ $tc('global.default.cancel') }}
+                </sw-button>
+            </template>
+        {% endblock %}
+
+        {% block dtgs_gtm_services_detail_content %}
+            <template #content>
+                <sw-card-view>
+                    <sw-card
+                            position-identifier="dtgs-gtm-services-detail"
+                            :title="$tc('dtgs-gtm-services.detail.cardTitle')"
+                            :isLoading="isLoading"
+                    >
+                        <template v-if="!gtmServiceIsLoading">
+                            <sw-container columns="1fr 1fr" gap="16px">
+                                <mt-text-field
+                                        v-model="item.name"
+                                        required
+                                        :label="$tc('dtgs-gtm-services.detail.fields.name')"
+                                        :helpText="$tc('dtgs-gtm-services.detail.fields.nameHelpText')"
+                                />
+                                <mt-switch
+                                        v-model="item.active"
+                                        :label="$tc('dtgs-gtm-services.detail.fields.active')"
+                                />
+                            </sw-container>
+
+                            <sw-container columns="1fr 1fr" gap="16px">
+                                <mt-text-field
+                                        v-model="item.eventName"
+                                        required
+                                        :label="$tc('dtgs-gtm-services.detail.fields.eventName')"
+                                        :helpText="$tc('dtgs-gtm-services.detail.fields.eventNameHelpText')"
+                                />
+                                <mt-select
+                                        v-model="item.category"
+                                        :label="$tc('dtgs-gtm-services.detail.fields.category')"
+                                        :options="categories"
+                                />
+                            </sw-container>
+                        </template>
+                    </sw-card>
+                </sw-card-view>
+            </template>
+        {% endblock %}
+    </sw-page>
+{% endblock %}

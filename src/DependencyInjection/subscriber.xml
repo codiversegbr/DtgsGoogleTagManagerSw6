@@ -17,6 +17,12 @@
             <tag name="kernel.event_subscriber"/>
         </service>
 
+        <!-- Storefront subscriber to expose services to Twig -->
+        <service id="Dtgs\GoogleTagManager\Subscriber\GtmServicesStorefrontSubscriber">
+            <tag name="kernel.event_subscriber" />
+            <argument type="service" id="dtgs_gtm_custom_service.repository" />
+        </service>
+
         <!-- Http cache key variation for GTM consent -->
         <service id="Dtgs\GoogleTagManager\Subscriber\HttpCacheKeySubscriber">
             <argument type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService" />
