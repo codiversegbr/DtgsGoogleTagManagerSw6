@@ -249,6 +249,14 @@ class Ga4Service implements Ga4ServiceInterface
         //Currency Code
         $ga4_tags['currency'] = $context->getCurrency()->getIsoCode();
         //Added in 6.3.9
+        switch ($listName) {
+            case 'Category':
+                $listName .= ': ' . $category->getTranslation('name');
+                break;
+            default:
+                $listName = 'Additional: ' . ucwords($listName, '-');
+                break;
+        }
         $ga4_tags['item_list_name'] = $listName;
         if($category) $ga4_tags['item_list_id'] = $category->getId();
 
