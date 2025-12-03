@@ -1,5 +1,8 @@
 # 6.4.5
-- tbd
+- Neu: Kompletter Breadcrumb (item_category2, item_category3) ist nun im Datalayer vorhanden (GTM-GH-8 / GTM-GH-49)
+- Neu: Mehrere Dienste (zB Facebook, Bing, etc) können nun dem Shopware Consent Management hinzugefügt werden und bei Zustimmung per Event kontrolliert werden. Mehr Infos auf unserer Website (GTM-GH-38)
+- Neu: Einkaufspreis ist nun verfügbar im transactionProducts Array auf den checkout/finish Seiten (purchase_price) (GTM-GH-52)
+- Verbesserung: item_list_name Daten sind jetzt dynamischer für Slider und Kategorien (GTM-GH-48)
 
 # 6.4.4
 - Änderung: Kleinere Anpassungen für das Decorator Pattern (GTM-GH-44)

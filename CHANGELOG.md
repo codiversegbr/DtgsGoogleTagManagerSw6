@@ -1,5 +1,8 @@
 # 6.4.5
-- tbd
+- New: complete breadcrumb (item_category2, item_category3) is now included in datalayer (GTM-GH-8 / GTM-GH-49)
+- New: Multiple services can now be registered through the backend and added to the SW Consent Management. See our blog for more info (GTM-GH-38)
+- New: Purchase Price is now available in transactionProducts on checkout/finish pages (purchase_price) (GTM-GH-52)
+- Improvement: item_list_name identifiers are now dynamic for sliders and categories (GTM-GH-48)
 
 # 6.4.4
 - Change: Minor optimizations for decorator pattern (GTM-GH-44)
