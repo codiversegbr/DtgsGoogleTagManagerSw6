@@ -1,3 +1,6 @@
+# 6.4.6
+- Bugfix: Error in cart when using custom products
+
 # 6.4.5
 - New: complete breadcrumb (item_category2, item_category3) is now included in datalayer (GTM-GH-8 / GTM-GH-49)
 - New: Multiple services can now be registered through the backend and added to the SW Consent Management. See our blog for more info (GTM-GH-38)
