@@ -1,3 +1,6 @@
+# 6.3.30
+- Neu: Einkaufspreis ist nun verfügbar im transactionProducts Array auf den checkout/finish Seiten (purchase_price) (GTM-GH-52)
+
 # 6.3.29
 - Kleiner Anpassungen für das Decorator Pattern (GTM-GH-44)
 - Sicherheitschecks für getTaxRules hinzugefügt (GTM-GH-43)

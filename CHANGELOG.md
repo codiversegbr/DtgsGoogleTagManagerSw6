@@ -1,3 +1,6 @@
+# 6.3.30
+- New: Purchase Price is now available in transactionProducts on checkout/finish pages (purchase_price) (GTM-GH-52)
+
 # 6.3.29
 - Minor optimizations for decorator pattern (GTM-GH-44)
 - Added safety checks for getTaxRules() calls (GTM-GH-43)
