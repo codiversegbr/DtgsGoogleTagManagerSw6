@@ -354,6 +354,13 @@ class DatalayerService implements DatalayerServiceInterface
                     $transactionProduct['item_variant'] = $this->getVariantName($payLoad['options']);
                 }
                 try {
+                    //GTM-GH-52 - purchase price
+                    if($product && $product->getPurchasePrices()) {
+                        $purchasePrice = $product->getPurchasePrices()->first()?->getGross();
+                        if (is_float($purchasePrice) && $purchasePrice > 0) {
+                            $transactionProduct['purchase_price'] = $this->priceHelper->getPrice($purchasePrice, $tax, $context);
+                        }
+                    }
                     if($product && $product->getEan()) {
                         $transactionProduct['ean'] = $product->getEan();
                     }
