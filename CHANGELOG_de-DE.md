@@ -1,5 +1,6 @@
 # 6.3.30
 - Neu: Einkaufspreis ist nun verfügbar im transactionProducts Array auf den checkout/finish Seiten (purchase_price) (GTM-GH-52)
+- Verbesserung: item_list_name Daten sind jetzt dynamischer für Slider und Kategorien (GTM-GH-48)
 
 # 6.3.29
 - Kleiner Anpassungen für das Decorator Pattern (GTM-GH-44)

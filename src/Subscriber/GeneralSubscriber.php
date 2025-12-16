@@ -305,7 +305,7 @@ class GeneralSubscriber implements EventSubscriberInterface
                     $additionalListings = $this->getAdditionalListings($cmsPage);
                     if($additionalListings) {
                         foreach ($additionalListings as $additionalListing) {
-                            $additionalEvents[] = $this->ga4Service->getNavigationTags($navigationId, $additionalListing, $event->getSalesChannelContext(), 'Additional');
+                            $additionalEvents[] = $this->ga4Service->getNavigationTags($navigationId, $additionalListing['products'], $event->getSalesChannelContext(), $additionalListing['type']);
                         }
                     }
                 }
@@ -394,17 +394,26 @@ class GeneralSubscriber implements EventSubscriberInterface
             foreach ($productListingContainerStructs as $productListingContainerStruct) {
                 if(is_a($productListingContainerStruct, 'Shopware\Core\Content\Cms\SalesChannel\Struct\ProductListingStruct')) {
                     if($productListingContainerStruct->getListing() === null) continue;
-                    $productListings[] = $productListingContainerStruct->getListing()->getElements();
+                    $productListings[] = [
+                        'type' => 'product-listing',
+                        'products' => $productListingContainerStruct->getListing()->getElements()
+                    ];
                 }
                 if(is_a($productListingContainerStruct, 'Shopware\Core\Content\Cms\SalesChannel\Struct\ProductSliderStruct')) {
                     if($productListingContainerStruct->getProducts() === null) continue;
-                    $productListings[] = $productListingContainerStruct->getProducts()->getElements();
+                    $productListings[] = [
+                        'type' => 'product-slider',
+                        'products' => $productListingContainerStruct->getProducts()->getElements()
+                    ];
                 }
                 if(is_a($productListingContainerStruct, 'Shopware\Core\Content\Cms\SalesChannel\Struct\CrossSellingStruct')) {
                     if($productListingContainerStruct->getCrossSellings() === null) continue;
                     $csElements = $productListingContainerStruct->getCrossSellings()->getElements();
                     foreach ($csElements as $csElement) {
-                        $productListings[] = $csElement->getProducts()->getElements();
+                        $productListings[] = [
+                            'type' => 'cross-selling',
+                            'products' => $csElement->getProducts()->getElements()
+                        ];
                     }
                 }
             }
@@ -437,6 +446,6 @@ class GeneralSubscriber implements EventSubscriberInterface
     private function getMainListing(CmsPageEntity $cmsPage)
     {
         $listings = $this->getListingsOnNavigationPage($cmsPage, 'product-listing');
-        return !empty($listings) ? $listings[0] : null;
+        return !empty($listings) ? $listings[0]['products'] : null;
     }
 }
