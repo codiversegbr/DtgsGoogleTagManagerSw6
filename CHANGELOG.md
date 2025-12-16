@@ -1,4 +1,5 @@
 # 6.3.30
+- New: complete breadcrumb (item_category2, item_category3) is now included in datalayer (GTM-GH-8 / GTM-GH-49)
 - New: Purchase Price is now available in transactionProducts on checkout/finish pages (purchase_price) (GTM-GH-52)
 - Improvement: item_list_name identifiers are now dynamic for sliders and categories (GTM-GH-48)
 

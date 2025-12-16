@@ -1,4 +1,5 @@
 # 6.3.30
+- Neu: Kompletter Breadcrumb (item_category2, item_category3) ist nun im Datalayer vorhanden (GTM-GH-8 / GTM-GH-49)
 - Neu: Einkaufspreis ist nun verfügbar im transactionProducts Array auf den checkout/finish Seiten (purchase_price) (GTM-GH-52)
 - Verbesserung: item_list_name Daten sind jetzt dynamischer für Slider und Kategorien (GTM-GH-48)
 

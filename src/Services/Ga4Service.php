@@ -21,6 +21,7 @@ use Shopware\Core\Content\Category\CategoryEntity;
 use Shopware\Core\Content\Product\SalesChannel\Listing\ProductListingResult;
 use Shopware\Core\Content\Product\SalesChannel\SalesChannelProductEntity;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\EntitySearchResult;
+use Shopware\Core\Framework\Uuid\Uuid;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Shopware\Storefront\Page\Checkout\Cart\CheckoutCartPageLoadedEvent;
@@ -204,8 +205,19 @@ class Ga4Service implements Ga4ServiceInterface
         //Product Category - Changed to SEO Category in V6.1.22
         $seoCategory = $product->getSeoCategory();
         if($seoCategory) {
-            $product_data['item_category'] = $seoCategory->getTranslation('name');
+            $breadcrumb = $seoCategory->getTranslation('breadcrumb');
+
+            if (!empty($breadcrumb) && is_array($breadcrumb)) {
+
+                $product_data = $this->mapBreadcrumbCategories($breadcrumb, $product_data);
+
+            } else {
+                $product_data['item_category'] = $seoCategory->getTranslation('name');
+            }
+
+            // Optional: the last visible category can be used for list ID
             $product_data['item_list_id'] = $seoCategory->getId();
+
         } else {
             $product_data['item_category'] = '';
         }
@@ -492,6 +504,21 @@ class Ga4Service implements Ga4ServiceInterface
         $tags = array();
         if(empty($listing)) return $tags;
 
+        $realProductIds = [];
+        if ($addCategoryNames) {
+            foreach ($listing as $lineItem) {
+                /** @var LineItem $lineItem */
+                if ($lineItem->getReferencedId() && Uuid::isValid($lineItem->getReferencedId())) {
+                    $realProductIds[] = $lineItem->getReferencedId();
+                }
+            }
+        }
+
+        $realProducts = null;
+        if (count($realProductIds)) {
+            $realProducts = $this->productHelper->getProductsById($realProductIds, $context);
+        }
+
         foreach($listing as $product) {
             /** @var LineItem $product */
             $taxRate = $product->getPrice()?->getTaxRules()->first();
@@ -552,11 +579,21 @@ class Ga4Service implements Ga4ServiceInterface
 
             //Product Category - Changed to SEO Category in V6.1.22
             if($addCategoryNames) {
-                if($product->getType() == 'promotion') continue;
-                if($product->getReferencedId()) {
-                    $salesChannelProduct = $this->productHelper->getSalesChannelProductEntityByProductId($product->getReferencedId(), $context);
-                    if($salesChannelProduct !== null && $salesChannelProduct->getSeoCategory() !== null) {
-                        $item['item_category'] = $salesChannelProduct->getSeoCategory()->getTranslation('name');
+                if($product->getType() != 'promotion' && $product->getReferencedId() && $realProducts && $realProducts->has($product->getReferencedId())) {
+                    $seoCategory = $this->productHelper->getSalesChannelSeoCategoryByProduct(
+                        $realProducts->get($product->getReferencedId()),
+                        $context,
+                    );
+                    if($seoCategory !== null) {
+                        $breadcrumb = $seoCategory->getTranslation('breadcrumb');
+                        if (!empty($breadcrumb) && is_array($breadcrumb)) {
+                            $item = $this->mapBreadcrumbCategories($breadcrumb, $item);
+
+                            // Optional: provide list id for consistency
+                            $item['item_list_id'] = $seoCategory->getId();
+                        } else {
+                            $item['item_category'] = $seoCategory->getTranslation('name');
+                        }
                     }
                 }
             }
@@ -631,6 +668,28 @@ class Ga4Service implements Ga4ServiceInterface
         }
 
         return trim($variantName);
+    }
+
+    /**
+     * @param array $breadcrumb
+     * @param array $item_data
+     * @return array
+     */
+    private function mapBreadcrumbCategories(array $breadcrumb, array $item_data): array
+    {
+        // Remove the first element (entry point category)
+        $visibleCategories = array_values(array_slice($breadcrumb, 1));
+
+        // Reverse the order: make the leaf category first
+        $visibleCategories = array_reverse($visibleCategories);
+
+        // Assign category levels dynamically
+        foreach ($visibleCategories as $index => $categoryName) {
+            $key = 'item_category' . ($index === 0 ? '' : (string)($index + 1));
+            $item_data[$key] = $categoryName;
+        }
+
+        return $item_data;
     }
 
 }
