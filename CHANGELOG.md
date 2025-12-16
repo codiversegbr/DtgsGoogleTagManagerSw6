@@ -1,5 +1,6 @@
 # 6.3.30
 - New: Purchase Price is now available in transactionProducts on checkout/finish pages (purchase_price) (GTM-GH-52)
+- Improvement: item_list_name identifiers are now dynamic for sliders and categories (GTM-GH-48)
 
 # 6.3.29
 - Minor optimizations for decorator pattern (GTM-GH-44)
