@@ -1,0 +1,39 @@
+{
+    "dtgs-gtm-services": {
+        "general": {
+            "mainMenuItemGeneral": "GTM Custom Services",
+            "descriptionTextModule": "Eigene GTM-Dienste für Consent & Event-Trigger verwalten"
+        },
+        "list": {
+            "title": "GTM Custom Services",
+            "cardTitle": "Dienste",
+            "add": "Dienst anlegen",
+            "edit": "Bearbeiten",
+            "delete": "Löschen",
+            "columnName": "Dienstname",
+            "columnEventName": "Event-Name",
+            "columnCategory": "Kategorie",
+            "columnActive": "Aktiv"
+        },
+        "detail": {
+            "createTitle": "Dienst anlegen",
+            "editTitle": "Dienst bearbeiten",
+            "cardTitle": "Dienstdetails",
+            "saveSuccess": "Dienst erfolgreich gespeichert.",
+            "saveError": "Dienst konnte nicht gespeichert werden.",
+            "fields": {
+                "name": "Dienstname",
+                "nameHelpText": "Dieser Name wird in den Cookie-Einstellungen des Shops angezeigt und sollte damit für den/die User*in nachvollziehbar und verständlich sein.",
+                "eventName": "GTM Event-Name",
+                "eventNameHelpText": "Vergeben Sie einen Namen für Ihr Event, das sie durch das Akzeptieren des Cookies pushen sollen. Z.B. cookieConsentGivenMyService.",
+                "category": "Kategorie",
+                "description": "Beschreibung",
+                "active": "Aktiv"
+            },
+            "category": {
+                "statistic": "Statistik",
+                "marketing": "Marketing"
+            }
+        }
+    }
+}

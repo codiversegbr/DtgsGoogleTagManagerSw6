@@ -1,0 +1,93 @@
+{% block dtgs_gtm_services_list %}
+    <sw-page class="dtgs-gtm-services-list">
+        {% block dtgs_gtm_services_list_search_bar %}
+            <template #search-bar>
+                <sw-search-bar initialSearchType="Dtgs GTM Services"
+                               :initialSearch="term"
+                               @search="onSearch">
+                </sw-search-bar>
+            </template>
+        {% endblock %}
+
+        {% block dtgs_gtm_services_list_smart_bar_header %}
+            <template #smart-bar-header>
+                <h2>
+                    {{ $tc('dtgs-gtm-services.list.title') }}
+                    {% block dtgs_gtm_services_list_smart_bar_header_amount %}
+                        <span v-if="!isLoading" class="sw-page__smart-bar-amount">
+                        ({{ total }})
+                    </span>
+                    {% endblock %}
+                </h2>
+            </template>
+        {% endblock %}
+
+        {% block dtgs_gtm_services_list_language_switch %}
+            <template #language-switch>
+                {% block dtgs_gtm_services_list_language_switch_component %}
+                    <sw-language-switch @on-change="onChangeLanguage"></sw-language-switch>
+                {% endblock %}
+            </template>
+        {% endblock %}
+
+        {% block dtgs_gtm_services_list_smart_bar_actions %}
+            <template #smart-bar-actions>
+                <sw-button variant="primary" @click="onAddNew">
+                    {{ $tc('dtgs-gtm-services.list.add') }}
+                </sw-button>
+            </template>
+        {% endblock %}
+
+        {% block dtgs_gtm_services_list_content %}
+            <template #content>
+                <sw-entity-listing
+                        v-if="items"
+                        :items="items"
+                        :columns="columns"
+                        :repository="serviceRepository"
+                        :show-selection="true"
+                        detail-route="dtgs.gtm.services.detail"
+                        @inline-edit-save="onInlineEditSave"
+                >
+                    <template #column-active="{ item, isInlineEdit }">
+                        {% block dtgs_gtm_services_list_grid_columns_active_inline_edit %}
+                            <template v-if="isInlineEdit">
+                                <mt-checkbox
+                                        v-model:checked="item.active"
+                                />
+                            </template>
+                        {% endblock %}
+
+                        {% block dtgs_gtm_services_list_grid_columns_active_content %}
+                            <template v-else>
+                                <mt-icon
+                                        size="16px"
+                                        :name="item.active ? 'regular-checkmark-xs' : 'regular-times-s'"
+                                        :color="item.active ? '#37d046' : '#de294c'"
+                                />
+                            </template>
+                        {% endblock %}
+                    </template>
+
+                    <template #column-category="{ item }">
+                        {{ $t('dtgs-gtm-services.detail.category.' + item.category) }}
+                    </template>
+
+                    <template #actions="{ item }">
+                        <sw-context-menu-item class="sw-entity-listing__edit-action" @click="onEdit(item)">
+                            {{ $tc('dtgs-gtm-services.list.edit') }}
+                        </sw-context-menu-item>
+                        <sw-context-menu-item variant="danger" @click="onDelete(item.id)">
+                            {{ $tc('dtgs-gtm-services.list.delete') }}
+                        </sw-context-menu-item>
+                    </template>
+
+                </sw-entity-listing>
+
+                {% block dtgs_gtm_services_list_grid_loader %}
+                    <sw-loader v-if="isLoading"></sw-loader>
+                {% endblock %}
+            </template>
+        {% endblock %}
+    </sw-page>
+{% endblock %}
