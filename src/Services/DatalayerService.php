@@ -289,6 +289,8 @@ class DatalayerService implements DatalayerServiceInterface
             if (isset($item->getPayload()['promotionId'])) {
                 $voucher = $item->getPayload();
                 if(isset($voucher['code'])) {
+                    $checkoutTags['transactionPromoId'] = $voucher['promotionId'];
+                    $checkoutTags['transactionPromoName'] = $item->getLabel();
                     $checkoutTags['transactionPromoCode'] = $voucher['code'];
                 }
             } else {
