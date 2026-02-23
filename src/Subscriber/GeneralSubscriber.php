@@ -277,6 +277,7 @@ class GeneralSubscriber implements EventSubscriberInterface
             case SearchPageLoadedEvent::class:
                 $searchTags = $this->datalayerService->getSearchTags($page->getSearchTerm(), $page->getListing());
                 $remarketingTags = $this->remarketingService->getSearchTags($event->getRequest());
+                $ga4Tags = $this->ga4Service->getSearchTags($page->getSearchTerm(), $page->getListing(), $event->getSalesChannelContext());
                 break;
             case WishlistPageLoadedEvent::class:
                 $navigationId = $event->getRequest()->get('navigationId', $event->getSalesChannelContext()->getSalesChannel()->getNavigationCategoryId());
