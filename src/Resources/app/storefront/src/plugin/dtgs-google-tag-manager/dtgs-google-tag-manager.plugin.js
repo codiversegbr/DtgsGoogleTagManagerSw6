@@ -147,10 +147,12 @@ export default class DtgsGoogleTagManagerPlugin extends Plugin
 
         if (updatedCookies[this.cookieEnabledName]) {
             this.fireCookieConsentEvent();
-            //this.startGoogleTagManager();
+            this.loadGoogleTagManager();
+            this.startGoogleTagManager();
             return;
         }
 
+        this.removeGoogleTagManager();
         this.removeCookies();
         this.disableEvents();
     }
@@ -173,6 +175,45 @@ export default class DtgsGoogleTagManagerPlugin extends Plugin
         this.events.forEach(event => {
             event.disable();
         });
+    }
+
+    /**
+     * Dynamically load GTM scripts when consent is given
+     * @private
+     */
+    loadGoogleTagManager() {
+        if (!window.dtgsGtmConfig || !window.dtgsGtmConfig.containerIds) {
+            return;
+        }
+
+        // Respect loadGoogleScriptAfterConsent setting
+        // If true, only load after consent (which is the case when this method is called)
+        // If false, GTM should have been loaded on page load, but load it anyway if not present
+        if (window.dtgsGtmConfig.loadGoogleScriptAfterConsent === false) {
+            // Check if GTM is already loaded (should be if loadGoogleScriptAfterConsent is false)
+            const hasGtmScript = document.querySelector('script[src*="googletagmanager.com/gtm.js"], script[src*="/gtm.js"]');
+            if (hasGtmScript) {
+                // GTM already loaded on page load, no need to reload
+                return;
+            }
+        }
+
+        // Load GTM for each container ID
+        window.dtgsGtmConfig.containerIds.forEach(containerId => {
+            if (typeof window.dtgsLoadGTM === 'function') {
+                window.dtgsLoadGTM(containerId);
+            }
+        });
+    }
+
+    /**
+     * Remove GTM scripts from DOM when consent is revoked
+     * @private
+     */
+    removeGoogleTagManager() {
+        if (typeof window.dtgsRemoveGTM === 'function') {
+            window.dtgsRemoveGTM();
+        }
     }
 
     /**
