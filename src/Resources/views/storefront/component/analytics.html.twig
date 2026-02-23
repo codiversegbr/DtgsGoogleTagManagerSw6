@@ -3,7 +3,7 @@
 {% set gtmConfig = config('DtgsGoogleTagManagerSw6.config') %}
 
 {% block component_head_analytics_gtag_consent %}
-    {% if not gtmConfig.pluginActiveInSaleschannel %}
+    {% if not gtmConfig.pluginActiveInSaleschannel or gtmConfig.removeContainerCode %}
     {{ parent() }}
     {% elseif gtmConfig.consentModeImplementation == 'shopwareCmp' %}
         <script{% if app.request.attributes.get('_cspNonce') %} nonce="{{ app.request.attributes.get('_cspNonce') }}"{% endif %}>
