@@ -1,4 +1,6 @@
 # 6.4.7
+- Problem behoben, dass immer neu geladen wurde nach erstem Consent (GTM-GH-56)
+- Unnötigen Code entfernt bei aktivierten datalayer-only option (GTM-GH-60)
 - aktualisiertes Plugin Icon
 
 # 6.4.6
