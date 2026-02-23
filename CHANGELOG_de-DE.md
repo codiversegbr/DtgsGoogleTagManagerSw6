@@ -1,3 +1,6 @@
+# 6.4.7
+- aktualisiertes Plugin Icon
+
 # 6.4.6
 - Bugfix: Fehler im Warenkorb wenn Custom Products verwendet werden
 

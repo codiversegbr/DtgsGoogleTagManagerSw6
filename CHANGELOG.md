@@ -1,3 +1,6 @@
+# 6.4.7
+- Update plugin icon
+
 # 6.4.6
 - Bugfix: Error in cart when using custom products
 
