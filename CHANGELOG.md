@@ -1,6 +1,8 @@
 # 6.4.7
-- Fix reloading after first consent (GTM-GH-56)
-- Remove unnecessary code when datalayer-only option is active (GTM-GH-60)
+- Bugfix: Fix reloading after first consent (GTM-GH-56)
+- New: Added new event view_search_results (GTM-GH-58)
+- New: Added new events sign_up & login (GTM-GH-59)
+- Bugfix: Remove unnecessary code when datalayer-only option is active (GTM-GH-60)
 - Update plugin icon
 
 # 6.4.6
