@@ -321,9 +321,9 @@
             <label lang="nl-NL">Alleen Datalayer uitgeven? (Verwijder Container Code)</label>
             <label>Datalayer only? (Remove container code)</label>
             <defaultValue>false</defaultValue>
-            <helpText lang="de-DE">Dies sollte nur aktiviert werden, wenn Sie den Container Code manuell einbinden oder ein Drittanbieter-Tool nutzen, welches den Container Code obsolet macht.</helpText>
-            <helpText lang="nl-NL">Dit mag alleen worden ingeschakeld als u de Containter Code handmatig invoert of een tool van derden gebruikt die de Containter Code overbodig maakt.</helpText>
-            <helpText>This should be only used in specific cases where you need to place the container code manually or using another tool.</helpText>
+            <helpText lang="de-DE">Dies sollte nur aktiviert werden, wenn Sie den Container Code manuell einbinden oder ein Drittanbieter-Tool nutzen, welches den Container Code obsolet macht. ACHTUNG: Entfernt ebenfalls den JS Code zum Google Consent Mode.</helpText>
+            <helpText lang="nl-NL">Dit mag alleen worden ingeschakeld als u de Containter Code handmatig invoert of een tool van derden gebruikt die de Containter Code overbodig maakt. LET OP: Verwijdert ook de code voor de Google Consent Mode.</helpText>
+            <helpText>This should be only used in specific cases where you need to place the container code manually or using another tool. CAUTION: Also removes the code for Google Consent Mode.</helpText>
         </input-field>
 
         <input-field type="bool">
