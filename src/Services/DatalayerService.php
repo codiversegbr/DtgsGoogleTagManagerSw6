@@ -165,7 +165,9 @@ class DatalayerService implements DatalayerServiceInterface
         $detailTags['productCurrency'] = $context->getCurrency()->getIsoCode();
 
         //Since 2.2.3
-        if($this->loggingHelper->loggingType('debug')) $this->loggingHelper->logMsg('Detail-Tags: ' . json_encode($detailTags));
+        if($this->loggingHelper->loggingType('debug')) {
+            $this->loggingHelper->logMsg('Detail-Tags: ' . json_encode($detailTags));
+        }
 
 	    return $detailTags;
 

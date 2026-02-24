@@ -11,6 +11,7 @@
         </service>
         <service id="Dtgs\GoogleTagManager\Components\Helper\LoggingHelper">
             <argument type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService" />
+            <argument type="service" id="monolog.logger"/>
         </service>
         <service id="Dtgs\GoogleTagManager\Components\Helper\CategoryHelper">
             <argument type="service" id="category.repository"/>

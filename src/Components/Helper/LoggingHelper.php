@@ -2,7 +2,9 @@
 
 namespace Dtgs\GoogleTagManager\Components\Helper;
 
-use Shopware\Core\Framework\Log\LoggingService;
+
+use Monolog\Level;
+use Monolog\Logger;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
 
 class LoggingHelper
@@ -16,9 +18,10 @@ class LoggingHelper
      *
      * @param SystemConfigService $systemConfigService
      */
-    public function __construct(SystemConfigService $systemConfigService)
+    public function __construct(SystemConfigService $systemConfigService, Logger $loggingService)
     {
         $this->systemConfigService = $systemConfigService;
+        $this->loggingService = $loggingService;
     }
 
     /**
@@ -36,12 +39,13 @@ class LoggingHelper
      * V 2.2.3 - Logging an/aus?
      * @return boolean
      */
-    private function loggingEnabled() {
+    private function loggingEnabled(): bool
+    {
 
         $tagManagerConfig = $this->getGtmConfig();
 
-        if(isset($tagManagerConfig['tagmanager_logging'])) {
-            return ($tagManagerConfig['tagmanager_logging'] == 'off') ? false : true;
+        if(isset($tagManagerConfig['tagmanagerLogging'])) {
+            return !(($tagManagerConfig['tagmanagerLogging'] == 'off'));
         }
         return false;
 
@@ -52,11 +56,12 @@ class LoggingHelper
      * @param $type string
      * @return boolean
      */
-    public function loggingType($type) {
+    public function loggingType($type): bool
+    {
 
         $tagManagerConfig = $this->getGtmConfig();
 
-        if($this->loggingEnabled() && $tagManagerConfig['tagmanager_logging'] == $type)
+        if($this->loggingEnabled() && $tagManagerConfig['tagmanagerLogging'] == $type)
             return true;
         return false;
 
@@ -70,7 +75,7 @@ class LoggingHelper
      */
     public function logMsg($msg) {
 
-        echo $msg;
+        $this->loggingService->log(Level::Debug, $msg, ['source' => 'DtgsGoogleTagManagerSw6']);
 
     }
 
