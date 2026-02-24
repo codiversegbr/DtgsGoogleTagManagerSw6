@@ -2,7 +2,6 @@
 
 namespace Dtgs\GoogleTagManager\Components\Helper;
 
-
 use Monolog\Level;
 use Monolog\Logger;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
@@ -17,6 +16,7 @@ class LoggingHelper
      * LoggingHelper constructor.
      *
      * @param SystemConfigService $systemConfigService
+     * @param Logger $loggingService
      */
     public function __construct(SystemConfigService $systemConfigService, Logger $loggingService)
     {
