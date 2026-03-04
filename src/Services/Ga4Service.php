@@ -420,6 +420,16 @@ class Ga4Service implements Ga4ServiceInterface
         return $this->addEeEvent($ga4_tags, 'add_shipping_info');
     }
 
+    public function getSearchTags($searchTerm, ProductListingResult $listing, SalesChannelContext $context): array
+    {
+        $ga4_tags = [];
+
+        //$ga4_tags['currency'] = $context->getCurrency()->getIsoCode();
+        $ga4_tags['search_term'] = $searchTerm;
+
+        return $this->addEeEvent($ga4_tags, 'view_search_results');
+    }
+
     /**
      * @param $listing
      * @param int $maxCategories
