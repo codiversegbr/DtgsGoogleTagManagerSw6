@@ -4,6 +4,8 @@ import { COOKIE_CONFIGURATION_UPDATE } from 'src/plugin/cookie/cookie-configurat
 import GtmAddToCartEvent from './events/add-to-cart.event';
 import GtmRemoveFromCartEvent from './events/remove-from-cart.event';
 import GtmQuantityChangeEvent from './events/quantity-change.event';
+import GtmLoginEvent from './events/login.event';
+import GtmSignUpEvent from './events/sign-up.event';
 import CookieStorageHelper from 'src/helper/storage/cookie-storage.helper';
 import LineItemHelper from 'src/plugin/google-analytics/line-item.helper';
 import DomAccessHelper from 'src/helper/dom-access.helper';
@@ -125,6 +127,8 @@ export default class DtgsGoogleTagManagerPlugin extends Plugin
         this.registerEvent(GtmAddToCartEvent);
         this.registerEvent(GtmRemoveFromCartEvent);
         this.registerEvent(GtmQuantityChangeEvent);
+        this.registerEvent(GtmLoginEvent);
+        this.registerEvent(GtmSignUpEvent);
         this.registerSelectItemEvent();
     }
 

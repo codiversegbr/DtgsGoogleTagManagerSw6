@@ -1,5 +1,7 @@
 # 6.3.31
 - Neu: Event view_search_results hinzugefügt (GTM-GH-58)
+- Neu: Events sign_up & login hinzugefügt (GTM-GH-59)
+- Unnötigen Code entfernt bei aktivierten datalayer-only option (GTM-GH-60)
 - aktualisiertes Plugin Icon
 
 # 6.3.30
