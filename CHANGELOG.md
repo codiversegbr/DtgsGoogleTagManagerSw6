@@ -1,3 +1,7 @@
+# 6.3.31
+- New: Added new event view_search_results (GTM-GH-58)
+- Update plugin icon
+
 # 6.3.30
 - New: Multiple services can now be registered through the backend and added to the SW Consent Management. See our blog for more info (GTM-GH-38)
 - New: complete breadcrumb (item_category2, item_category3) is now included in datalayer (GTM-GH-8 / GTM-GH-49)

@@ -1,3 +1,7 @@
+# 6.3.31
+- Neu: Event view_search_results hinzugefügt (GTM-GH-58)
+- aktualisiertes Plugin Icon
+
 # 6.3.30
 - Neu: Mehrere Dienste (zB Facebook, Bing, etc) können nun dem Shopware Consent Management hinzugefügt werden und bei Zustimmung per Event kontrolliert werden. Mehr Infos auf unserer Website (GTM-GH-38)
 - Neu: Kompletter Breadcrumb (item_category2, item_category3) ist nun im Datalayer vorhanden (GTM-GH-8 / GTM-GH-49)
