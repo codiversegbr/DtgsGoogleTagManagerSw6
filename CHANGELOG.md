@@ -1,6 +1,7 @@
 # 6.3.31
 - New: Added new event view_search_results (GTM-GH-58)
 - New: Added new events sign_up & login (GTM-GH-59)
+- Bugfix: Logging not working (GTM-GH-61)
 - Bugfix: Remove unnecessary code when datalayer-only option is active (GTM-GH-60)
 - Update plugin icon
 
