@@ -4,6 +4,7 @@
 - Bugfix: Logging funktioniert nicht korrekt (GTM-GH-61)
 - Bugfix: kleinere Sicherheits-Checks (GTM-GH-62)
 - Unnötigen Code entfernt bei aktivierten datalayer-only option (GTM-GH-60)
+- Problem behoben, dass immer neu geladen wurde nach erstem Consent (GTM-GH-56)
 - aktualisiertes Plugin Icon
 
 # 6.3.30
