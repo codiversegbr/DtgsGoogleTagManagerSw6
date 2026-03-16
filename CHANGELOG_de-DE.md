@@ -1,7 +1,8 @@
 # 6.4.8
 - Bugfix: Logging funktioniert nicht korrekt (GTM-GH-61)
 - Bugfix: Kleinere Verbesserungen (GTM-GH-62) (thanks to @M-arcus!)
-- 
+- Neu: promotion_name zum generellen dataLayer hinzugefügt (GTM-GH-54)
+- Verbesserung: Optimierungen für große Warenkörbe (GTM-GH-57)
 
 # 6.4.7
 - Problem behoben, dass immer neu geladen wurde nach erstem Consent (GTM-GH-56)
