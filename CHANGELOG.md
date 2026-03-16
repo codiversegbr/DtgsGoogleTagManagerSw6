@@ -1,3 +1,8 @@
+# 6.3.32
+- Bugfix: Minor security improvements (GTM-GH-62) (thanks to @M-arcus!)
+- New: Add promotion_name to general dataLayer (GTM-GH-54)
+- Improvement: Optimizations for large carts (GTM-GH-57)
+
 # 6.3.31
 - New: Added new event view_search_results (GTM-GH-58)
 - New: Added new events sign_up & login (GTM-GH-59)
