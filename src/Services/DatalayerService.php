@@ -12,6 +12,7 @@ use Shopware\Core\Checkout\Cart\LineItem\LineItem;
 use Shopware\Core\Checkout\Cart\Tax\Struct\CalculatedTax;
 use Shopware\Core\Checkout\Order\OrderEntity;
 use Shopware\Core\Content\Category\CategoryCollection;
+use Shopware\Core\Framework\Uuid\Uuid;
 use Shopware\Core\Content\Product\SalesChannel\Listing\ProductListingResult;
 use Shopware\Core\Content\Product\SalesChannel\SalesChannelProductEntity;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
@@ -285,7 +286,41 @@ class DatalayerService implements DatalayerServiceInterface
 
         $checkoutTags['transactionProducts'] = array();
 
-		//Transaction Product Data
+        // Performance optimization: Batch-load all products to avoid the N+1 query problem
+        $productIds = [];
+        foreach($cartOrOrder->getLineItems() as $item) {
+            /** @var LineItem $item */
+            if (isset($item->getPayload()['promotionId'])) {
+                continue; // Skip promotions in a product ID collection
+            }
+
+            if(($item->getType() == 'option-values' || $item->getType() == 'customized-products') && $isFinish) {
+                continue;
+            }
+
+            $productId = null;
+            if (method_exists($item, 'getProductId')) {
+                $productId = $item->getProductId();
+            } elseif (method_exists($item, 'getId')) {
+                $productId = $item->getId();
+            }
+
+            if ($productId && Uuid::isValid($productId)) {
+                $productIds[] = $productId;
+            }
+        }
+
+        // Batch-load all products in a single query
+        $products = null;
+        if (count($productIds) > 0) {
+            try {
+                $products = $this->productHelper->getProductsById($productIds, $context);
+            } catch (InvalidUuidException | InvalidCriteriaIdsException $exception) {
+                // Fallback: if batch loading fails, products will be null and we'll skip product-specific data
+            }
+        }
+
+        //Transaction Product Data
 		foreach($cartOrOrder->getLineItems() as $item) {
             //$item Shopware\Core\Checkout\Cart\LineItem\LineItem
             if (isset($item->getPayload()['promotionId'])) {
@@ -327,22 +362,21 @@ class DatalayerService implements DatalayerServiceInterface
                     continue;
                 }
 
+                // Get product from a pre-loaded collection instead of an individual query
                 $product = null;
-                try {
+                if ($products !== null) {
+                    $productId = null;
                     if (method_exists($item, 'getProductId')) {
-                        $product = $this->productHelper->getProductyById($item->getProductId(), $context);
+                        $productId = $item->getProductId();
                     } elseif (method_exists($item, 'getId')) {
-                        $product = $this->productHelper->getProductyById($item->getId(), $context);
+                        $productId = $item->getId();
                     }
-                } catch (InvalidUuidException | InvalidCriteriaIdsException $exception) {
-                    //CDVRS-16
-                    //Hier haben wir es mit Sonderproduktion zu tun, zB Pfand.
-                    //Hat das Produkt keine UUID, müssen wir hier die Exception abfangen.
-                    //CDVRS-15
-                    //Custom Products werden als eigene Items im WK gehandlet, haben aber keine ID.
-                    //Damit die Optionen im WK erhalten bleiben (können ja auch einen Preis haben),
-                    //wird hier die Exception gefangen und keine gesonderte Behandlung vorgenommen.
+
+                    if ($productId && $products->has($productId)) {
+                        $product = $products->get($productId);
+                    }
                 }
+
                 $transactionProduct = array(
                     'id' => $item->getId(),
                     'parent_id' => ($product !== null) ? $product->getParentId() : '',

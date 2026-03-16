@@ -1,3 +1,9 @@
+# 6.4.8
+- Bugfix: Logging not working (GTM-GH-61)
+- Bugfix: Minor security improvements (GTM-GH-62) (thanks to @M-arcus!)
+- New: Add promotion_name to general dataLayer (GTM-GH-54)
+- Improvement: Optimizations for large carts (GTM-GH-57)
+
 # 6.4.7
 - Bugfix: Fix reloading after first consent (GTM-GH-56)
 - New: Added new event view_search_results (GTM-GH-58)

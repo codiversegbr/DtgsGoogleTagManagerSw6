@@ -138,8 +138,8 @@ class TwigExtension extends AbstractExtension
 
         try {
             if(!is_object($ga4tagsAsObject)) return '';
-            if(!is_object($ga4tagsAsObject->ecommerce)) return '';
-            if(!is_array($ga4tagsAsObject->ecommerce->items)) return '';
+            if(!property_exists($ga4tagsAsObject, "ecommerce") || !is_object($ga4tagsAsObject->ecommerce)) return '';
+            if(!property_exists($ga4tagsAsObject->ecommerce, "items") || !is_array($ga4tagsAsObject->ecommerce->items)) return '';
             $items = $ga4tagsAsObject->ecommerce->items;
 
             foreach ($items as $item) {

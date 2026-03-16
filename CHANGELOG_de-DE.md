@@ -1,3 +1,8 @@
+# 6.4.8
+- Bugfix: Logging funktioniert nicht korrekt (GTM-GH-61)
+- Bugfix: Kleinere Verbesserungen (GTM-GH-62) (thanks to @M-arcus!)
+- 
+
 # 6.4.7
 - Problem behoben, dass immer neu geladen wurde nach erstem Consent (GTM-GH-56)
 - Neu: Event view_search_results hinzugefügt (GTM-GH-58)
