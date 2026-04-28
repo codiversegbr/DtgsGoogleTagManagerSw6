@@ -22,10 +22,20 @@
 
 {% endblock %}
 
-{% block component_product_box_action_form %}
+{% block component_product_box_action_buy_meta %}
 
     {{ parent() }}
 
     {% sw_include 'storefront/plugins/TagManager/product-card-action.html.twig' %}
+
+{% endblock %}
+
+{% block component_product_box_action_meta %}
+
+    {{ parent() }}
+
+    {% if not displayBuyButton %}
+        {% sw_include 'storefront/plugins/TagManager/product-card-action.html.twig' %}
+    {% endif %}
 
 {% endblock %}
