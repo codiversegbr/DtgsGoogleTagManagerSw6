@@ -11,6 +11,9 @@
     <input type="hidden"
            name="product-name"
            value="{{ product.translated.name }}">
+    {% if not displayBuyButton %}
+        {% sw_include 'storefront/plugins/TagManager/product-card-action.html.twig' %}
+    {% endif %}
 {% endblock %}
 
 {% block component_product_box_action_inner %}
@@ -25,7 +28,7 @@
 
 {% endblock %}
 
-{% block component_product_box_action_form %}
+{% block component_product_box_action_buy_meta %}
 
     {{ parent() }}
 
