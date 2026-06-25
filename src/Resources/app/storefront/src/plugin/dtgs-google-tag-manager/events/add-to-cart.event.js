@@ -70,6 +70,11 @@ export default class GtmAddToCartEvent extends EventAwareAnalyticsEvent
         if(formData.get('brand-name') !== null) Object.assign(products, {'item_brand': formData.get('brand-name')});
         //Database ID - GH-7 / added in 6.3.19
         if(formData.get('dtgs-gtm-product-db-id') !== null) Object.assign(products, {'item_db_id': formData.get('dtgs-gtm-product-db-id')});
+        //Original price for discounted items
+        if(formData.get('dtgs-gtm-product-discount') !== null) {
+            Object.assign(products, {'discount': Number(formData.get('dtgs-gtm-product-discount'))});
+            Object.assign(products, {'item_original_price': Number(formData.get('dtgs-gtm-product-original-price'))});
+        }
 
         //Remarketing
         if(typeof dtgsRemarketingEnabled !== 'undefined' && dtgsRemarketingEnabled === true) {

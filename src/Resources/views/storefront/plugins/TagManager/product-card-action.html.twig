@@ -29,6 +29,16 @@
                name="dtgs-gtm-product-variantname"
                value="{{ gtmGetVariantName(product.variation) }}">
     {%  endif %}
+    {% if(config('DtgsGoogleTagManagerSw6.config.eeShowOriginalPrice') and product.calculatedPrice.listPrice) %}
+        {% set originalPrice = product.calculatedPrice.listPrice.price %}
+        {% set discountAmount = originalPrice - product.calculatedPrice.unitPrice %}
+        <input type="hidden"
+               name="dtgs-gtm-product-discount"
+               value="{{ discountAmount|round(2) }}">
+        <input type="hidden"
+               name="dtgs-gtm-product-original-price"
+               value="{{ originalPrice|round(2) }}">
+    {%  endif %}
     {% if(config('DtgsGoogleTagManagerSw6.config.addProductDatabaseIds')) %}
         <input type="hidden"
                name="dtgs-gtm-product-db-id"

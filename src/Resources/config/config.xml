@@ -183,6 +183,14 @@
         </input-field>
 
         <input-field type="bool">
+            <name>eeShowOriginalPrice</name>
+            <label lang="de-DE">Originalpreis bei rabattierten Artikeln in GA4 Events ausgeben</label>
+            <label>Show original price for discounted items in GA4 events</label>
+            <helpText lang="de-DE">Wenn aktiviert, werden bei rabattierten Artikeln die Felder "discount" und "item_original_price" im item-Array der GA4 Events ausgegeben.</helpText>
+            <helpText>When enabled, the fields "discount" and "item_original_price" will be added to the item array in GA4 events for discounted items.</helpText>
+        </input-field>
+
+        <input-field type="bool">
             <name>eeAddCategorynameInCheckout</name>
             <label lang="de-DE">Enhanced Ecommerce: Kategorienamen übertragen?</label>
             <label lang="nl-NL">Enhanced Ecommerce: Categorienamen overdragen?</label>

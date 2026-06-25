@@ -230,6 +230,11 @@ class GeneralSubscriber implements EventSubscriberInterface
                     $addToCartInfo->set('variantname', $ga4Tags['ecommerce']['items'][0]['item_variant']);
                 }
 
+                if(isset($ga4Tags['ecommerce']['items'][0]['discount'])) {
+                    $addToCartInfo->set('discount', $ga4Tags['ecommerce']['items'][0]['discount']);
+                    $addToCartInfo->set('item_original_price', $ga4Tags['ecommerce']['items'][0]['item_original_price']);
+                }
+
                 if($this->ga4Service->addDatabaseProductId($salesChannelId)) {
                     $addToCartInfo->set('add_db_ids', true);
                 }
