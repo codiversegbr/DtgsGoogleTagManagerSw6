@@ -21,6 +21,7 @@
             <argument type="service" id="request_stack" />
             <argument type="service" id="dtgs_gtm_custom_service.repository" />
             <argument type="service" id="translator" />
+            <argument type="service" id="cache.object" />
         </service>
 
         <!-- Twig Functionr -->
