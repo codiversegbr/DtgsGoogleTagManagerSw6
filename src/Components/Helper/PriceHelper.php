@@ -55,10 +55,10 @@ class PriceHelper
      * @param $price
      * @param int $tax
      * @param SalesChannelContext $context
-     * @return string
+     * @return float
      * @throws \Exception
      */
-    public function getPrice($price, $tax, SalesChannelContext $context) {
+    public function getPrice($price, $tax, SalesChannelContext $context): float {
 
         if(!is_numeric($tax)) $tax = 19;
 
@@ -71,10 +71,10 @@ class PriceHelper
 
         //nur wenn im Plugin Netto eingestellt und die SW Preise Brutto sind! (Änderung in V2.6.1)
         if($plugin_price_type == 'netto' && $isPriceTypeGross) {
-            return number_format($price / (100 + $tax) * 100, 2, '.', ''); //1.3.6 - 1000er Separator entfernt
+            return round($price / (100 + $tax) * 100, 2);
         }
         else {
-            return number_format($price, 2, '.', '');
+            return round((float) $price, 2);
         }
 
     }
@@ -99,7 +99,7 @@ class PriceHelper
     }
 
     public function formatPrice($price) {
-        return number_format($price, 2, '.', '');
+        return round((float) $price, 2);
     }
 
     /**
