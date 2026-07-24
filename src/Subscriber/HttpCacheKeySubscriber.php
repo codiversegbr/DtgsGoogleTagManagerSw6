@@ -48,11 +48,7 @@ class HttpCacheKeySubscriber implements EventSubscriberInterface
         $pluginActiveInSc = (bool)($config['pluginActiveInSaleschannel'] ?? true);
         $removeContainer = (bool)($config['removeContainerCode'] ?? false);
 
-        if (!$pluginActiveInSc || $removeContainer) {
-            return;
-        }
-
-        if (!$loadAfterConsent) {
+        if (!$pluginActiveInSc || $removeContainer || !$loadAfterConsent) {
             return;
         }
 

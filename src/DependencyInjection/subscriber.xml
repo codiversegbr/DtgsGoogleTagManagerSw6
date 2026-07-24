@@ -21,6 +21,7 @@
         <service id="Dtgs\GoogleTagManager\Subscriber\GtmServicesStorefrontSubscriber">
             <tag name="kernel.event_subscriber" />
             <argument type="service" id="dtgs_gtm_custom_service.repository" />
+            <argument type="service" id="cache.object" />
         </service>
 
         <!-- Http cache key variation for GTM consent -->

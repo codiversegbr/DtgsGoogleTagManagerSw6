@@ -9,11 +9,14 @@ use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Storefront\Event\StorefrontRenderEvent;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
+use Symfony\Contracts\Cache\CacheInterface;
+use Symfony\Contracts\Cache\ItemInterface;
 
 class GtmServicesStorefrontSubscriber implements EventSubscriberInterface
 {
     public function __construct(
-        private readonly EntityRepository $customServiceRepository
+        private readonly EntityRepository $customServiceRepository,
+        private readonly CacheInterface $cache
     )
     {
     }
@@ -27,30 +30,39 @@ class GtmServicesStorefrontSubscriber implements EventSubscriberInterface
 
     public function onStorefrontRender(StorefrontRenderEvent $event): void
     {
-        // Use the current SalesChannel context to respect inheritance, translations, and visibility
-        $context = $event->getSalesChannelContext()->getContext();
-        $criteria = (new Criteria())->addFilter(new EqualsFilter('active', true));
-        $criteria->addAssociation('translations');
-        $result = $this->customServiceRepository->search($criteria, $context);
+        $salesChannelContext = $event->getSalesChannelContext();
+        $context = $salesChannelContext->getContext();
 
-        $services = [];
-        /** @var CustomServiceEntity $entity */
-        foreach ($result->getElements() as $entity) {
-            $name = $entity->getName() ?: ($entity->getTranslated()['name'] ?? '');
-            $eventName = $entity->getEventName() ?? '';
+        $cacheKey = 'dtgs_gtm_custom_services_' . $salesChannelContext->getSalesChannelId() . '_' . $context->getLanguageId();
 
-            $cookie = CustomCookieProvider::buildCookieKey($eventName);
+        $services = $this->cache->get($cacheKey, function (ItemInterface $item) use ($context) {
+            $item->expiresAfter(3600); // 1 hour
 
-            if ($name === '' || $eventName === '') {
-                continue; // skip incomplete entries
+            $criteria = (new Criteria())->addFilter(new EqualsFilter('active', true));
+            $criteria->addAssociation('translations');
+            $result = $this->customServiceRepository->search($criteria, $context);
+
+            $services = [];
+            /** @var CustomServiceEntity $entity */
+            foreach ($result->getElements() as $entity) {
+                $name = $entity->getName() ?: ($entity->getTranslated()['name'] ?? '');
+                $eventName = $entity->getEventName() ?? '';
+
+                $cookie = CustomCookieProvider::buildCookieKey($eventName);
+
+                if ($name === '' || $eventName === '') {
+                    continue; // skip incomplete entries
+                }
+
+                $services[] = [
+                    'name' => $name,
+                    'eventName' => $eventName,
+                    'cookie' => $cookie,
+                ];
             }
 
-            $services[] = [
-                'name' => $name,
-                'eventName' => $eventName,
-                'cookie' => $cookie,
-            ];
-        }
+            return $services;
+        });
 
         $event->setParameter('dtgsGtmCustomServices', $services);
         $event->setParameter('dtgsGtmConsentCookieName', 'dtgsAllowGtmTracking');

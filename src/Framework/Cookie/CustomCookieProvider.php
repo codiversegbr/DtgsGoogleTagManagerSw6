@@ -11,6 +11,8 @@ use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Shopware\Storefront\Framework\Cookie\CookieProviderInterface;
 use Symfony\Component\HttpFoundation\RequestStack;
+use Symfony\Contracts\Cache\CacheInterface;
+use Symfony\Contracts\Cache\ItemInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 class CustomCookieProvider implements CookieProviderInterface {
@@ -20,6 +22,7 @@ class CustomCookieProvider implements CookieProviderInterface {
     private $requestStack;
     private $customServiceRepository;
     private $translator;
+    private CacheInterface $cache;
 
     public function __construct(
         CookieProviderInterface $service,
@@ -27,6 +30,7 @@ class CustomCookieProvider implements CookieProviderInterface {
         RequestStack            $requestStack,
         EntityRepository        $customServiceRepository,
         TranslatorInterface     $translator,
+        CacheInterface          $cache
     )
     {
         $this->originalService = $service;
@@ -34,6 +38,7 @@ class CustomCookieProvider implements CookieProviderInterface {
         $this->requestStack = $requestStack;
         $this->customServiceRepository = $customServiceRepository;
         $this->translator = $translator;
+        $this->cache = $cache;
     }
 
     private const cookie = [
@@ -83,16 +88,47 @@ class CustomCookieProvider implements CookieProviderInterface {
     private function customServiceCookieGroups(array $groups): array
     {
         $context = Context::createDefaultContext();
+        $salesChannelId = 'default';
+
         if ($this->requestStack
             && ($request = $this->requestStack->getCurrentRequest())
-            && $request->attributes->has('sw-sales-channel-context')
+            && ($salesChannelContext = $request->attributes->get('sw-sales-channel-context'))
         ) {
-            $context = $request->attributes->get('sw-sales-channel-context')->getContext();
+            $context = $salesChannelContext->getContext();
+            $salesChannelId = $salesChannelContext->getSalesChannelId();
         }
 
-        $criteria = (new Criteria())->addFilter(new EqualsFilter('active', true));
-        $services = $this->customServiceRepository->search($criteria, $context);
-        if ($services->getTotal() === 0) {
+        $cacheKey = 'dtgs_gtm_custom_cookie_services_' . $salesChannelId . '_' . $context->getLanguageId();
+
+        $servicesData = $this->cache->get($cacheKey, function (ItemInterface $item) use ($context) {
+            $item->expiresAfter(3600); // 1 hour
+
+            $criteria = (new Criteria())->addFilter(new EqualsFilter('active', true));
+            $criteria->addAssociation('translations');
+            $services = $this->customServiceRepository->search($criteria, $context);
+
+            $data = [];
+            /** @var CustomServiceEntity $entity */
+            foreach ($services->getElements() as $entity) {
+                $name = $entity->getName() ?: ($entity->getTranslated()['name'] ?? '');
+                $eventName = method_exists($entity, 'getEventName') ? (string) $entity->getEventName() : (string) ($entity->getTranslated()['eventName'] ?? '');
+                $category = method_exists($entity, 'getCategory') ? (string) $entity->getCategory() : (string) ($entity->getTranslated()['category'] ?? '');
+
+                if ($name === '' || $eventName === '') {
+                    continue;
+                }
+
+                $data[] = [
+                    'name' => $name,
+                    'eventName' => $eventName,
+                    'category' => $category,
+                ];
+            }
+
+            return $data;
+        });
+
+        if (empty($servicesData)) {
             return $groups;
         }
 
@@ -108,11 +144,10 @@ class CustomCookieProvider implements CookieProviderInterface {
             }
         }
 
-        /** @var CustomServiceEntity $entity */
-        foreach ($services->getElements() as $entity) {
-            $name = $entity->getName() ?: ($entity->getTranslated()['name'] ?? '');
-            $eventName = method_exists($entity, 'getEventName') ? (string) $entity->getEventName() : (string) ($entity->getTranslated()['eventName'] ?? '');
-            $category = method_exists($entity, 'getCategory') ? (string) $entity->getCategory() : (string) ($entity->getTranslated()['category'] ?? '');
+        foreach ($servicesData as $service) {
+            $name = $service['name'];
+            $eventName = $service['eventName'];
+            $category = $service['category'];
 
             // Derive a cookie key for this service
             $cookie = self::buildCookieKey($eventName);
@@ -122,17 +157,11 @@ class CustomCookieProvider implements CookieProviderInterface {
                 ['%name%' => $name]
             );
 
-            $description = $eventName ?
-                $this->translator->trans('cookie.dtgs-gtm-svc-generic-service.description', [
-                    '%event%' => $eventName
-                ]) : null;
-
             $entry = [
                 'snippet_name'            => $label,
                 'cookie'                  => $cookie,
                 'expiration'              => '30',
                 'value'                   => '1',
-//                'snippet_description'     => $description
             ];
 
             $targetIdx = null;
