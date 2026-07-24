@@ -20,4 +20,14 @@
     <input type="hidden"
            name="dtgs-gtm-total-price"
            value="{{ lineItem.price.totalPrice }}">
+    {% if(config('DtgsGoogleTagManagerSw6.config.eeShowOriginalPrice') and lineItem.price.listPrice) %}
+        {% set originalPrice = lineItem.price.listPrice.price %}
+        {% set discountAmount = originalPrice - lineItem.price.unitPrice %}
+        <input type="hidden"
+               name="dtgs-gtm-product-discount"
+               value="{{ discountAmount|round(2) }}">
+        <input type="hidden"
+               name="dtgs-gtm-product-original-price"
+               value="{{ originalPrice|round(2) }}">
+    {%  endif %}
 {%  endif %}

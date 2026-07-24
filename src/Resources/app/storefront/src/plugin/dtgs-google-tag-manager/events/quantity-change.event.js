@@ -199,6 +199,16 @@ export default class GtmQuantityChangeEvent extends AnalyticsEvent
         if (dbId && dbId.value && dbId.value !== '') {
             itemData.item_db_id = dbId.value;
         }
+
+        // Add discount fields if available
+        const discount = DomAccessHelper.querySelector(removeForm, 'input[name="dtgs-gtm-product-discount"]', false);
+        if (discount && discount.value && discount.value !== '') {
+            itemData.discount = Number(discount.value);
+            const originalPrice = DomAccessHelper.querySelector(removeForm, 'input[name="dtgs-gtm-product-original-price"]', false);
+            if (originalPrice && originalPrice.value) {
+                itemData.item_original_price = Number(originalPrice.value);
+            }
+        }
     }
 
     _addRemarketingFields(itemData, sku) {

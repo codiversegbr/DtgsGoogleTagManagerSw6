@@ -128,6 +128,22 @@ class Ga4Service implements Ga4ServiceInterface
     }
 
     /**
+     * @param $salesChannelId
+     * @return bool
+     */
+    public function showOriginalPrice($salesChannelId): bool {
+
+        $tagManagerConfig = $this->getGtmConfig($salesChannelId);
+
+        if(isset($tagManagerConfig['eeShowOriginalPrice'])) {
+            return (bool) $tagManagerConfig['eeShowOriginalPrice'];
+        }
+
+        return false;
+
+    }
+
+    /**
      * @param $ga4Tags
      * @return false|string
      */
@@ -227,6 +243,16 @@ class Ga4Service implements Ga4ServiceInterface
 
         if($product->getManufacturer())
             $product_data['item_brand'] = $product->getManufacturer()->getTranslation('name');
+
+        //Original price for discounted items
+        if($this->showOriginalPrice($context->getSalesChannel()->getId())) {
+            $listPrice = $product->getCalculatedPrice()->getListPrice();
+            if($listPrice !== null) {
+                $originalPrice = (float) $this->priceHelper->getPrice($listPrice->getPrice(), $tax, $context);
+                $product_data['item_original_price'] = $originalPrice;
+                $product_data['discount'] = $this->priceHelper->formatPrice($originalPrice - $item_price);
+            }
+        }
 
         $ga4_tags['value'] = $item_price;
         $ga4_tags['items'] = [$product_data];
@@ -479,6 +505,16 @@ class Ga4Service implements Ga4ServiceInterface
                 $item['item_variant'] = $this->getVariantName($product->getVariation());
             }
 
+            //Original price for discounted items
+            if($this->showOriginalPrice($context->getSalesChannel()->getId())) {
+                $listPrice = $product->getCalculatedPrice()->getListPrice();
+                if($listPrice !== null) {
+                    $originalPrice = (float) $this->priceHelper->getPrice($listPrice->getPrice(), $tax, $context);
+                    $item['item_original_price'] = $originalPrice;
+                    $item['discount'] = $this->priceHelper->formatPrice($originalPrice - $item['price']);
+                }
+            }
+
             //add Remarketing Data
             if($this->remarketingEnabled($context->getSalesChannel()->getId())) {
                 $item['id'] = $product->getProductNumber();
@@ -601,6 +637,16 @@ class Ga4Service implements Ga4ServiceInterface
                             $item['item_category'] = $seoCategory->getTranslation('name');
                         }
                     }
+                }
+            }
+
+            //Original price for discounted items
+            if($this->showOriginalPrice($context->getSalesChannel()->getId())) {
+                $listPrice = $product->getPrice()->getListPrice();
+                if($listPrice !== null) {
+                    $originalPrice = (float) $this->priceHelper->getPrice($listPrice->getPrice(), $tax, $context);
+                    $item['item_original_price'] = $originalPrice;
+                    $item['discount'] = $this->priceHelper->formatPrice($originalPrice - $item['price']);
                 }
             }
 
