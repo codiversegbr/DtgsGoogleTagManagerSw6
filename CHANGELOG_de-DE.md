@@ -1,3 +1,9 @@
+# 6.4.9
+- Verbesserung: Perfomance Updates für GTM Custom Services Funktion (GTM-GH-71)
+- Neu: Rabatt und Original-Preis sind nun Teil des item-Arrays (GTM-GH-69)
+- Bugfix: Alle Preise als Float formatiert (GTM-GH-70)
+- Bugfix: select_item Event funktionierte nicht korrekt für Varianten (GTM-GH-65)
+
 # 6.4.8
 - Bugfix: Logging funktioniert nicht korrekt (GTM-GH-61)
 - Bugfix: Kleinere Verbesserungen (GTM-GH-62) (thanks to @M-arcus!)
