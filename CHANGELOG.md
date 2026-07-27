@@ -1,3 +1,7 @@
+# 6.3.33
+- Bugfix: all prices are now formatted as float (GTM-GH-70)
+- Bugfix: select_item event not working correctly for variants (GTM-GH-65)
+
 # 6.3.32
 - Bugfix: Minor security improvements (GTM-GH-62) (thanks to @M-arcus!)
 - New: Add promotion_name to general dataLayer (GTM-GH-54)

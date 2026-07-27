@@ -1,7 +1,7 @@
 {
     "name": "dtgs/google-tag-manager",
     "description": "codiverse GoogleTagManager",
-    "version": "v6.3.32",
+    "version": "v6.3.33",
     "type": "shopware-platform-plugin",
     "license": "proprietary",
     "authors": [
