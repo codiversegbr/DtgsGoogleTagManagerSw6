@@ -146,13 +146,17 @@ class Ga4Service implements Ga4ServiceInterface
      * @param string $event_name
      * @return array
      */
-    private function addEeEvent($tags, $event_name = '')
+    private function addEeEvent($tags, $event_name = '', $source = '')
     {
         $event_array = [];
         if($event_name != '') $event_array = ['event' => $event_name];
 
+        $source_array = [];
+        if($source != '') $source_array = ['event_source' => $source];
+
         return array_merge(
             $event_array,
+            $source_array,
             ['ecommerce' => $tags]
         );
     }
@@ -378,7 +382,7 @@ class Ga4Service implements Ga4ServiceInterface
             $ga4_tags['aw_feed_language'] = $this->generalTagsService->getCldrLanguageCode($localeCode);
         }
 
-        return $this->addEeEvent($ga4_tags, 'purchase');
+        return $this->addEeEvent($ga4_tags, 'purchase', 'client');
 
     }
 
