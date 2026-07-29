@@ -83,6 +83,7 @@ class MeasurementProtocolSubscriber implements EventSubscriberInterface
 
         $payload = [
             'client_id' => $clientId,
+            'consent' => $this->getConsentFromCookie($request),
             'events' => [
                 [
                     'name' => 'purchase',
@@ -101,6 +102,26 @@ class MeasurementProtocolSubscriber implements EventSubscriberInterface
         ]);
 
         $this->sendRequest($url, $payload);
+    }
+
+    /**
+     * Builds the consent block for the Measurement Protocol payload based on the consent cookies.
+     *
+     * @return array<string, string>
+     */
+    private function getConsentFromCookie($request): array
+    {
+        // Advertising consent is stored either in the dedicated Google Ads cookie
+        // or (since SW 6.6.9) in the general GTM tracking cookie.
+        $adsEnabled = $request->cookies->get('google-ads-enabled', '') === '1'
+            || $request->cookies->get('dtgsAllowGtmTracking', '') === '1';
+
+        $consentValue = $adsEnabled ? 'GRANTED' : 'DENIED';
+
+        return [
+            'ad_user_data' => $consentValue,
+            'ad_personalization' => $consentValue,
+        ];
     }
 
     private function getClientIdFromCookie($request, OrderEntity $order): string
