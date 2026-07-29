@@ -105,6 +105,8 @@ export default class DtgsGoogleTagManagerPlugin extends Plugin
     handleCookies(cookieUpdateEvent) {
         const updatedCookies = cookieUpdateEvent.detail;
 
+        this.updateConsentMode(updatedCookies);
+
         if (!updatedCookies.hasOwnProperty(this.cookieEnabledName)) {
             return;
         }
@@ -137,6 +139,39 @@ export default class DtgsGoogleTagManagerPlugin extends Plugin
         this.events.forEach(event => {
             event.disable();
         });
+    }
+
+    /**
+     * Added in 6.2.22
+     * @param updatedCookies
+     */
+    updateConsentMode(updatedCookies) {
+        if (Object.keys(updatedCookies).length === 0) {
+            return;
+        }
+
+        //GTM-GH-21: let 3rdparty system handle consent
+        if(typeof dtgsConsentHandler !== 'undefined' && dtgsConsentHandler === 'thirdpartyCmp') {
+            return;
+        }
+
+        const consentUpdateConfig = {};
+
+        if (Object.prototype.hasOwnProperty.call(updatedCookies, this.cookieEnabledName)) {
+            consentUpdateConfig['analytics_storage'] = updatedCookies[this.cookieEnabledName] ? 'granted' : 'denied';
+        }
+
+        if (Object.prototype.hasOwnProperty.call(updatedCookies, this.cookieEnabledName)) {
+            consentUpdateConfig['ad_storage'] = updatedCookies[this.cookieEnabledName] ? 'granted' : 'denied';
+            consentUpdateConfig['ad_user_data'] = updatedCookies[this.cookieEnabledName] ? 'granted' : 'denied';
+            consentUpdateConfig['ad_personalization'] = updatedCookies[this.cookieEnabledName] ? 'granted' : 'denied';
+        }
+
+        if (Object.keys(consentUpdateConfig).length === 0) {
+            return;
+        }
+
+        gtag('consent', 'update', consentUpdateConfig);
     }
 
     /**
