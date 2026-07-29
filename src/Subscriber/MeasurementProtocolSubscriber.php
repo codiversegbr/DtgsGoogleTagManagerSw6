@@ -91,6 +91,10 @@ class MeasurementProtocolSubscriber implements EventSubscriberInterface
                 ],
             ],
         ];
+        $customerNumber = $this->getCustomerNumber($order);
+        if ($customerNumber !== null) {
+            $payload['user_id'] = $customerNumber;
+        }
 
         $endpoint = $config['measurementProtocolEndpoint'] ?? 'https://region1.google-analytics.com/mp/collect';
         $apiSecret = $config['measurementProtocolApiSecret'] ?? '';
@@ -102,6 +106,24 @@ class MeasurementProtocolSubscriber implements EventSubscriberInterface
         ]);
 
         $this->sendRequest($url, $payload);
+    }
+
+    /**
+     * Reads the customer number from the order to be sent as user_id.
+     */
+    private function getCustomerNumber(OrderEntity $order): ?string
+    {
+        $orderCustomer = $order->getOrderCustomer();
+        if ($orderCustomer === null) {
+            return null;
+        }
+
+        $customerNumber = $orderCustomer->getCustomerNumber();
+        if ($customerNumber === null || $customerNumber === '') {
+            return null;
+        }
+
+        return $customerNumber;
     }
 
     /**
