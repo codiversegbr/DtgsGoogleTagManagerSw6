@@ -74,7 +74,14 @@ class MeasurementProtocolSubscriber implements EventSubscriberInterface
         $eventParams['event_source'] = 'server';
         $eventParams['engagement_time_msec'] = 1;
 
-        $clientId = $this->getClientIdFromCookie($request, $order);
+        $clientId = $this->getClientIdFromCookie($request);
+        if ($clientId === null) {
+            // No GA cookie available => do not send the event
+            if ($this->loggingHelper->loggingType('debug')) {
+                $this->loggingHelper->logMsg('Measurement Protocol: no _ga cookie found, purchase event not sent.');
+            }
+            return;
+        }
 
         $sessionId = $this->getSessionIdFromCookie($request, $config);
         if ($sessionId !== null) {
@@ -146,7 +153,7 @@ class MeasurementProtocolSubscriber implements EventSubscriberInterface
         ];
     }
 
-    private function getClientIdFromCookie($request, OrderEntity $order): string
+    private function getClientIdFromCookie($request): ?string
     {
         $gaCookie = $request->cookies->get('_ga', '');
 
@@ -155,8 +162,8 @@ class MeasurementProtocolSubscriber implements EventSubscriberInterface
             return $matches[1];
         }
 
-        // Fallback if cookie is not available
-        return $order->getOrderNumber() . '.' . time();
+        // No GA cookie available => no client_id
+        return null;
     }
 
     private function getSessionIdFromCookie($request, array $config): ?string
