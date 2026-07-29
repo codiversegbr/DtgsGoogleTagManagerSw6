@@ -1,3 +1,7 @@
+# 6.2.22
+- Bugfix: Update Google Consent Mode without page reload (GTM-GH-72)
+- Bugfix: Format all prices as float (GTM-GH-70)
+
 # 6.2.21
 - Bugfix: Error „Call to a member function getGuest() on null“ in Checkout when using B2B Suite (GTM-GH-34)
 
