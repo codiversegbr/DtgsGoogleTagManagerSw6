@@ -70,6 +70,10 @@ class MeasurementProtocolSubscriber implements EventSubscriberInterface
             }
         }
 
+        //Custom-Attribut mitschicken, um zwischen Server-Event und Client-Event unterscheiden zu können
+        $eventParams['event_source'] = 'server';
+        $eventParams['engagement_time_msec'] = 1;
+
         $clientId = $this->getClientIdFromCookie($request, $order);
 
         $sessionId = $this->getSessionIdFromCookie($request, $config);
