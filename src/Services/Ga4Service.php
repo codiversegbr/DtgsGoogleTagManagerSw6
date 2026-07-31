@@ -677,7 +677,10 @@ class Ga4Service implements Ga4ServiceInterface
                 $event_name = 'confirm_order';
                 break;
             case CheckoutRegisterPageLoadedEvent::class:
-                $event_name = 'begin_checkout';
+                // begin_checkout is no longer fired on the registration page.
+                // It is now triggered earlier, on click of the checkout button
+                // ("Zur Kasse") in the off canvas cart (handled in JS).
+                $event_name = '';
                 break;
             default:
                 $event_name = 'view_cart';

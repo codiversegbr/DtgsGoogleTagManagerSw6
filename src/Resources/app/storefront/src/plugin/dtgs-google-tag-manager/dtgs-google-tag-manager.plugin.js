@@ -335,10 +335,43 @@ export default class DtgsGoogleTagManagerPlugin extends Plugin
             }
         });
 
+        // register begin_checkout event on "Zur Kasse" button click
+        this.registerBeginCheckoutEvent();
+
         // store initial quantities
         this.events.forEach(event => {
             if (event.hasOwnProperty("quantityBeforeChange")) {
                 event.storeInitialQuantities();
+            }
+        });
+
+    }
+
+    /**
+     * Fire begin_checkout when the user clicks the "Zur Kasse" button
+     * inside the off canvas cart.
+     */
+    registerBeginCheckoutEvent() {
+
+        const checkoutButton = DomAccessHelper.querySelector(document, '.begin-checkout-btn', false);
+        if(checkoutButton) {
+            checkoutButton.addEventListener('click', this.fireBeginCheckoutEvent.bind(this));
+        }
+
+    }
+
+    fireBeginCheckoutEvent() {
+
+        let additionalProperties = LineItemHelper.getAdditionalProperties();
+        let lineItems = this.getLineItems();
+
+        // Clear the previous ecommerce object
+        window.dataLayer.push({ ecommerce: null });
+        window.dataLayer.push({
+            'event': 'begin_checkout',
+            'currency': additionalProperties.currency,
+            'ecommerce': {
+                'items': lineItems
             }
         });
 
