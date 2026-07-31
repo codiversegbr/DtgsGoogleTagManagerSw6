@@ -47,12 +47,7 @@ export default class DtgsGoogleTagManagerPlugin extends Plugin
         }
 
         //subscribe to wishlist events - added in 6.3.16
-        const wishlistBasketElement = DomAccessHelper.querySelector(document, '#wishlist-basket', false);
-        if (wishlistBasketElement) {
-            const wishlistPlugin = window.PluginManager.getPluginInstanceFromElement(wishlistBasketElement, 'WishlistStorage');
-            if(wishlistPlugin) wishlistPlugin.$emitter.subscribe('Wishlist/onProductAdded', this.onWishlistAdd.bind(this));
-            if(wishlistPlugin) wishlistPlugin.$emitter.subscribe('Wishlist/onProductRemoved', this.onWishlistRemove.bind(this));
-        }
+        this.registerWishlistEvents();
         //subscribe to wishlist remove form
         const wishlistFormElement = DomAccessHelper.querySelector(document, '.product-wishlist-form', false);
         if (wishlistFormElement) {
@@ -273,19 +268,47 @@ export default class DtgsGoogleTagManagerPlugin extends Plugin
 
 
     /**
+     * Subscribe to the wishlist storage events.
+     *
+     * The WishlistStorage plugin is registered as an async (lazy loaded)
+     * plugin. On pages where the header is loaded delayed (e.g. the
+     * checkout/confirm page) the storage plugin instance is not available
+     * yet when this plugin's init() runs. Instead of polling for the plugin
+     * instance (which caused a noticeable delay and could miss the events),
+     * we attach native listeners directly to the wishlist basket element.
+     *
+     * The Shopware NativeEventEmitter dispatches its events as DOM
+     * CustomEvents on the plugin element (#wishlist-basket). Since that
+     * element already exists in the DOM on page load, listeners registered
+     * here will catch the events as soon as the storage plugin publishes
+     * them, regardless of when the plugin itself is initialized.
+     */
+    registerWishlistEvents() {
+
+        const wishlistBasketElement = DomAccessHelper.querySelector(document, '#wishlist-basket', false);
+        if (!wishlistBasketElement) {
+            return;
+        }
+        
+        wishlistBasketElement.addEventListener('Wishlist/onProductAdded', this.onWishlistAdd.bind(this));
+        wishlistBasketElement.addEventListener('Wishlist/onProductRemoved', this.onWishlistRemove.bind(this));
+
+    }
+
+    /**
      * added in 6.3.16
      */
     onWishlistAdd(event) {
-        let skuField = this.getSkuFromEvent(event);
-        this.fireWishlistEvent(skuField, 'add_to_wishlist');
+        let sku = this.getSkuFromEvent(event);
+        this.fireWishlistEvent(sku, 'add_to_wishlist');
     }
 
     /**
      * added in 6.3.16
      */
     onWishlistRemove(event) {
-        let skuField = this.getSkuFromEvent(event);
-        this.fireWishlistEvent(skuField, 'remove_from_wishlist');
+        let sku = this.getSkuFromEvent(event);
+        this.fireWishlistEvent(sku, 'remove_from_wishlist');
     }
 
     /**
@@ -295,22 +318,22 @@ export default class DtgsGoogleTagManagerPlugin extends Plugin
     onWishlistRemoveFormSubmit(event) {
 
         let skuField = DomAccessHelper.querySelector(event.target, 'input[name="dtgs-gtm-product-sku"]', false);
-        this.fireWishlistEvent(skuField, 'remove_from_wishlist');
+        this.fireWishlistEvent(skuField ? skuField.value : undefined, 'remove_from_wishlist');
 
     }
 
     /**
      * added in 6.3.16
      */
-    fireWishlistEvent(skuField, gtm_event_name) {
+    fireWishlistEvent(sku, gtm_event_name) {
 
-        if(skuField !== null) {
+        if(sku) {
 
             dataLayer.push({
                 'event': gtm_event_name,
                 'ecommerce': {
                     'items': {
-                        'item_id': skuField.value
+                        'item_id': sku
                     }
                 }
             });
@@ -384,10 +407,46 @@ export default class DtgsGoogleTagManagerPlugin extends Plugin
     getSkuFromEvent(event) {
 
         let productId = event.detail.productId;
+
+        // Primary lookup: hidden sku field next to the product id hidden field
+        // (used on product listing / detail pages).
         let siblingHiddenField = DomAccessHelper.querySelector(document, 'input[value="' + productId + '"]', false);
         if(siblingHiddenField) {
-            return DomAccessHelper.querySelector(siblingHiddenField.parentNode, 'input[name="dtgs-gtm-product-sku"]', false);
+            let skuField = DomAccessHelper.querySelector(siblingHiddenField.parentNode, 'input[name="dtgs-gtm-product-sku"]', false);
+            if(skuField) {
+                return skuField.value;
+            }
         }
+
+        // Fallback: resolve the sku from the hidden line items, matching the
+        // product id via the data-id attribute (e.g. on the checkout/confirm page).
+        return this.getSkuFromLineItems(productId);
+
+    }
+
+    /**
+     * Resolve the article number (sku) from the hidden line items by matching
+     * the given product id against the data-id attribute.
+     *
+     * @param productId
+     * @returns {string|undefined}
+     */
+    getSkuFromLineItems(productId) {
+
+        const lineItemsContainer = DomAccessHelper.querySelector(document, '.hidden-line-items-information', false);
+        if(!lineItemsContainer) return undefined;
+
+        const lineItemDataElements = DomAccessHelper.querySelectorAll(lineItemsContainer, '.hidden-line-item', false);
+        if(lineItemDataElements === false) return undefined;
+
+        let sku;
+        lineItemDataElements.forEach(itemEl => {
+            if(DomAccessHelper.getDataAttribute(itemEl, 'data-id', false) == productId) {
+                sku = DomAccessHelper.getDataAttribute(itemEl, 'data-dtgs-sku', false);
+            }
+        });
+
+        return sku;
 
     }
 }
