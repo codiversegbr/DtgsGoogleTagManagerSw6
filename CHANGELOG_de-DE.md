@@ -1,5 +1,6 @@
 # 6.4.10
 - Bugfix: SKU fehlt auf Listenseiten wenn Buybutton inaktiv ist, was zu einem Fehler mit select_item führte
+- Bugfix: fehlende Button Klasse hinzugefügt (GTM-GH-72)
 
 # 6.4.9
 - Verbesserung: Perfomance Updates für GTM Custom Services Funktion (GTM-GH-71)
