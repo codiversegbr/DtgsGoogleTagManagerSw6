@@ -1,5 +1,7 @@
 {% sw_extends '@Storefront/storefront/component/product/card/action.html.twig' %}
 
+{% set gtmConfig = config('DtgsGoogleTagManagerSw6.config') %}
+
 {% block component_product_box_action_detail %}
     <div class="d-grid">
         <a href="{{ seoUrl('frontend.detail.page', {'productId': id}) }}"
