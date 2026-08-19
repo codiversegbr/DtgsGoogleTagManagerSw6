@@ -1,3 +1,6 @@
+# 6.4.10
+- Bugfix: SKU fehlt auf Listenseiten wenn Buybutton inaktiv ist, was zu einem Fehler mit select_item führte
+
 # 6.4.9
 - Verbesserung: Perfomance Updates für GTM Custom Services Funktion (GTM-GH-71)
 - Neu: Rabatt und Original-Preis sind nun Teil des item-Arrays (GTM-GH-69)
