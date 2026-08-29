@@ -6,6 +6,7 @@ import GtmRemoveFromCartEvent from './events/remove-from-cart.event';
 import GtmQuantityChangeEvent from './events/quantity-change.event';
 import GtmLoginEvent from './events/login.event';
 import GtmSignUpEvent from './events/sign-up.event';
+import GtmBeginCheckoutEvent from './events/begin-checkout.event';
 import CookieStorageHelper from 'src/helper/storage/cookie-storage.helper';
 import LineItemHelper from 'src/plugin/google-analytics/line-item.helper';
 import DomAccessHelper from 'src/helper/dom-access.helper';
@@ -129,6 +130,7 @@ export default class DtgsGoogleTagManagerPlugin extends Plugin
         this.registerEvent(GtmQuantityChangeEvent);
         this.registerEvent(GtmLoginEvent);
         this.registerEvent(GtmSignUpEvent);
+        this.registerEvent(GtmBeginCheckoutEvent);
         this.registerSelectItemEvent();
     }
 
@@ -335,43 +337,10 @@ export default class DtgsGoogleTagManagerPlugin extends Plugin
             }
         });
 
-        // register begin_checkout event on "Zur Kasse" button click
-        this.registerBeginCheckoutEvent();
-
         // store initial quantities
         this.events.forEach(event => {
             if (event.hasOwnProperty("quantityBeforeChange")) {
                 event.storeInitialQuantities();
-            }
-        });
-
-    }
-
-    /**
-     * Fire begin_checkout when the user clicks the "Zur Kasse" button
-     * inside the off canvas cart.
-     */
-    registerBeginCheckoutEvent() {
-
-        const checkoutButton = DomAccessHelper.querySelector(document, '.begin-checkout-btn', false);
-        if(checkoutButton) {
-            checkoutButton.addEventListener('click', this.fireBeginCheckoutEvent.bind(this));
-        }
-
-    }
-
-    fireBeginCheckoutEvent() {
-
-        let additionalProperties = LineItemHelper.getAdditionalProperties();
-        let lineItems = this.getLineItems();
-
-        // Clear the previous ecommerce object
-        window.dataLayer.push({ ecommerce: null });
-        window.dataLayer.push({
-            'event': 'begin_checkout',
-            'currency': additionalProperties.currency,
-            'ecommerce': {
-                'items': lineItems
             }
         });
 
