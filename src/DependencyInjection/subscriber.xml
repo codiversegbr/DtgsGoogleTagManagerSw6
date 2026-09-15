@@ -30,5 +30,14 @@
             <tag name="kernel.event_subscriber" />
         </service>
 
+        <!-- Measurement Protocol: server-side purchase tracking -->
+        <service id="Dtgs\GoogleTagManager\Subscriber\MeasurementProtocolSubscriber">
+            <argument type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService" />
+            <argument type="service" id="Dtgs\GoogleTagManager\Services\Ga4Service" />
+            <argument type="service" id="Dtgs\GoogleTagManager\Components\Helper\LoggingHelper" />
+            <argument type="service" id="request_stack" />
+            <argument type="service" id="order.repository" />
+            <tag name="kernel.event_subscriber" />
+        </service>
     </services>
 </container>
