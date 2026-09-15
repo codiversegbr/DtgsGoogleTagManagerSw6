@@ -8,6 +8,8 @@ use Dtgs\GoogleTagManager\Services\RemarketingService;
 use Dtgs\GoogleTagManager\Subscriber\GeneralSubscriber;
 use Dtgs\GoogleTagManager\Subscriber\GtmServicesStorefrontSubscriber;
 use Dtgs\GoogleTagManager\Subscriber\HttpCacheKeySubscriber;
+use Dtgs\GoogleTagManager\Subscriber\MeasurementProtocolSubscriber;
+use Dtgs\GoogleTagManager\Components\Helper\LoggingHelper;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
 
 use function Symfony\Component\DependencyInjection\Loader\Configurator\service;
@@ -40,6 +42,17 @@ return static function (Symfony\Component\DependencyInjection\Loader\Configurato
     $services->set(HttpCacheKeySubscriber::class)
         ->args([
             service(SystemConfigService::class),
+        ])
+        ->tag('kernel.event_subscriber');
+
+    // Measurement Protocol: server-side purchase tracking
+    $services->set(MeasurementProtocolSubscriber::class)
+        ->args([
+            service(SystemConfigService::class),
+            service(Ga4Service::class),
+            service(LoggingHelper::class),
+            service('request_stack'),
+            service('order.repository'),
         ])
         ->tag('kernel.event_subscriber');
 };
