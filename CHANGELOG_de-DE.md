@@ -1,3 +1,9 @@
+# 6.4.11
+- Neu: Measurement Protocol: server-side purchase tracking (GTM-GH-64)
+- Verbesserung: Service Deklaration von XML auf PHP migriert (GTM-GH-67)
+- Verbesserung: begin_checkout Event wird jetzt bei Klick auf "Zur Kasse" ausgelöst und sollte häufiger ausgelöst werden (GTM-GH-55)
+- Bugfix: JS-Fehler in der Liste, wenn SwagCommercial-Plugin installiert ist (GTM-GH-76)
+
 # 6.4.10
 - Bugfix: SKU fehlt auf Listenseiten wenn Buybutton inaktiv ist, was zu einem Fehler mit select_item führte
 - Bugfix: fehlende Button Klasse hinzugefügt (GTM-GH-72)

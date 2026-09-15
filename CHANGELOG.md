@@ -1,3 +1,9 @@
+# 6.4.11
+- New: Measurement Protocol: server-side purchase tracking (GTM-GH-64)
+- Improvement: Migrate services declaration from XML to PHP (GTM-GH-67)
+- Improvement: Rework begin_checkout event - it is now being fired when clicking on "Go to checkout" button and should be triggered more often (GTM-GH-55)
+- Bugfix: JS error in listing when SwagCommercial plugin is installed (GTM-GH-76)
+
 # 6.4.10
 - Bugfix: missing sku on listing pages if buybutton was inactive, which caused a select_item error
 - Bugfix: added missing button class (GTM-GH-72)
