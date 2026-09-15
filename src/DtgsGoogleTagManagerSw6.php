@@ -11,7 +11,7 @@ use Shopware\Core\Framework\Plugin\Context\InstallContext;
 use Shopware\Core\Framework\Plugin\Context\UninstallContext;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
-use Symfony\Component\DependencyInjection\Loader\XmlFileLoader;
+use Symfony\Component\DependencyInjection\Loader\PhpFileLoader;
 
 class DtgsGoogleTagManagerSw6 extends Plugin
 {
@@ -27,10 +27,10 @@ class DtgsGoogleTagManagerSw6 extends Plugin
     {
         parent::build($container);
 
-        $loader = new XmlFileLoader($container, new FileLocator(__DIR__ . '/DependencyInjection/'));
-        $loader->load('helper.xml');
-        $loader->load('gtm_services.xml');
-        $loader->load('subscriber.xml');
+        $loader = new PhpFileLoader($container, new FileLocator(__DIR__ . '/DependencyInjection/'));
+        $loader->load('helper.php');
+        $loader->load('gtm_services.php');
+        $loader->load('subscriber.php');
     }
 
     /**
