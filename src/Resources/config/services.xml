@@ -26,6 +26,7 @@
 
         <!-- Twig Functionr -->
         <service id="Dtgs\GoogleTagManager\Components\Utils\TwigExtension">
+            <argument type="service" id="Shopware\Core\Framework\Plugin\KernelPluginCollection" on-invalid="null" />
             <tag name="twig.extension" />
         </service>
 

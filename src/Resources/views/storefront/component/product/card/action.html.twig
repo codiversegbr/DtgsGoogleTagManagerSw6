@@ -27,6 +27,11 @@
                name="dtgs-gtm-product-sku"
                value="{{ product.productNumber }}">
     {%  endif %}
+    {%  if gtmIsPluginInstalled('SwagCommercial') %}
+        <input type="hidden"
+               name="product-name"
+               value="{{ product.translated.name }}">
+    {%  endif %}
 
 {% endblock %}
 
