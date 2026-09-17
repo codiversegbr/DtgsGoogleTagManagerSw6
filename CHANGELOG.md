@@ -2,6 +2,7 @@
 - New: Measurement Protocol: server-side purchase tracking (GTM-GH-64)
 - Improvement: Migrate services declaration from XML to PHP (GTM-GH-67)
 - Improvement: Rework begin_checkout event - it is now being fired when clicking on "Go to checkout" button and should be triggered more often (GTM-GH-55)
+- Improvement: add_to_wishlist event now firing on checkout/confirm page (GTM-GH-15)
 - Bugfix: JS error in listing when SwagCommercial plugin is installed (GTM-GH-76)
 
 # 6.4.10
