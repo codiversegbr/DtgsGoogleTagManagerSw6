@@ -35,13 +35,4 @@ return static function (Symfony\Component\DependencyInjection\Loader\Configurato
     // Twig Function
     $services->set(TwigExtension::class)
         ->tag('twig.extension');
-
-    // Snippets
-    $services->set(SnippetFile_en_GB::class)
-        ->public()
-        ->tag('shopware.snippet.file', ['priority' => 100]);
-
-    $services->set(SnippetFile_de_DE::class)
-        ->public()
-        ->tag('shopware.snippet.file', ['priority' => 100]);
 };
