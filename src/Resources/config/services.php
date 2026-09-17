@@ -4,8 +4,6 @@ use Dtgs\GoogleTagManager\Components\Utils\TwigExtension;
 use Dtgs\GoogleTagManager\Core\Content\DtgsGtmCustomService\CustomServiceDefinition;
 use Dtgs\GoogleTagManager\Core\Content\DtgsGtmCustomService\Translation\ServiceTranslationDefinition;
 use Dtgs\GoogleTagManager\Framework\Cookie\CustomCookieProvider;
-use Dtgs\GoogleTagManager\Resources\snippet\de_DE\SnippetFile_de_DE;
-use Dtgs\GoogleTagManager\Resources\snippet\en_GB\SnippetFile_en_GB;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Shopware\Storefront\Framework\Cookie\CookieProviderInterface;
 
