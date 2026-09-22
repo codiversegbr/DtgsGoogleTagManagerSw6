@@ -35,8 +35,9 @@ export default class GtmBeginCheckoutEvent extends AnalyticsEvent
         window.dataLayer.push({ ecommerce: null });
         window.dataLayer.push({
             'event': 'begin_checkout',
-            'currency': additionalProperties.currency,
             'ecommerce': {
+                'currency': additionalProperties.currency,
+                'value': Number(additionalProperties.value),
                 'items': lineItems
             }
         });
