@@ -60,7 +60,7 @@ export default class GtmAddToCartEvent extends EventAwareAnalyticsEvent
         let products = {
             'item_name': formData.get('product-name'),
             'item_id': formData.get('dtgs-gtm-product-sku'),
-            'quantity': Number(formData.get('lineItems[' + productId + '][quantity]'))
+            'quantity': Number(formData.get('lineItems[' + productId + '][quantity]') ?? 0)
         };
 
         //Price, Brand Name & Kategorie optional
