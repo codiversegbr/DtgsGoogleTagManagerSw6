@@ -546,6 +546,9 @@ class Ga4Service implements Ga4ServiceInterface
      */
     public function getBasketItems($listing, SalesChannelContext $context, $addCategoryNames = false, $location = 'checkout'): array
     {
+        $listing = $listing->filter(function($lineItem) {
+            return $lineItem->getType() !== 'promotion';
+        });
 
         $i = 0;
         $tags = array();
@@ -626,7 +629,7 @@ class Ga4Service implements Ga4ServiceInterface
 
             //Product Category - Changed to SEO Category in V6.1.22
             if($addCategoryNames) {
-                if($product->getType() != 'promotion' && $product->getReferencedId() && $realProducts && $realProducts->has($product->getReferencedId())) {
+                if($product->getReferencedId() && $realProducts && $realProducts->has($product->getReferencedId())) {
                     $seoCategory = $this->productHelper->getSalesChannelSeoCategoryByProduct(
                         $realProducts->get($product->getReferencedId()),
                         $context,
