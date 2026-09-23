@@ -50,6 +50,9 @@ export default class GtmBeginCheckoutEvent extends AnalyticsEvent
         if (lineItemDataElements === false) return [];
 
         lineItemDataElements.forEach(itemEl => {
+            if (DomAccessHelper.getDataAttribute(itemEl, 'data-dtgs-type') === 'promotion') {
+                return;
+            }
             let item = {
                 item_id: DomAccessHelper.getDataAttribute(itemEl, 'data-dtgs-sku'),
                 item_name: DomAccessHelper.getDataAttribute(itemEl, 'name'),
