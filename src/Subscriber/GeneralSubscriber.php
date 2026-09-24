@@ -11,35 +11,42 @@ use Exception;
 use Shopware\Core\Content\Cms\Aggregate\CmsSlot\CmsSlotEntity;
 use Shopware\Core\Content\Cms\CmsPageEntity;
 use Shopware\Core\Content\Cms\Events\CmsPageLoadedEvent;
+use Shopware\Core\Content\Cms\SalesChannel\Struct\CrossSellingStruct;
 use Shopware\Core\Content\Cms\SalesChannel\Struct\ProductListingStruct;
 use Shopware\Core\Content\Cms\SalesChannel\Struct\ProductSliderStruct;
-use Shopware\Core\Content\Product\SalesChannel\SalesChannelProductEntity;
 use Shopware\Core\Framework\Struct\ArrayEntity;
 use Shopware\Core\Framework\Struct\ArrayStruct;
-use Shopware\Core\Framework\Struct\Struct;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Shopware\Storefront\Page\Account\Login\AccountLoginPageLoadedEvent;
 use Shopware\Storefront\Page\Account\Order\AccountEditOrderPageLoadedEvent;
 use Shopware\Storefront\Page\Account\Order\AccountOrderPageLoadedEvent;
 use Shopware\Storefront\Page\Account\Overview\AccountOverviewPageLoadedEvent;
-use Shopware\Storefront\Page\Account\PaymentMethod\AccountPaymentMethodPageLoadedEvent;
 use Shopware\Storefront\Page\Account\Profile\AccountProfilePageLoadedEvent;
 use Shopware\Storefront\Page\Address\Listing\AddressListingPageLoadedEvent;
+use Shopware\Storefront\Page\Checkout\Cart\CheckoutCartPage;
 use Shopware\Storefront\Page\Checkout\Cart\CheckoutCartPageLoadedEvent;
+use Shopware\Storefront\Page\Checkout\Confirm\CheckoutConfirmPage;
 use Shopware\Storefront\Page\Checkout\Confirm\CheckoutConfirmPageLoadedEvent;
+use Shopware\Storefront\Page\Checkout\Finish\CheckoutFinishPage;
 use Shopware\Storefront\Page\Checkout\Finish\CheckoutFinishPageLoadedEvent;
+use Shopware\Storefront\Page\Checkout\Offcanvas\OffcanvasCartPage;
 use Shopware\Storefront\Page\Checkout\Offcanvas\OffcanvasCartPageLoadedEvent;
+use Shopware\Storefront\Page\Checkout\Register\CheckoutRegisterPage;
 use Shopware\Storefront\Page\Checkout\Register\CheckoutRegisterPageLoadedEvent;
 use Shopware\Storefront\Page\GenericPageLoadedEvent;
 use Shopware\Storefront\Page\LandingPage\LandingPageLoadedEvent;
 use Shopware\Storefront\Page\Maintenance\MaintenancePageLoadedEvent;
 use Shopware\Storefront\Page\Navigation\Error\ErrorPageLoadedEvent;
+use Shopware\Storefront\Page\Navigation\NavigationPage;
 use Shopware\Storefront\Page\Navigation\NavigationPageLoadedEvent;
 use Shopware\Storefront\Page\Newsletter\Subscribe\NewsletterSubscribePageLoadedEvent;
 use Shopware\Storefront\Page\Page;
 use Shopware\Storefront\Page\PageLoadedEvent;
+use Shopware\Storefront\Page\Product\ProductPage;
 use Shopware\Storefront\Page\Product\ProductPageLoadedEvent;
+use Shopware\Storefront\Page\Search\SearchPage;
 use Shopware\Storefront\Page\Search\SearchPageLoadedEvent;
+use Shopware\Storefront\Page\Wishlist\WishlistPage;
 use Shopware\Storefront\Page\Wishlist\WishlistPageLoadedEvent;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpFoundation\RequestStack;
@@ -106,7 +113,6 @@ class GeneralSubscriber implements EventSubscriberInterface
             AccountProfilePageLoadedEvent::class => 'onPageLoaded',
             AccountLoginPageLoadedEvent::class => 'onPageLoaded',
             AccountOrderPageLoadedEvent::class => 'onPageLoaded',
-            AccountPaymentMethodPageLoadedEvent::class => 'onPageLoaded',
             AddressListingPageLoadedEvent::class => 'onPageLoaded',
             //
             SearchPageLoadedEvent::class => 'onPageLoaded',
@@ -216,9 +222,10 @@ class GeneralSubscriber implements EventSubscriberInterface
 
         switch (get_class($event)) {
             case ProductPageLoadedEvent::class:
-                $detailTags = $this->datalayerService->getDetailTags($event->getPage()->getProduct(), $event->getSalesChannelContext());
-                $remarketingTags = $this->remarketingService->getDetailTags($event->getPage()->getProduct(), $event->getSalesChannelContext());
-                $ga4Tags = $this->ga4Service->getDetailTags($event->getPage()->getProduct(), $event->getSalesChannelContext());
+                /** @var ProductPage $page */
+                $detailTags = $this->datalayerService->getDetailTags($page->getProduct(), $event->getSalesChannelContext());
+                $remarketingTags = $this->remarketingService->getDetailTags($page->getProduct(), $event->getSalesChannelContext());
+                $ga4Tags = $this->ga4Service->getDetailTags($page->getProduct(), $event->getSalesChannelContext());
 
                 $addToCartInfo = new ArrayEntity([
                     'price' => $ga4Tags['ecommerce']['items'][0]['price'],
@@ -244,11 +251,13 @@ class GeneralSubscriber implements EventSubscriberInterface
             case CheckoutCartPageLoadedEvent::class:
             case CheckoutRegisterPageLoadedEvent::class:
             case OffcanvasCartPageLoadedEvent::class:
+                /** @var CheckoutCartPage|CheckoutRegisterPage|OffcanvasCartPage $page */
                 $checkoutTags = $this->datalayerService->getCheckoutTags($page->getCart(), $event->getSalesChannelContext());
                 $remarketingTags = $this->remarketingService->getCheckoutTags($page->getCart(), $event->getSalesChannelContext());
                 $ga4Tags = $this->ga4Service->getCheckoutTags($page->getCart(), $event);
                 break;
             case CheckoutConfirmPageLoadedEvent::class:
+                /** @var CheckoutConfirmPage $page */
                 $checkoutTags = $this->datalayerService->getCheckoutTags($page->getCart(), $event->getSalesChannelContext());
                 $remarketingTags = $this->remarketingService->getCheckoutTags($page->getCart(), $event->getSalesChannelContext());
                 $ga4Tags = $this->ga4Service->getCheckoutTags($page->getCart(), $event);
@@ -259,6 +268,7 @@ class GeneralSubscriber implements EventSubscriberInterface
                 $additionalEvents[] = $this->ga4Service->getAddShippingInfoTags($page->getCart(), $event->getSalesChannelContext());
                 break;
             case CheckoutFinishPageLoadedEvent::class:
+                /** @var CheckoutFinishPage $page */
                 $checkoutTags = $this->datalayerService->getFinishTags($page->getOrder(), $event->getSalesChannelContext());
                 $remarketingTags = $this->remarketingService->getPurchaseConfirmationTags($page->getOrder(), $event->getSalesChannelContext());
                 $ga4Tags = $this->ga4Service->getPurchaseConfirmationTags($page->getOrder(), $event->getSalesChannelContext());
@@ -275,28 +285,29 @@ class GeneralSubscriber implements EventSubscriberInterface
             case AccountEditOrderPageLoadedEvent::class:
             case AccountOrderPageLoadedEvent::class:
             case AddressListingPageLoadedEvent::class:
-            case AccountPaymentMethodPageLoadedEvent::class:
                 $accountTags = $this->datalayerService->getAccountTags();
                 $remarketingTags = $this->remarketingService->getBasicTags($event->getRequest());
                 break;
             case SearchPageLoadedEvent::class:
+                /** @var SearchPage $page */
                 $searchTags = $this->datalayerService->getSearchTags($page->getSearchTerm(), $page->getListing());
                 $remarketingTags = $this->remarketingService->getSearchTags($event->getRequest());
                 $ga4Tags = $this->ga4Service->getSearchTags($page->getSearchTerm(), $page->getListing(), $event->getSalesChannelContext());
                 break;
             case WishlistPageLoadedEvent::class:
+                /** @var WishlistPage $page */
                 $navigationId = $event->getRequest()->get('navigationId', $event->getSalesChannelContext()->getSalesChannel()->getNavigationCategoryId());
                 $navigationTags = $this->datalayerService->getNavigationTags($navigationId, $event->getSalesChannelContext());
-                $listing = $event->getPage()->getWishlist()->getProductListing();
+                $listing = $page->getWishlist()->getProductListing();
                 $ga4Tags = $this->ga4Service->getNavigationTags($navigationId, $listing, $event->getSalesChannelContext());
                 $remarketingTags = $this->remarketingService->getNavigationTags($navigationId, $listing, $event->getSalesChannelContext(), $event->getRequest());
                 break;
             case NavigationPageLoadedEvent::class:
+                /** @var NavigationPage $page */
                 $navigationId = $event->getRequest()->get('navigationId', $event->getSalesChannelContext()->getSalesChannel()->getNavigationCategoryId());
                 $navigationTags = $this->datalayerService->getNavigationTags($navigationId, $event->getSalesChannelContext());
 
-                /** @var SalesChannelProductEntity[] $products */
-                $cmsPage = $event->getPage()->getCmsPage();
+                $cmsPage = $page->getCmsPage();
                 if($cmsPage) {
                     $listing = $this->getMainListing($cmsPage);
                     if($listing) {
@@ -397,21 +408,21 @@ class GeneralSubscriber implements EventSubscriberInterface
         }
         if(!empty($productListingContainerStructs)) {
             foreach ($productListingContainerStructs as $productListingContainerStruct) {
-                if(is_a($productListingContainerStruct, 'Shopware\Core\Content\Cms\SalesChannel\Struct\ProductListingStruct')) {
+                if(is_a($productListingContainerStruct, ProductListingStruct::class)) {
                     if($productListingContainerStruct->getListing() === null) continue;
                     $productListings[] = [
                         'type' => 'product-listing',
                         'products' => $productListingContainerStruct->getListing()->getElements()
                     ];
                 }
-                if(is_a($productListingContainerStruct, 'Shopware\Core\Content\Cms\SalesChannel\Struct\ProductSliderStruct')) {
+                if(is_a($productListingContainerStruct, ProductSliderStruct::class)) {
                     if($productListingContainerStruct->getProducts() === null) continue;
                     $productListings[] = [
                         'type' => 'product-slider',
                         'products' => $productListingContainerStruct->getProducts()->getElements()
                     ];
                 }
-                if(is_a($productListingContainerStruct, 'Shopware\Core\Content\Cms\SalesChannel\Struct\CrossSellingStruct')) {
+                if(is_a($productListingContainerStruct, CrossSellingStruct::class)) {
                     if($productListingContainerStruct->getCrossSellings() === null) continue;
                     $csElements = $productListingContainerStruct->getCrossSellings()->getElements();
                     foreach ($csElements as $csElement) {

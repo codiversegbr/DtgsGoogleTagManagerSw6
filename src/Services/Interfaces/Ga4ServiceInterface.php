@@ -4,6 +4,7 @@ namespace Dtgs\GoogleTagManager\Services\Interfaces;
 
 use Shopware\Core\Checkout\Cart\Cart;
 use Shopware\Core\Checkout\Order\OrderEntity;
+use Shopware\Core\Content\Product\SalesChannel\Listing\ProductListingResult;
 use Shopware\Core\Content\Product\SalesChannel\SalesChannelProductEntity;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 
@@ -40,6 +41,12 @@ interface Ga4ServiceInterface
      * @return bool
      */
     public function addDatabaseProductId($salesChannelId);
+
+    /**
+     * @param string|null $salesChannelId
+     * @return bool
+     */
+    public function showOriginalPrice($salesChannelId): bool;
 
     /**
      * Prepare tags for view
@@ -104,4 +111,23 @@ interface Ga4ServiceInterface
      * @return array
      */
     public function getAddShippingInfoTags($cart, SalesChannelContext $context): array;
+
+    /**
+     * Get search tags
+     *
+     * @param string $searchTerm
+     * @param ProductListingResult $listing
+     * @param SalesChannelContext $context
+     * @return array
+     */
+    public function getSearchTags($searchTerm, ProductListingResult $listing, SalesChannelContext $context): array;
+
+    /**
+     * @param mixed $listing
+     * @param SalesChannelContext $context
+     * @param bool $addCategoryNames
+     * @param string $location
+     * @return array
+     */
+    public function getBasketItems($listing, SalesChannelContext $context, $addCategoryNames = false, $location = 'checkout'): array;
 }

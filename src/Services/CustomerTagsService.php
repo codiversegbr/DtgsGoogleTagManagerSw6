@@ -5,14 +5,7 @@ namespace Dtgs\GoogleTagManager\Services;
 use Dtgs\GoogleTagManager\Components\Helper\CustomerHelper;
 use Dtgs\GoogleTagManager\Components\Helper\LoggingHelper;
 use Dtgs\GoogleTagManager\Services\Interfaces\CustomerTagsServiceInterface;
-use Shopware\Core\Checkout\Customer\Aggregate\CustomerGroup\CustomerGroupCollection;
-use Shopware\Core\Checkout\Order\OrderCollection;
-use Shopware\Core\Checkout\Order\OrderEntity;
-use Shopware\Core\Framework\Context;
 use Shopware\Core\Checkout\Customer\CustomerEntity;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
-use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
-use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 
 class CustomerTagsService implements CustomerTagsServiceInterface
@@ -28,14 +21,6 @@ class CustomerTagsService implements CustomerTagsServiceInterface
         $this->loggingHelper = $loggingHelper;
     }
 
-    /**
-     * SW6 ready
-     *
-     * Gets customer information
-     *
-     * @param CustomerEntity $customer or null
-     * @return array
-     */
     public function getCustomerTags(?CustomerEntity $customer, SalesChannelContext $context) {
 
         $tags = array();

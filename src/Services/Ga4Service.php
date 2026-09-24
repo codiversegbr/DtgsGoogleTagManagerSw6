@@ -13,7 +13,6 @@ use Dtgs\GoogleTagManager\Services\Interfaces\GeneralTagsServiceInterface;
 use Shopware\Core\Checkout\Cart\LineItem\LineItem;
 use Shopware\Core\Checkout\Cart\LineItem\LineItemCollection;
 use Shopware\Core\Checkout\Cart\Price\Struct\CalculatedPrice;
-use Shopware\Core\Checkout\Customer\Aggregate\CustomerWishlist\CustomerWishlistEntity;
 use Shopware\Core\Checkout\Order\OrderEntity;
 use Shopware\Core\Checkout\Promotion\Cart\PromotionProcessor;
 use Shopware\Core\Content\Category\CategoryEntity;
@@ -23,7 +22,6 @@ use Shopware\Core\Framework\DataAbstractionLayer\Search\EntitySearchResult;
 use Shopware\Core\Framework\Uuid\Uuid;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
-use Shopware\Storefront\Page\Checkout\Cart\CheckoutCartPageLoadedEvent;
 use Shopware\Storefront\Page\Checkout\Confirm\CheckoutConfirmPageLoadedEvent;
 use Shopware\Storefront\Page\Checkout\Register\CheckoutRegisterPageLoadedEvent;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -77,21 +75,10 @@ class Ga4Service implements Ga4ServiceInterface
         $this->loggingHelper = $loggingHelper;
     }
 
-    /**
-     * Maybe move to general helper
-     *
-     * Helper to get plugin specific config
-     *
-     * @return array|mixed|null
-     */
     public function getGtmConfig($salesChannelId) {
-        return $tagManagerConfig = $this->systemConfigService->get('DtgsGoogleTagManagerSw6.config', $salesChannelId);
+        return $this->systemConfigService->get('DtgsGoogleTagManagerSw6.config', $salesChannelId);
     }
 
-    /**
-     * SW6 ready
-     *
-     */
     public function getAdwordsId($salesChannelId) {
 
         $tagManagerConfig = $this->getGtmConfig($salesChannelId);
@@ -109,12 +96,6 @@ class Ga4Service implements Ga4ServiceInterface
         return (isset($tagManagerConfig['remarketingIntegration']) && $tagManagerConfig['remarketingIntegration'] == 'enable');
     }
 
-    /**
-     * GH-Ticket #7
-     *
-     * @param $salesChannelId
-     * @return bool
-     */
     public function addDatabaseProductId($salesChannelId) {
 
         $tagManagerConfig = $this->getGtmConfig($salesChannelId);
@@ -127,10 +108,6 @@ class Ga4Service implements Ga4ServiceInterface
 
     }
 
-    /**
-     * @param $salesChannelId
-     * @return bool
-     */
     public function showOriginalPrice($salesChannelId): bool {
 
         $tagManagerConfig = $this->getGtmConfig($salesChannelId);
@@ -143,10 +120,6 @@ class Ga4Service implements Ga4ServiceInterface
 
     }
 
-    /**
-     * @param $ga4Tags
-     * @return false|string
-     */
     public function prepareTagsForView($ga4Tags)
     {
         return json_encode($ga4Tags);
@@ -175,12 +148,6 @@ class Ga4Service implements Ga4ServiceInterface
         );
     }
 
-    /**
-     * @param SalesChannelProductEntity $product
-     * @param SalesChannelContext $context
-     * @return mixed
-     * @throws \Exception
-     */
     public function getDetailTags(SalesChannelProductEntity $product, SalesChannelContext $context) {
 
         $ga4_tags = [];
@@ -270,15 +237,6 @@ class Ga4Service implements Ga4ServiceInterface
 
     }
 
-    /**
-     * SW6 ready
-     *
-     * @param $navigationId
-     * @param EntitySearchResult $result
-     * @param SalesChannelContext $context
-     * @return array
-     * @throws \Exception
-     */
     public function getNavigationTags($navigationId, $listing, SalesChannelContext $context, $listName = 'Category') {
 
         $pluginConfig = $this->getGtmConfig($context->getSalesChannel()->getId());
@@ -309,14 +267,6 @@ class Ga4Service implements Ga4ServiceInterface
 
     }
 
-    /**
-     * SW6 ready
-     *
-     * @param $cartOrOrder
-     * @param $event
-     * @return array
-     * @throws \Exception
-     */
     public function getCheckoutTags($cartOrOrder, $event) {
 
         $pluginConfig = $this->getGtmConfig($event->getSalesChannelContext()->getSalesChannel()->getId());
@@ -333,14 +283,6 @@ class Ga4Service implements Ga4ServiceInterface
 
     }
 
-    /**
-     * SW6 ready
-     *
-     * @param OrderEntity $order
-     * @param SalesChannelContext $context
-     * @return array
-     * @throws \Exception
-     */
     public function getPurchaseConfirmationTags(OrderEntity $order, SalesChannelContext $context): array
     {
 
@@ -423,9 +365,6 @@ class Ga4Service implements Ga4ServiceInterface
         return $ga4_tags;
     }
 
-    /**
-     * CDVRS-GH-14
-     */
     public function getAddPaymentInfoTags($cart, SalesChannelContext $context): array
     {
         $ga4_tags = $this->getGenericPaymentOrShippingInfoData($cart, $context);
@@ -435,9 +374,6 @@ class Ga4Service implements Ga4ServiceInterface
         return $this->addEeEvent($ga4_tags, 'add_payment_info');
     }
 
-    /**
-     * CDVRS-GH-14
-     */
     public function getAddShippingInfoTags($cart, SalesChannelContext $context): array
     {
         $ga4_tags = $this->getGenericPaymentOrShippingInfoData($cart, $context);
@@ -462,11 +398,10 @@ class Ga4Service implements Ga4ServiceInterface
      * @param int $maxCategories
      * @param SalesChannelContext $context
      * @param string $listName
-     * @param string $category
+     * @param CategoryEntity|null $category
      * @return array
-     * @throws \Exception
      */
-    private function getImpressions($listing, int $maxCategories, SalesChannelContext $context, string $listName = 'Search', CategoryEntity $category = null): array
+    private function getImpressions($listing, int $maxCategories, SalesChannelContext $context, string $listName = 'Search', ?CategoryEntity $category): array
     {
 
         $tags = array();
@@ -536,14 +471,6 @@ class Ga4Service implements Ga4ServiceInterface
 
     }
 
-    /**
-     * @param $listing
-     * @param SalesChannelContext $context
-     * @param bool $addCategoryNames
-     * @param string $location
-     * @return array
-     * @throws \Exception
-     */
     public function getBasketItems($listing, SalesChannelContext $context, $addCategoryNames = false, $location = 'checkout'): array
     {
 
@@ -670,12 +597,12 @@ class Ga4Service implements Ga4ServiceInterface
 
     /**
      * @param $event
-     * @return int
+     * @return string
      */
     private function getCheckoutEventName($event)
     {
 
-        $event_name = 0;
+        $event_name = '';
 
         switch (get_class($event)) {
             case CheckoutConfirmPageLoadedEvent::class:
@@ -697,7 +624,7 @@ class Ga4Service implements Ga4ServiceInterface
     }
 
     /**
-     * @param $lineItems LineItemCollection
+     * @param LineItemCollection $lineItems
      */
     private function getPromotionCode($lineItems)
     {
