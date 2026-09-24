@@ -27,13 +27,6 @@ class GeneralTagsService implements GeneralTagsServiceInterface
         $this->languageRepository = $languageRepository;
     }
 
-    /**
-     * @TODO!!
-     *
-     * @param Page $page
-     * @param Context $context
-     * @return array
-     */
     public function getGeneralTags(Page $page, Context $context, Request $request)
     {
         $tags = array();
@@ -70,12 +63,6 @@ class GeneralTagsService implements GeneralTagsServiceInterface
         return $tags;
     }
 
-    /**
-     * SW6 ready
-     *
-     * @param Request $request
-     * @return array
-     */
     public function getUtmTags(Request $request) {
 
         $tags = array();

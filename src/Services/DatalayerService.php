@@ -9,9 +9,7 @@ use Dtgs\GoogleTagManager\Components\Helper\ProductHelper;
 use Dtgs\GoogleTagManager\Services\Interfaces\DatalayerServiceInterface;
 use Exception;
 use Shopware\Core\Checkout\Cart\LineItem\LineItem;
-use Shopware\Core\Checkout\Cart\Tax\Struct\CalculatedTax;
 use Shopware\Core\Checkout\Order\OrderEntity;
-use Shopware\Core\Content\Category\CategoryCollection;
 use Shopware\Core\Framework\Uuid\Uuid;
 use Shopware\Core\Content\Product\SalesChannel\Listing\ProductListingResult;
 use Shopware\Core\Content\Product\SalesChannel\SalesChannelProductEntity;
@@ -21,7 +19,6 @@ use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\Uuid\Exception\InvalidUuidException;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
-use Symfony\Component\HttpFoundation\Request;
 
 class DatalayerService implements DatalayerServiceInterface
 {
@@ -51,30 +48,10 @@ class DatalayerService implements DatalayerServiceInterface
         $this->stateMachineStateRepository = $stateMachineStateRepository;
     }
 
-    /**
-     * Maybe move to general helper
-     *
-     * Helper to get plugin specific config
-     *
-     * @return array|mixed|null
-     */
     public function getGtmConfig($salesChannelId) {
-        return $tagManagerConfig = $this->systemConfigService->get('DtgsGoogleTagManagerSw6.config', $salesChannelId);
+        return $this->systemConfigService->get('DtgsGoogleTagManagerSw6.config', $salesChannelId);
     }
 
-    /**
-     * Maybe move to general helper
-     *
-     * @param array $generalTags
-     * @param array $navigationTags
-     * @param array $accountTags
-     * @param array $detailTags
-     * @param array $checkoutTags
-     * @param array $customerTags
-     * @param array $utmTags
-     * @param array $searchTags
-     * @return false|string
-     */
     public function prepareTagsForView(
         array $generalTags,
         array $navigationTags,
@@ -100,13 +77,6 @@ class DatalayerService implements DatalayerServiceInterface
         return json_encode($return);
     }
 
-    /**
-     * SW6 ready
-     *
-     * since V2.5.0
-     * multiple Tag Manager Container IDs
-     * @return array|bool
-     */
     public function getContainerIds($salesChannelId) {
 
         $tagManagerConfig = $this->getGtmConfig($salesChannelId);
@@ -120,14 +90,6 @@ class DatalayerService implements DatalayerServiceInterface
 
     }
 
-    /**
-     * SW6 ready
-     *
-     * @param SalesChannelProductEntity $product
-     * @param SalesChannelContext $context
-     * @return array
-     * @throws Exception
-     */
 	public function getDetailTags(SalesChannelProductEntity $product, SalesChannelContext $context) {
 
 		$detailTags = [];
@@ -174,13 +136,6 @@ class DatalayerService implements DatalayerServiceInterface
 
 	}
 
-    /**
-     * SW6 ready
-     *
-     * @param $navigationId
-     * @param SalesChannelContext $context
-     * @return array
-     */
     public function getNavigationTags($navigationId, SalesChannelContext $context): array
     {
         //no explicit navigation Tags so far
@@ -195,11 +150,6 @@ class DatalayerService implements DatalayerServiceInterface
         return $tags;
     }
 
-    /**
-     * SW6 ready
-     *
-     * @return array
-     */
     public function getAccountTags()
     {
         //no explicit account Tags so far
@@ -210,15 +160,6 @@ class DatalayerService implements DatalayerServiceInterface
         return $tags;
     }
 
-    /**
-     * SW6 ready
-     *
-     * @param $cartOrOrder (either Cart or Order)
-     * @param SalesChannelContext $context
-     * @param bool $isFinish
-     * @return array
-     * @throws Exception
-     */
 	public function getCheckoutTags($cartOrOrder, SalesChannelContext $context, $isFinish = false) {
 
         $pluginConfig = $this->getGtmConfig($context->getSalesChannel()->getId());
@@ -249,7 +190,6 @@ class DatalayerService implements DatalayerServiceInterface
 
 		$taxRate = $cartOrOrder->getPrice()->getCalculatedTaxes()->first();
 		if($taxRate) {
-            /** @var $taxRate CalculatedTax */
 		    $checkoutTags['transactionTax'] = (float)$this->priceHelper->formatPrice($taxRate->getTax());
         }
 		else {
@@ -423,15 +363,6 @@ class DatalayerService implements DatalayerServiceInterface
 
 	}
 
-    /**
-     * SW6 ready
-     *
-     * @param OrderEntity $order
-     * @param SalesChannelContext $context
-     * @param Request $request
-     * @return array
-     * @throws Exception
-     */
 	public function getFinishTags(OrderEntity $order, SalesChannelContext $context) {
 
         $pluginConfig = $this->getGtmConfig($context->getSalesChannel()->getId());
@@ -494,14 +425,7 @@ class DatalayerService implements DatalayerServiceInterface
 
     }
 
-    /**
-     * SW6 ready
-     *
-     * @param $searchTerm
-     * @param ProductListingResult $listing
-     * @return array
-     */
-	public function getSearchTags($searchTerm, ProductListingResult $listing) {
+    public function getSearchTags($searchTerm, ProductListingResult $listing) {
 
         $tags = array();
 
