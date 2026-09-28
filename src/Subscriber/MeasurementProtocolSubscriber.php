@@ -4,36 +4,52 @@ namespace Dtgs\GoogleTagManager\Subscriber;
 
 use Dtgs\GoogleTagManager\Components\Helper\LoggingHelper;
 use Dtgs\GoogleTagManager\Services\Interfaces\Ga4ServiceInterface;
+use Dtgs\GoogleTagManager\Services\Interfaces\MeasurementProtocolSubscriberInterface;
+use Shopware\Core\Checkout\Order\Event\OrderStateMachineStateChangeEvent;
 use Shopware\Core\Checkout\Order\OrderEntity;
+use Shopware\Core\Framework\Context;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Shopware\Storefront\Page\Checkout\Finish\CheckoutFinishPageLoadedEvent;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpFoundation\RequestStack;
 
-class MeasurementProtocolSubscriber implements EventSubscriberInterface
+class MeasurementProtocolSubscriber implements EventSubscriberInterface, MeasurementProtocolSubscriberInterface
 {
+    /**
+     * Custom-Field-Key, unter dem die für das serverseitige Purchase-Event benötigten
+     * Client-Daten (client_id, session_id, consent, ...) an der Bestellung zwischengespeichert werden,
+     * bis diese als bezahlt markiert wird.
+     */
+    private const PENDING_CUSTOM_FIELD = 'dtgs_gtm_mp_pending_purchase';
+
     private SystemConfigService $systemConfigService;
     private Ga4ServiceInterface $ga4Service;
     private LoggingHelper $loggingHelper;
     private RequestStack $requestStack;
+    private EntityRepository $orderRepository;
 
     public function __construct(
         SystemConfigService $systemConfigService,
         Ga4ServiceInterface $ga4Service,
         LoggingHelper $loggingHelper,
-        RequestStack $requestStack
+        RequestStack $requestStack,
+        EntityRepository $orderRepository
     ) {
         $this->systemConfigService = $systemConfigService;
         $this->ga4Service = $ga4Service;
         $this->loggingHelper = $loggingHelper;
         $this->requestStack = $requestStack;
+        $this->orderRepository = $orderRepository;
     }
 
     public static function getSubscribedEvents(): array
     {
         return [
             CheckoutFinishPageLoadedEvent::class => 'onCheckoutFinish',
+            'state_enter.order_transaction.state.paid' => 'onOrderPaid',
         ];
     }
 
@@ -46,18 +62,140 @@ class MeasurementProtocolSubscriber implements EventSubscriberInterface
             return;
         }
 
-        if (($config['measurementProtocolTrackingTrigger'] ?? 'checkout_complete') !== 'checkout_complete') {
-            return;
-        }
+        $trigger = $config['measurementProtocolTrackingTrigger'] ?? 'checkout_complete';
 
         $order = $event->getPage()->getOrder();
         $context = $event->getSalesChannelContext();
-
         $request = $event->getRequest();
-        $this->sendPurchaseEvent($order, $context, $config, $request);
+
+        if ($trigger === 'order_paid') {
+            // Beim Bestellabschluss stehen noch die GA-Cookies zur Verfügung.
+            // Wir speichern die benötigten Daten an der Bestellung und senden das
+            // Event erst, wenn die Bestellung als bezahlt markiert wird.
+            $this->storePendingPurchase($order, $context, $config, $request);
+            return;
+        }
+
+        // Standard: Beim Bestellabschluss im Shop tracken
+        $eventParams = $this->buildEventParams($order, $context);
+
+        $clientId = $this->getClientIdFromCookie($request);
+        if ($clientId === null) {
+            // No GA cookie available => do not send the event
+            if ($this->loggingHelper->loggingType('debug')) {
+                $this->loggingHelper->logMsg('Measurement Protocol: no _ga cookie found, purchase event not sent.');
+            }
+            return;
+        }
+
+        $sessionId = $this->getSessionIdFromCookie($request, $config);
+        $consent = $this->getConsentFromCookie($request);
+        $userId = $this->getCustomerNumber($order);
+
+        $this->sendPurchaseEvent($config, $clientId, $sessionId, $consent, $userId, $eventParams);
     }
 
-    private function sendPurchaseEvent(OrderEntity $order, SalesChannelContext $context, array $config, $request): void
+    /**
+     * Wird ausgelöst, sobald eine Zahlungstransaktion der Bestellung in den Status "bezahlt" wechselt.
+     * Sendet das serverseitige Purchase-Event, sofern beim Bestellabschluss entsprechende
+     * Client-Daten zwischengespeichert wurden.
+     */
+    public function onOrderPaid(OrderStateMachineStateChangeEvent $event): void
+    {
+        $salesChannelId = $event->getSalesChannelId();
+        $config = $this->getConfig($salesChannelId);
+
+        if (!$this->isMeasurementProtocolEnabled($config)) {
+            return;
+        }
+
+        if (($config['measurementProtocolTrackingTrigger'] ?? 'checkout_complete') !== 'order_paid') {
+            return;
+        }
+
+        $context = $event->getContext();
+        $order = $this->loadOrder($event->getOrderId(), $context);
+        if ($order === null) {
+            return;
+        }
+
+        $customFields = $order->getCustomFields() ?? [];
+        $pending = $customFields[self::PENDING_CUSTOM_FIELD] ?? null;
+        if (!is_array($pending) || empty($pending['event_params'])) {
+            // Keine zwischengespeicherten Daten (z.B. kein GA-Cookie oder Bestellung nicht über den Shop abgeschlossen)
+            return;
+        }
+
+        $this->sendPurchaseEvent(
+            $config,
+            $pending['client_id'] ?? null,
+            $pending['session_id'] ?? null,
+            $pending['consent'] ?? [],
+            $pending['user_id'] ?? null,
+            $pending['event_params']
+        );
+
+        // Zwischengespeicherte Daten entfernen, damit das Event nicht mehrfach gesendet wird.
+        $this->clearPendingPurchase($order->getId(), $context);
+    }
+
+    /**
+     * Speichert die für das serverseitige Purchase-Event benötigten Daten an der Bestellung.
+     */
+    private function storePendingPurchase(OrderEntity $order, SalesChannelContext $context, array $config, $request): void
+    {
+        $clientId = $this->getClientIdFromCookie($request);
+        if ($clientId === null) {
+            // No GA cookie available => nothing to send later
+            if ($this->loggingHelper->loggingType('debug')) {
+                $this->loggingHelper->logMsg('Measurement Protocol: no _ga cookie found, purchase event not stored for order_paid trigger.');
+            }
+            return;
+        }
+
+        $pending = [
+            'client_id' => $clientId,
+            'session_id' => $this->getSessionIdFromCookie($request, $config),
+            'consent' => $this->getConsentFromCookie($request),
+            'user_id' => $this->getCustomerNumber($order),
+            'event_params' => $this->buildEventParams($order, $context),
+        ];
+
+        $this->orderRepository->update([
+            [
+                'id' => $order->getId(),
+                'customFields' => [
+                    self::PENDING_CUSTOM_FIELD => $pending,
+                ],
+            ],
+        ], $context->getContext());
+    }
+
+    private function clearPendingPurchase(string $orderId, Context $context): void
+    {
+        $this->orderRepository->update([
+            [
+                'id' => $orderId,
+                'customFields' => [
+                    self::PENDING_CUSTOM_FIELD => null,
+                ],
+            ],
+        ], $context);
+    }
+
+    private function loadOrder(string $orderId, Context $context): ?OrderEntity
+    {
+        $criteria = new Criteria([$orderId]);
+
+        return $this->orderRepository->search($criteria, $context)->first();
+    }
+
+    /**
+     * Baut die GA4-Event-Parameter aus den Purchase-Confirmation-Tags auf.
+     *
+     * @return array<string, mixed>
+     */
+    private function buildEventParams(OrderEntity $order, SalesChannelContext $context): array
     {
         $ga4Tags = $this->ga4Service->getPurchaseConfirmationTags($order, $context);
 
@@ -74,23 +212,32 @@ class MeasurementProtocolSubscriber implements EventSubscriberInterface
         $eventParams['event_source'] = 'server';
         $eventParams['engagement_time_msec'] = 1;
 
-        $clientId = $this->getClientIdFromCookie($request);
+        return $eventParams;
+    }
+
+    /**
+     * Sendet das Purchase-Event via Measurement Protocol.
+     *
+     * @param array<string, mixed> $config
+     * @param array<string, string> $consent
+     * @param array<string, mixed> $eventParams
+     */
+    private function sendPurchaseEvent(array $config, ?string $clientId, ?string $sessionId, array $consent, ?string $userId, array $eventParams): void
+    {
         if ($clientId === null) {
-            // No GA cookie available => do not send the event
             if ($this->loggingHelper->loggingType('debug')) {
-                $this->loggingHelper->logMsg('Measurement Protocol: no _ga cookie found, purchase event not sent.');
+                $this->loggingHelper->logMsg('Measurement Protocol: no client_id available, purchase event not sent.');
             }
             return;
         }
 
-        $sessionId = $this->getSessionIdFromCookie($request, $config);
         if ($sessionId !== null) {
             $eventParams['session_id'] = $sessionId;
         }
 
         $payload = [
             'client_id' => $clientId,
-            'consent' => $this->getConsentFromCookie($request),
+            'consent' => $consent,
             'events' => [
                 [
                     'name' => 'purchase',
@@ -98,9 +245,8 @@ class MeasurementProtocolSubscriber implements EventSubscriberInterface
                 ],
             ],
         ];
-        $customerNumber = $this->getCustomerNumber($order);
-        if ($customerNumber !== null) {
-            $payload['user_id'] = $customerNumber;
+        if ($userId !== null) {
+            $payload['user_id'] = $userId;
         }
 
         $endpoint = $config['measurementProtocolEndpoint'] ?? 'https://region1.google-analytics.com/mp/collect';
@@ -108,9 +254,9 @@ class MeasurementProtocolSubscriber implements EventSubscriberInterface
         $measurementId = $config['measurementProtocolMeasurementId'] ?? '';
 
         $url = $endpoint . '?' . http_build_query([
-            'measurement_id' => $measurementId,
-            'api_secret' => $apiSecret,
-        ]);
+                'measurement_id' => $measurementId,
+                'api_secret' => $apiSecret,
+            ]);
 
         $this->sendRequest($url, $payload);
     }

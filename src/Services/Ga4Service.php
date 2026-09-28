@@ -146,7 +146,7 @@ class Ga4Service implements Ga4ServiceInterface
      * @param string $event_name
      * @return array
      */
-    private function addEeEvent($tags, $event_name = '', $source = '')
+    private function addEeEvent($tags, string $event_name = '', string $source = ''): array
     {
         $event_array = [];
         if($event_name != '') $event_array = ['event' => $event_name];
