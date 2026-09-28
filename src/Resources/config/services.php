@@ -4,6 +4,7 @@ use Dtgs\GoogleTagManager\Components\Utils\TwigExtension;
 use Dtgs\GoogleTagManager\Core\Content\DtgsGtmCustomService\CustomServiceDefinition;
 use Dtgs\GoogleTagManager\Core\Content\DtgsGtmCustomService\Translation\ServiceTranslationDefinition;
 use Dtgs\GoogleTagManager\Framework\Cookie\CustomCookieProvider;
+use Shopware\Core\Framework\Plugin\KernelPluginCollection;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Shopware\Storefront\Framework\Cookie\CookieProviderInterface;
 
@@ -32,5 +33,8 @@ return static function (Symfony\Component\DependencyInjection\Loader\Configurato
 
     // Twig Function
     $services->set(TwigExtension::class)
+        ->args([
+            service(KernelPluginCollection::class),
+        ])
         ->tag('twig.extension');
 };

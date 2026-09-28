@@ -7,11 +7,17 @@ namespace Dtgs\GoogleTagManager\Components\Utils;
 use Composer\InstalledVersions;
 use OutOfBoundsException;
 use Shopware\Core\Content\Product\SalesChannel\SalesChannelProductEntity;
+use Shopware\Core\Framework\Plugin\KernelPluginCollection;
 use Twig\Extension\AbstractExtension;
 use Twig\TwigFunction;
 
 class TwigExtension extends AbstractExtension
 {
+    public function __construct(
+        private readonly ?KernelPluginCollection $pluginCollection = null
+    ) {
+    }
+
     /**
      * @return TwigFunction[]
      */
@@ -25,6 +31,7 @@ class TwigExtension extends AbstractExtension
             new TwigFunction('gtmGetVariantName', [$this, 'getVariantName']),
             new TwigFunction('gtmGetCalculatedProductPrice', [$this, 'getCalculatedProductPrice']),
             new TwigFunction('gtmGetShopwareVersion', [$this, 'getShopwareVersion']),
+            new TwigFunction('gtmIsPluginInstalled', [$this, 'isPluginInstalled']),
         ];
     }
 
@@ -185,4 +192,61 @@ class TwigExtension extends AbstractExtension
         }
     }
 
+    /**
+     * Checks if a plugin is installed/active by plugin name, bundle class, or composer package name
+     */
+    public function isPluginInstalled(string $pluginName): bool
+    {
+        if ($this->pluginCollection !== null) {
+            if ($this->pluginCollection->has($pluginName)) {
+                return true;
+            }
+            foreach ($this->pluginCollection->all() as $plugin) {
+                if ($plugin->getName() === $pluginName || $plugin::class === $pluginName) {
+                    return true;
+                }
+            }
+        }
+
+        try {
+            if (InstalledVersions::isInstalled($pluginName)) {
+                return true;
+            }
+        } catch (\OutOfBoundsException|\Throwable $e) {
+        }
+
+        if (class_exists($pluginName)) {
+            return true;
+        }
+
+        // Try common package / class conventions if a short name was provided
+        if (!str_contains($pluginName, '\\') && !str_contains($pluginName, '/')) {
+            $kebabName = strtolower((string) preg_replace('/(?<!^)[A-Z]/', '-$0', $pluginName));
+            $cleanKebab = (string) preg_replace('/^swag-/', '', $kebabName);
+            $cleanStudly = (string) preg_replace('/^Swag/', '', $pluginName);
+
+            $candidates = [
+                $pluginName . '\\' . $pluginName,
+                'Swag\\' . $pluginName . '\\' . $pluginName,
+                'Shopware\\' . $cleanStudly . '\\' . $pluginName,
+                'shopware/' . $kebabName,
+                'swag/' . $kebabName,
+                'shopware/' . $cleanKebab,
+                'swag/' . $cleanKebab,
+            ];
+            foreach ($candidates as $candidate) {
+                if (class_exists($candidate)) {
+                    return true;
+                }
+                try {
+                    if (InstalledVersions::isInstalled($candidate)) {
+                        return true;
+                    }
+                } catch (\OutOfBoundsException|\Throwable $e) {
+                }
+            }
+        }
+
+        return false;
+    }
 }
