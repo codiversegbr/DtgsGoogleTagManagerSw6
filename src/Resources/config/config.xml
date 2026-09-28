@@ -300,6 +300,83 @@
     </card>
 
     <card>
+        <title>Google Measurement Protocol</title>
+        <title lang="de-DE">Google Measurement Protocol</title>
+        <title lang="nl-NL">Google Measurement Protocol</title>
+
+        <input-field type="bool">
+            <name>measurementProtocolEnabled</name>
+            <label>Report purchases via Google Measurement API?</label>
+            <label lang="de-DE">Käufe per Google Measurement API melden?</label>
+            <label lang="nl-NL">Aankopen melden via Google Measurement API?</label>
+            <defaultValue>false</defaultValue>
+        </input-field>
+
+        <input-field>
+            <name>measurementProtocolApiSecret</name>
+            <label>API Secret</label>
+            <label lang="de-DE">API Secret</label>
+            <label lang="nl-NL">API Secret</label>
+            <helpText>The API secret can be created in the Google Analytics UI under Admin > Data Streams > Measurement Protocol API secrets.</helpText>
+            <helpText lang="de-DE">Das API Secret kann in der Google Analytics Oberfläche unter Verwaltung > Datenstreams > Measurement Protocol API-Secrets erstellt werden.</helpText>
+            <helpText lang="nl-NL">Het API-geheim kan worden aangemaakt in de Google Analytics-interface onder Beheer > Datastreams > Measurement Protocol API-geheimen.</helpText>
+        </input-field>
+
+        <input-field>
+            <name>measurementProtocolMeasurementId</name>
+            <label>Measurement ID</label>
+            <label lang="de-DE">Measurement ID</label>
+            <label lang="nl-NL">Measurement ID</label>
+            <helpText>Your GA4 Measurement ID (e.g. G-XXXXXXXXXX).</helpText>
+            <helpText lang="de-DE">Ihre GA4 Measurement ID (z.B. G-XXXXXXXXXX).</helpText>
+            <helpText lang="nl-NL">Uw GA4 Measurement ID (bijv. G-XXXXXXXXXX).</helpText>
+        </input-field>
+
+        <input-field type="single-select">
+            <name>measurementProtocolTrackingTrigger</name>
+            <options>
+                <option>
+                    <id>checkout_complete</id>
+                    <name>On order completion in shop</name>
+                    <name lang="de-DE">Beim Bestellabschluss im Shop</name>
+                    <name lang="nl-NL">Bij het afronden van de bestelling in de shop</name>
+                </option>
+                <option>
+                    <id>order_paid</id>
+                    <name>When order is marked as paid</name>
+                    <name lang="de-DE">Beim Markieren der Bestellung als bezahlt</name>
+                    <name lang="nl-NL">Wanneer de bestelling als betaald wordt gemarkeerd</name>
+                </option>
+            </options>
+            <defaultValue>checkout_complete</defaultValue>
+            <label>When should the purchase be tracked?</label>
+            <label lang="de-DE">Wann soll der Kauf getrackt werden?</label>
+            <label lang="nl-NL">Wanneer moet de aankoop worden getrackt?</label>
+        </input-field>
+
+        <input-field type="single-select">
+            <name>measurementProtocolEndpoint</name>
+            <options>
+                <option>
+                    <id>https://www.google-analytics.com/mp/collect</id>
+                    <name>https://www.google-analytics.com/mp/collect</name>
+                </option>
+                <option>
+                    <id>https://region1.google-analytics.com/mp/collect</id>
+                    <name>https://region1.google-analytics.com/mp/collect (EU)</name>
+                </option>
+            </options>
+            <defaultValue>https://region1.google-analytics.com/mp/collect</defaultValue>
+            <label>API Endpoint</label>
+            <label lang="de-DE">API Endpunkt</label>
+            <label lang="nl-NL">API Endpoint</label>
+            <helpText>Select the Google Measurement Protocol endpoint. The EU endpoint (region1) is recommended for European shops.</helpText>
+            <helpText lang="de-DE">Wählen Sie den Google Measurement Protocol Endpunkt. Der EU-Endpunkt (region1) wird für europäische Shops empfohlen.</helpText>
+            <helpText lang="nl-NL">Selecteer het Google Measurement Protocol-eindpunt. Het EU-eindpunt (region1) wordt aanbevolen voor Europese shops.</helpText>
+        </input-field>
+    </card>
+
+    <card>
         <title>Developer configuration</title>
         <title lang="de-DE">Entwickler Konfiguration</title>
         <title lang="nl-NL">Configuratie voor ontwikkelaars</title>
