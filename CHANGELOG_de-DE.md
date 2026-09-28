@@ -1,3 +1,12 @@
+# 6.3.34
+- Neu: Measurement Protocol: serversteiges Kauf-Tracking (GTM-GH-64)
+- Verbesserung: Service Deklaration von XML auf PHP migriert (GTM-GH-67)
+- Verbesserung: begin_checkout Event umgebaut: feuert nun beim Klick auf den Zur Kasse-Button (GTM-GH-55)
+- Verbesserung: add_to_wishlist Event feuert nun auch auf der confirm-Seite (GTM-GH-15)
+- Bugfix: JS Fehler gefixt wenn SwagCommercial Plugin installiert ist (GTM-GH-76)
+- Verbesserung: Alte Snippet File Registrierung entfernt (GTM-GH-78)
+- Verbesserung: events add_shipping_info und add_payment_info are only feuern nun nur wenn sich der Wert geändert hat (GTM-GH-79)
+
 # 6.3.33
 - Bugfix: Alle Preise als Float formatiert (GTM-GH-70)
 - Bugfix: select_item Event funktionierte nicht korrekt für Varianten (GTM-GH-65)

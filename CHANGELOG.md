@@ -1,3 +1,12 @@
+# 6.3.34
+- New: Measurement Protocol: server-side purchase tracking (GTM-GH-64)
+- Improvement: Migrate services declaration from XML to PHP (GTM-GH-67)
+- Improvement: Rework begin_checkout event - it is now being fired when clicking on "Go to checkout" button and should be triggered more often (GTM-GH-55)
+- Improvement: add_to_wishlist event now firing on checkout/confirm page (GTM-GH-15)
+- Improvement: events add_shipping_info and add_payment_info are only fired when changed (GTM-GH-79)
+- Bugfix: JS error in listing when SwagCommercial plugin is installed (GTM-GH-76)
+- Bugfix: Old snippet file registration crashes symfony lint tool (GTM-GH-78)
+
 # 6.3.33
 - Bugfix: all prices are now formatted as float (GTM-GH-70)
 - Bugfix: select_item event not working correctly for variants (GTM-GH-65)
