@@ -31,7 +31,9 @@
 
     {{ parent() }}
 
-    {% sw_include 'storefront/plugins/TagManager/product-card-action.html.twig' %}
+    {% if not displayBuyButton %}
+        {% sw_include 'storefront/plugins/TagManager/product-card-action.html.twig' %}
+    {% endif %}
 
 {% endblock %}
 
@@ -39,8 +41,6 @@
 
     {{ parent() }}
 
-    {% if not displayBuyButton %}
-        {% sw_include 'storefront/plugins/TagManager/product-card-action.html.twig' %}
-    {% endif %}
+    {% sw_include 'storefront/plugins/TagManager/product-card-action.html.twig' %}
 
 {% endblock %}
