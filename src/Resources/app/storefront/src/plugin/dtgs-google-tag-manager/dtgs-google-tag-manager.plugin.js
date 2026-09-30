@@ -354,8 +354,8 @@ export default class DtgsGoogleTagManagerPlugin extends Plugin
 
         window.dataLayer.push({
             'event': 'view_cart',
-            'currency': additionalProperties.currency,
             'ecommerce': {
+                'currency': additionalProperties.currency,
                 'items': lineItems
             }
         });
