@@ -3,9 +3,10 @@
 - Verbesserung: Service Deklaration von XML auf PHP migriert (GTM-GH-67)
 - Verbesserung: begin_checkout Event umgebaut: feuert nun beim Klick auf den Zur Kasse-Button (GTM-GH-55)
 - Verbesserung: add_to_wishlist Event feuert nun auch auf der confirm-Seite (GTM-GH-15)
+- Verbesserung: events add_shipping_info und add_payment_info feuern nun nur, wenn sich der Wert geändert hat (GTM-GH-79)
+- Verbesserung: Die Position von currency im view_cart-Event des off-canvas Warenkorbs wurde entsprechend den Vorgaben von Google angepasst. (GTM-GH-86)
 - Bugfix: JS Fehler gefixt wenn SwagCommercial Plugin installiert ist (GTM-GH-76)
-- Verbesserung: Alte Snippet File Registrierung entfernt (GTM-GH-78)
-- Verbesserung: events add_shipping_info und add_payment_info are only feuern nun nur wenn sich der Wert geändert hat (GTM-GH-79)
+- Bugfix: Alte Snippet File Registrierung entfernt (GTM-GH-78)
 
 # 6.3.33
 - Bugfix: Alle Preise als Float formatiert (GTM-GH-70)

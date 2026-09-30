@@ -4,6 +4,7 @@
 - Improvement: Rework begin_checkout event - it is now being fired when clicking on "Go to checkout" button and should be triggered more often (GTM-GH-55)
 - Improvement: add_to_wishlist event now firing on checkout/confirm page (GTM-GH-15)
 - Improvement: events add_shipping_info and add_payment_info are only fired when changed (GTM-GH-79)
+- Improvement: The position of ‘currency’ in the ‘view_cart’ event of the off-canvas shopping basket has been adjusted in line with Google’s guidelines. (GTM-GH-86)
 - Bugfix: JS error in listing when SwagCommercial plugin is installed (GTM-GH-76)
 - Bugfix: Old snippet file registration crashes symfony lint tool (GTM-GH-78)
 
