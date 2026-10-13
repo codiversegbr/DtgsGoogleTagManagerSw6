@@ -356,6 +356,7 @@ export default class DtgsGoogleTagManagerPlugin extends Plugin
             'event': 'view_cart',
             'ecommerce': {
                 'currency': additionalProperties.currency,
+                'value': Number(additionalProperties.value),
                 'items': lineItems
             }
         });
