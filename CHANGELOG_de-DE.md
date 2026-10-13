@@ -1,3 +1,12 @@
+# 6.4.12
+- Verbesserung: add_payment_info und add_shipping_info twice werden nun unabhängig von einander gefeuert (GTM-GH-79)
+- Verbesserung: begin_checkout kann nicht mehr mehrfach auf der selben Seite ausgelöst werden (thanks to @lacknere!)
+- Verbesserung: quantity Fallback im add_to_cart Event hinzugefügt (thanks to @lacknere!)
+- Bugfix: begin_checkout Event Daten korrigiert (thanks to @lacknere!)
+- Bugfix: view_cart Event auf der checkout/register hat nun einen eigenen Eventnamen (GTM-GH-87)
+- Bugfix: Mögliche Slashes im CSP Nonce konnte dazu führen, dass SEO Bots den Nonce als URL interpretierten (GTM-GH-88)
+- Bugfix: view_cart Event im Off Canvas WK: Currency falsch im Ecommerce Array positioniert (GTM-GH-86)
+
 # 6.4.11
 - Neu: Measurement Protocol: server-side purchase tracking (GTM-GH-64)
 - Verbesserung: Service Deklaration von XML auf PHP migriert (GTM-GH-67)

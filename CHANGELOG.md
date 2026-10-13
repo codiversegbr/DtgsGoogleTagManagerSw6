@@ -1,3 +1,12 @@
+# 6.4.12
+- Improvement: Avoid fireing add_payment_info or add_shipping_info twice, when one of them is changed (GTM-GH-79)
+- Improvement: prevent begin_checkout from firing multiple times on the same page (thanks to @lacknere!)
+- Improvement: add quantity fallback to add_to_cart event in case of missing input field (thanks to @lacknere!) 
+- Bugfix: begin_checkout was missing value and currency was wrongfully placed (thanks to @lacknere!)
+- Bugfix: view_cart event data still left on checkout/register page, but without event name (GTM-GH-87)
+- Bugfix: Possible slashes in csp nonce lead to Google bot interpreting nonce as relative URL (GTM-GH-88)
+- Bugfix: view_cart event in off-canvas: currency value position in ecommerce (GTM-GH-86)
+
 # 6.4.11
 - New: Measurement Protocol: server-side purchase tracking (GTM-GH-64)
 - Improvement: Migrate services declaration from XML to PHP (GTM-GH-67)
