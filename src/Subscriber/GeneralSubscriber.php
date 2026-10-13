@@ -47,6 +47,14 @@ use Symfony\Component\HttpFoundation\RequestStack;
 class GeneralSubscriber implements EventSubscriberInterface
 {
     /**
+     * Session keys used to remember the last payment/shipping selection for which
+     * the add_payment_info / add_shipping_info events have already been fired.
+     * CDVRS-GH-14
+     */
+    private const GTM_ADD_PAYMENT_INFO_SESSION_KEY = 'dtgsGtmAddPaymentInfo';
+    private const GTM_ADD_SHIPPING_INFO_SESSION_KEY = 'dtgsGtmAddShippingInfo';
+
+    /**
      * @var SystemConfigService
      */
     private $systemConfigService;
@@ -254,14 +262,37 @@ class GeneralSubscriber implements EventSubscriberInterface
                 $ga4Tags = $this->ga4Service->getCheckoutTags($page->getCart(), $event);
                 /**
                  * CDVRS-GH-14: add events add_payment_info and and add_shipping_info
+                 * These events should only be fired once and only when the selected
+                 * payment/shipping method actually changed. We remember the last
+                 * selection in the session to avoid duplicate events on every
+                 * confirm page reload.
                  */
-                $additionalEvents[] = $this->ga4Service->getAddPaymentInfoTags($page->getCart(), $event->getSalesChannelContext());
-                $additionalEvents[] = $this->ga4Service->getAddShippingInfoTags($page->getCart(), $event->getSalesChannelContext());
+                $session = $event->getRequest()->getSession();
+                $paymentMethod = $event->getSalesChannelContext()->getPaymentMethod();
+                $paymentMethodId = $paymentMethod ? $paymentMethod->getId() : null;
+                if($session->get(self::GTM_ADD_PAYMENT_INFO_SESSION_KEY) !== $paymentMethodId) {
+                    $additionalEvents[] = $this->ga4Service->getAddPaymentInfoTags($page->getCart(), $event->getSalesChannelContext());
+                    $session->set(self::GTM_ADD_PAYMENT_INFO_SESSION_KEY, $paymentMethodId);
+                }
+
+                $shippingMethod = $event->getSalesChannelContext()->getShippingMethod();
+                $shippingMethodId = $shippingMethod ? $shippingMethod->getId() : null;
+                if($session->get(self::GTM_ADD_SHIPPING_INFO_SESSION_KEY) !== $shippingMethodId) {
+                    $additionalEvents[] = $this->ga4Service->getAddShippingInfoTags($page->getCart(), $event->getSalesChannelContext());
+                    $session->set(self::GTM_ADD_SHIPPING_INFO_SESSION_KEY, $shippingMethodId);
+                }
                 break;
             case CheckoutFinishPageLoadedEvent::class:
                 $checkoutTags = $this->datalayerService->getFinishTags($page->getOrder(), $event->getSalesChannelContext());
                 $remarketingTags = $this->remarketingService->getPurchaseConfirmationTags($page->getOrder(), $event->getSalesChannelContext());
                 $ga4Tags = $this->ga4Service->getPurchaseConfirmationTags($page->getOrder(), $event->getSalesChannelContext());
+                /**
+                 * CDVRS-GH-14: reset the remembered payment/shipping selection so the
+                 * add_payment_info / add_shipping_info events fire again for the next order.
+                 */
+                $session = $event->getRequest()->getSession();
+                $session->remove(self::GTM_ADD_PAYMENT_INFO_SESSION_KEY);
+                $session->remove(self::GTM_ADD_SHIPPING_INFO_SESSION_KEY);
                 /**
                  * Code insertion delay exception on finish pages - since 6.2.9
                  */
