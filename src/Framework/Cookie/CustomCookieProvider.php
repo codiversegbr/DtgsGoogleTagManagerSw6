@@ -56,6 +56,20 @@ class CustomCookieProvider implements CookieProviderInterface {
         ],
     ];
 
+    private const marketingCookie = [
+        'snippet_name' => 'cookie.dtgsGtmMarketing',
+        'cookie' => 'dtgsAllowGtmMarketing',
+        'value' => '1',
+        'expiration' => '30'
+    ];
+
+    private const marketingCookieGroup = [
+        'snippet_name' => 'cookie.groupMarketing',
+        'entries' => [
+            self::marketingCookie
+        ],
+    ];
+
     public function getCookieGroups(): array
     {
         $cookieGroups = $this->originalService->getCookieGroups();
@@ -78,6 +92,26 @@ class CustomCookieProvider implements CookieProviderInterface {
                     self::cookieGroup
                 ]
             );
+        }
+
+        if ($this->separateMarketingConsentEnabled()) {
+            $addedToMarketingGroup = false;
+
+            foreach ($cookieGroups as $cookieGroupKey => $cookieGroup) {
+                if (($cookieGroup['snippet_name'] ?? '') === 'cookie.groupMarketing') {
+                    $cookieGroups[$cookieGroupKey]['entries'][] = self::marketingCookie;
+                    $addedToMarketingGroup = true;
+                }
+            }
+
+            if (!$addedToMarketingGroup) {
+                $cookieGroups = array_merge(
+                    $cookieGroups,
+                    [
+                        self::marketingCookieGroup
+                    ]
+                );
+            }
         }
 
         $cookieGroups = $this->customServiceCookieGroups($cookieGroups);
@@ -209,5 +243,19 @@ class CustomCookieProvider implements CookieProviderInterface {
         $tagManagerConfig = $this->systemConfigService->get('DtgsGoogleTagManagerSw6.config', $salesChannelId);
 
         return $tagManagerConfig['pluginActiveInSaleschannel'] ?? true;
+    }
+
+    private function separateMarketingConsentEnabled(): bool
+    {
+        $request = $this->requestStack->getCurrentRequest();
+        /** @var SalesChannelContext|null $salesChannelContext */
+        $salesChannelContext = $request ? $request->attributes->get('sw-sales-channel-context') : null;
+        $salesChannelId = $salesChannelContext ? $salesChannelContext->getSalesChannel()->getId() : null;
+        $tagManagerConfig = $this->systemConfigService->get('DtgsGoogleTagManagerSw6.config', $salesChannelId);
+
+        $consentModeImplementation = $tagManagerConfig['consentModeImplementation'] ?? 'shopwareCmp';
+        $separateMarketingConsent = $tagManagerConfig['separateMarketingConsent'] ?? false;
+
+        return $consentModeImplementation === 'shopwareCmp' && $separateMarketingConsent;
     }
 }

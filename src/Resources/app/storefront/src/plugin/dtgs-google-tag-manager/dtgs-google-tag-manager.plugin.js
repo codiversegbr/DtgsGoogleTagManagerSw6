@@ -16,12 +16,16 @@ export default class DtgsGoogleTagManagerPlugin extends Plugin
     init() {
         this.cookieEnabledName = 'dtgsAllowGtmTracking';
         this.cookieAdsEnabledName = window.googleAdsCookieName || 'google-ads-enabled';
+        // When the separate marketing consent option is enabled, the twig template sets
+        // window.googleAdsCookieName to the dedicated marketing cookie. In that case the
+        // advertising flags (ad_*) are controlled independently from the statistics cookie.
+        this.separateMarketingConsent = this.cookieAdsEnabledName === 'dtgsAllowGtmMarketing';
 
         this.handleCookieChangeEvent();
 
         this.startGoogleTagManager();
 
-        if (!CookieStorageHelper.getItem(this.cookieEnabledName)) {
+        if (!this.isGtmConsentGiven()) {
 
             const offCanvasCartElement = document.querySelector('[data-off-canvas-cart]');
             if(offCanvasCartElement) {
@@ -55,6 +59,42 @@ export default class DtgsGoogleTagManagerPlugin extends Plugin
             wishlistFormElement.addEventListener('submit', this.onWishlistRemoveFormSubmit.bind(this));
         }
 
+    }
+
+    /**
+     * Returns the current effective consent for a cookie. If the cookie is part of the
+     * provided update payload its updated value is used, otherwise the currently stored
+     * cookie value is evaluated.
+     *
+     * @param cookieName
+     * @param updatedCookies
+     * @returns {boolean}
+     */
+    isConsentGranted(cookieName, updatedCookies) {
+        if (updatedCookies && Object.prototype.hasOwnProperty.call(updatedCookies, cookieName)) {
+            return !!updatedCookies[cookieName];
+        }
+
+        return !!CookieStorageHelper.getItem(cookieName);
+    }
+
+    /**
+     * GTM may be loaded when the statistics consent is given. When the separate marketing
+     * consent option is active, a granted marketing consent is sufficient as well.
+     *
+     * @param updatedCookies
+     * @returns {boolean}
+     */
+    isGtmConsentGiven(updatedCookies) {
+        if (this.isConsentGranted(this.cookieEnabledName, updatedCookies)) {
+            return true;
+        }
+
+        if (this.separateMarketingConsent && this.isConsentGranted(this.cookieAdsEnabledName, updatedCookies)) {
+            return true;
+        }
+
+        return false;
     }
 
     fireCookieConsentEvent() {
@@ -142,11 +182,14 @@ export default class DtgsGoogleTagManagerPlugin extends Plugin
 
         this.updateConsentMode(updatedCookies);
 
-        if (!updatedCookies.hasOwnProperty(this.cookieEnabledName)) {
+        const trackingUpdated = updatedCookies.hasOwnProperty(this.cookieEnabledName);
+        const marketingUpdated = this.separateMarketingConsent && updatedCookies.hasOwnProperty(this.cookieAdsEnabledName);
+
+        if (!trackingUpdated && !marketingUpdated) {
             return;
         }
 
-        if (updatedCookies[this.cookieEnabledName]) {
+        if (this.isGtmConsentGiven(updatedCookies)) {
             this.fireCookieConsentEvent();
             this.loadGoogleTagManager();
             this.startGoogleTagManager();
