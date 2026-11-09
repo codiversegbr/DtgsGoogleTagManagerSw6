@@ -1,4 +1,4 @@
-<p align="center"><a href="https://www.codiverse.de/" target="_blank" rel="noopener noreferrer"><img width="250" src="https://cdn.shopware.store/H/D/7/H3WDw/media/e3/28/78/1712849178/127f7b77dd9380f7d469351b82530c73.png?width=1920&ts=1747818643"></a></p>
+<p align="center"><a href="https://www.codiverse.de/" target="_blank" rel="noopener noreferrer"><img width="250" src="https://codiverse.de/_shopware-community-store/icon-gtm.png"></a></p>
 
 <h1 align="center">Google Tag Manager + GA4 + Remarketing Plugin for Shopware</h1>
 
