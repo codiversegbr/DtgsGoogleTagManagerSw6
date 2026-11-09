@@ -1,6 +1,7 @@
 {
     "cookie": {
         "dtgsGtmTracking": "Kauf- und Surfverhalten mit Google Tag Manager",
+        "dtgsGtmMarketing": "Marketing und Werbung mit Google Tag Manager",
         "groupStatistical": "Statistik",
         "groupStatisticalDescription": "Diese Cookies werden für Statistiken und Shop Performance Metriken genutzt.",
         "dtgs-gtm-svc-generic-service": {

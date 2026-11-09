@@ -153,6 +153,16 @@
                 Optie 3: Verzendt ALTIJD “granted”. Controleer zorgvuldig of deze code wettelijk is toegestaan voor het verkoopgebied.</helpText>
         </input-field>
 
+        <input-field type="bool">
+            <name>separateMarketingConsent</name>
+            <label lang="de-DE">Werbe-Flags (ad_*) über ein separates Marketing-Cookie steuern?</label>
+            <label lang="nl-NL">Advertentie-flags (ad_*) via een afzonderlijke Marketing-cookie beheren?</label>
+            <label>Control advertising flags (ad_*) via a separate marketing cookie?</label>
+            <defaultValue>false</defaultValue>
+            <helpText lang="de-DE">Nur wirksam, wenn "Einbindung des Google Consent Mode V2" auf die Standard-Option (Shopware Cookie Manager) steht. Ist diese Option aktiviert, werden die Flags ad_user_data, ad_storage und ad_personalization über ein separates Marketing-Cookie gesteuert, während analytics_storage weiterhin über das Statistik-Cookie gesteuert wird.</helpText>
+            <helpText lang="nl-NL">Alleen van toepassing als "Integratie van de Google Consent Mode V2" is ingesteld op de standaardoptie (Shopware Cookie Manager). Indien ingeschakeld, worden de flags ad_user_data, ad_storage en ad_personalization beheerd via een afzonderlijke Marketing-cookie, terwijl analytics_storage via de Statistiek-cookie wordt beheerd.</helpText>
+            <helpText>Only effective when "Implementation of Google Consent Mode V2" is set to the default option (Shopware Cookie Manager). When enabled, the flags ad_user_data, ad_storage and ad_personalization are controlled via a separate marketing cookie, while analytics_storage is still controlled via the statistics cookie.</helpText>
+        </input-field>
     </card>
 
     <card>

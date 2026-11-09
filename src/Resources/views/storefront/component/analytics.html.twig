@@ -19,6 +19,11 @@
                     window.googleAdsCookieName = 'dtgsAllowGtmTracking';
                 {% endif %}
 
+                {% if gtmConfig.separateMarketingConsent %}
+                    googleAdsCookieName = 'dtgsAllowGtmMarketing';
+                    window.googleAdsCookieName = 'dtgsAllowGtmMarketing';
+                {% endif %}
+
                 const adsEnabled = document.cookie.split(';').some((item) => item.trim().includes(googleAdsCookieName + '=1'));
 
                 // Always set a default consent for consent mode v2
