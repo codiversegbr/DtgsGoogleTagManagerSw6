@@ -1,3 +1,11 @@
+# 6.3.35
+- Neu: Option zum Verschieben der Google Consent Flags aus dem Bereich "Statistics" in den Bereich "Marketing" hinzugefügt (GTM-GH-89)
+- Verbesserung: begin_checkout kann nicht mehr mehrfach auf der selben Seite ausgelöst werden (thanks to @lacknere!)
+- Verbesserung: quantity Fallback im add_to_cart Event hinzugefügt (thanks to @lacknere!)
+- Bugfix: begin_checkout Event Daten korrigiert (thanks to @lacknere!)
+- Bugfix: view_cart Event auf der checkout/register hat nun einen eigenen Eventnamen (GTM-GH-87)
+- Bugfix: Mögliche Slashes im CSP Nonce konnte dazu führen, dass SEO Bots den Nonce als URL interpretierten (GTM-GH-88)
+
 # 6.3.34
 - Neu: Measurement Protocol: serversteiges Kauf-Tracking (GTM-GH-64)
 - Verbesserung: Service Deklaration von XML auf PHP migriert (GTM-GH-67)
