@@ -35,4 +35,4 @@ Hi, we are codiverse and we love Shopware! We are a team of experienced develope
 Our plugin is available in the Shopware Store. You can install it via the Shopware Plugin Manager. Download it here: https://store.shopware.com/en/dtgs888695584742m/google-tag-manager-ga4-remarketing.html 
 
 <h2>Collaboration</h2>
-If you found a bug or have a feature request, please open an issue on our [github repository](https://github.com/codiversegbr/DtgsGoogleTagManagerSw6) or create a pull request. We are happy to collaborate with you and improve our plugin together.
+If you found a bug or have a feature request, please open an issue on our <a href="https://github.com/codiversegbr/DtgsGoogleTagManagerSw6" target="_blank" rel="noopener noreferrer">github repository</a> or create a pull request. We are happy to collaborate with you and improve our plugin together.
