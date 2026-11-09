@@ -1,3 +1,6 @@
+# 6.4.13
+- Neuerung: Option zum Verschieben der Google Consent Flags aus dem Bereich "Statistics" in den Bereich "Marketing" hinzugefügt (GTM-GH-89)
+
 # 6.4.12
 - Verbesserung: add_payment_info und add_shipping_info twice werden nun unabhängig von einander gefeuert (GTM-GH-79)
 - Verbesserung: begin_checkout kann nicht mehr mehrfach auf der selben Seite ausgelöst werden (thanks to @lacknere!)

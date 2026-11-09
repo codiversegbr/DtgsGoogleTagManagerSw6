@@ -1,3 +1,6 @@
+# 6.4.13
+- New: Add option to move Google Consent Flags except analytics_storage from statistics to marketing (GTM-GH-89)
+
 # 6.4.12
 - Improvement: Avoid fireing add_payment_info or add_shipping_info twice, when one of them is changed (GTM-GH-79)
 - Improvement: prevent begin_checkout from firing multiple times on the same page (thanks to @lacknere!)
