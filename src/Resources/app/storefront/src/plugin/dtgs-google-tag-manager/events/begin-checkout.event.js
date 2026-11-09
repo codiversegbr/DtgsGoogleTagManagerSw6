@@ -9,7 +9,9 @@ export default class GtmBeginCheckoutEvent extends AnalyticsEvent
     }
 
     execute() {
-        document.addEventListener('click', this._onBeginCheckout.bind(this));
+        this._boundOnBeginCheckout = this._onBeginCheckout.bind(this);
+
+        document.addEventListener('click', this._boundOnBeginCheckout);
     }
 
     _onBeginCheckout(event) {
@@ -41,6 +43,8 @@ export default class GtmBeginCheckoutEvent extends AnalyticsEvent
                 'items': lineItems
             }
         });
+
+        document.removeEventListener('click', this._boundOnBeginCheckout);
     }
 
     getLineItems() {
