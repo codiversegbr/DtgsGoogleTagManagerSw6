@@ -1,5 +1,4 @@
 <p align="center"><a href="https://www.codiverse.de/" target="_blank" rel="noopener noreferrer"><img width="250" src="https://codiverse.de/_shopware-community-store/icon-gtm.png"></a></p>
-<p align="center"><a href="https://www.codiverse.de/" target="_blank" rel="noopener noreferrer"><img width="100" src="https://www.codiverse.de/wp-content/uploads/2016/05/logo-codiverse-retina.png"></a></p>
 
 <h1 align="center">Google Tag Manager + GA4 + Measurement Protocol + Ads + Remarketing</h1>
 
@@ -36,4 +35,4 @@ Hi, we are codiverse and we love Shopware! We are a team of experienced develope
 Our plugin is available in the Shopware Store. You can install it via the Shopware Plugin Manager. Download it here: https://store.shopware.com/en/dtgs888695584742m/google-tag-manager-ga4-remarketing.html 
 
 <h2>Collaboration</h2>
-If you found a bug or have a feature request, please open an issue on our github repository or create a pull request. We are happy to collaborate with you and improve our plugin together.
+If you found a bug or have a feature request, please open an issue on our [github repository](https://github.com/codiversegbr/DtgsGoogleTagManagerSw6) or create a pull request. We are happy to collaborate with you and improve our plugin together.
