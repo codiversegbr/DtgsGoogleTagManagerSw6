@@ -9,7 +9,7 @@
 ✅ Google Consent Mode V2 & GDPR-compliant – integrated cookie consent management, including compatibility with many third-party providersServer-side tracking via the Google <br/>
 ✅ Measurement Protocol – reliable purchase tracking even with ad blockers and without data loss.<br/>
 ✅ No programming knowledge required – full configuration via the Shopware backend for each sales channel.<br/>
-✅ Custom tracking services – manage any third-party scripts (Meta, Pinterest, TikTok, etc.) with your own cookie consent.br/>
+✅ Custom tracking services – manage any third-party scripts (Meta, Pinterest, TikTok, etc.) with your own cookie consent.
 
 <h2>Features</h2>
 👍 Integration of the Google Tag Manager container (GTM ID) via configuration (multiple container IDs possible).<br/>
