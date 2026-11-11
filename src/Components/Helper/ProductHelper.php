@@ -54,4 +54,12 @@ class ProductHelper
         return $this->breadcrumbBuilder->getProductSeoCategory($product, $context);
     }
 
+    /**
+     * @param CategoryEntity $category
+     */
+    public function getBreadcrumbAsArray($category): ?array
+    {
+        return $this->breadcrumbBuilder->build($category);
+    }
+
 }
