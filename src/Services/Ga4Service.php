@@ -209,7 +209,7 @@ class Ga4Service implements Ga4ServiceInterface
         //Product Category - Changed to SEO Category in V6.1.22
         $seoCategory = $product->getSeoCategory();
         if($seoCategory) {
-            $breadcrumb = $seoCategory->getTranslation('breadcrumb');
+            $breadcrumb = $this->productHelper->getBreadcrumbAsArray($product->getSeoCategory());
 
             if (!empty($breadcrumb) && is_array($breadcrumb)) {
 
@@ -599,7 +599,7 @@ class Ga4Service implements Ga4ServiceInterface
                         $context,
                     );
                     if($seoCategory !== null) {
-                        $breadcrumb = $seoCategory->getTranslation('breadcrumb');
+                        $breadcrumb = $this->productHelper->getBreadcrumbAsArray($seoCategory);
                         if (!empty($breadcrumb) && is_array($breadcrumb)) {
                             $item = $this->mapBreadcrumbCategories($breadcrumb, $item);
 
@@ -699,7 +699,9 @@ class Ga4Service implements Ga4ServiceInterface
         $visibleCategories = array_values(array_slice($breadcrumb, 1));
 
         // Reverse the order: make the leaf category first
-        $visibleCategories = array_reverse($visibleCategories);
+        // GTM-GH-91: keep original order according to current GA4 documentation
+        // https://developers.google.com/analytics/devguides/collection/ga4/ecommerce?hl=de&client_type=gtag
+        //$visibleCategories = array_reverse($visibleCategories);
 
         // Assign category levels dynamically
         foreach ($visibleCategories as $index => $categoryName) {

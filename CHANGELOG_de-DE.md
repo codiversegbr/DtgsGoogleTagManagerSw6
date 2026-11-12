@@ -1,3 +1,6 @@
+# 6.3.36
+- Verbesserung: Der Breadcrumb in item_category ist jetzt konsistent (GTM-GH-91)
+
 # 6.3.35
 - Neu: Option zum Verschieben der Google Consent Flags aus dem Bereich "Statistics" in den Bereich "Marketing" hinzugefügt (GTM-GH-89)
 - Verbesserung: begin_checkout kann nicht mehr mehrfach auf der selben Seite ausgelöst werden (thanks to @lacknere!)

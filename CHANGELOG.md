@@ -1,3 +1,6 @@
+# 6.3.36
+- Improvement: Keep breadcrumb in item_category consistent (GTM-GH-91)
+
 # 6.3.35
 - New: Add option to move Google Consent Flags except analytics_storage from statistics to marketing (GTM-GH-89)
 - Improvement: prevent begin_checkout from firing multiple times on the same page (thanks to @lacknere!)
