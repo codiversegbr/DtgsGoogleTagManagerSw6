@@ -228,10 +228,22 @@ class GeneralSubscriber implements EventSubscriberInterface
                 $remarketingTags = $this->remarketingService->getDetailTags($event->getPage()->getProduct(), $event->getSalesChannelContext());
                 $ga4Tags = $this->ga4Service->getDetailTags($event->getPage()->getProduct(), $event->getSalesChannelContext());
 
+                // Collect all breadcrumb category levels (item_category, item_category2, ...)
+                // so the add_to_cart event contains the full breadcrumb like the other events.
+                $addToCartCategories = [];
+                foreach ($ga4Tags['ecommerce']['items'][0] as $itemKey => $itemValue) {
+                    if (strpos($itemKey, 'item_category') === 0) {
+                        // item_category => category, item_category2 => category2, ...
+                        $suffix = substr($itemKey, strlen('item_category'));
+                        $addToCartCategories['category' . $suffix] = $itemValue;
+                    }
+                }
+
                 $addToCartInfo = new ArrayEntity([
                     'price' => $ga4Tags['ecommerce']['items'][0]['price'],
                     'sku' => $ga4Tags['ecommerce']['items'][0]['item_id'],
                     'category' => $ga4Tags['ecommerce']['items'][0]['item_category'],
+                    'categories' => $addToCartCategories,
                 ]);
 
                 if(isset($ga4Tags['ecommerce']['items'][0]['item_variant'])) {

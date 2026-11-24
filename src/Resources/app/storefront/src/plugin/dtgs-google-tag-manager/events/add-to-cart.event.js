@@ -65,7 +65,13 @@ export default class GtmAddToCartEvent extends EventAwareAnalyticsEvent
 
         //Price, Brand Name & Kategorie optional
         if(formData.get('dtgs-gtm-product-variantname') !== null) Object.assign(products, {'item_variant': formData.get('dtgs-gtm-product-variantname')});
-        if(formData.get('dtgs-gtm-product-category') !== null) Object.assign(products, {'item_category': formData.get('dtgs-gtm-product-category')});
+        //Category / Breadcrumb - read all category levels (category, category2, category3, ...)
+        formData.forEach((value, key) => {
+            const categoryMatch = key.match(/^dtgs-gtm-product-category(\d*)$/);
+            if(categoryMatch && value !== null && value !== '') {
+                Object.assign(products, {['item_category' + categoryMatch[1]]: value});
+            }
+        });
         if(formData.get('dtgs-gtm-product-price') !== null) Object.assign(products, {'price': Number(formData.get('dtgs-gtm-product-price'))});
         if(formData.get('brand-name') !== null) Object.assign(products, {'item_brand': formData.get('brand-name')});
         //Database ID - GH-7 / added in 6.3.19
