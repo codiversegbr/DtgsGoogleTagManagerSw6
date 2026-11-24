@@ -48,5 +48,6 @@ return static function (Symfony\Component\DependencyInjection\Loader\Configurato
             service('customer.repository'),
             service('customer_group.repository'),
             service('order.repository'),
-        ]);
+        ])
+        ->tag('kernel.reset', ['method' => 'reset']);
 };
