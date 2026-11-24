@@ -14,7 +14,7 @@
               data-name="{{ lineItem.label }}"
               data-quantity="{{ lineItem.quantity }}"
               data-price="{{ gaPrice }}"
-              data-dtgs-sku="{{ lineItem.payload.productNumber }}"
+              data-dtgs-sku="{{ gtmResolveItemId(lineItem, context) }}"
               data-dtgs-price="{{ gtmCalculatedProductPrice }}"
                 {% if(config('DtgsGoogleTagManagerSw6.config.addProductDatabaseIds')) %}
                     data-dtgs-db-id="{{ lineItem.id }}"

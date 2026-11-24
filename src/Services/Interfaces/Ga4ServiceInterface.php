@@ -104,4 +104,13 @@ interface Ga4ServiceInterface
      * @return array
      */
     public function getAddShippingInfoTags($cart, SalesChannelContext $context): array;
+
+    /**
+     * Resolves the configured item_id for a storefront line item (cart or order line item).
+     *
+     * @param mixed $lineItem
+     * @param SalesChannelContext $context
+     * @return string|null
+     */
+    public function resolveItemIdForLineItem($lineItem, SalesChannelContext $context): ?string;
 }

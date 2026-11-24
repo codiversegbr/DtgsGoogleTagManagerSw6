@@ -5,16 +5,19 @@ declare(strict_types=1);
 namespace Dtgs\GoogleTagManager\Components\Utils;
 
 use Composer\InstalledVersions;
+use Dtgs\GoogleTagManager\Services\Interfaces\Ga4ServiceInterface;
 use OutOfBoundsException;
 use Shopware\Core\Content\Product\SalesChannel\SalesChannelProductEntity;
 use Shopware\Core\Framework\Plugin\KernelPluginCollection;
+use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Twig\Extension\AbstractExtension;
 use Twig\TwigFunction;
 
 class TwigExtension extends AbstractExtension
 {
     public function __construct(
-        private readonly ?KernelPluginCollection $pluginCollection = null
+        private readonly ?KernelPluginCollection $pluginCollection = null,
+        private readonly ?Ga4ServiceInterface $ga4Service = null
     ) {
     }
 
@@ -30,6 +33,7 @@ class TwigExtension extends AbstractExtension
             new TwigFunction('gtmGetNoScriptUrl', [$this, 'getNoScriptUrl']),
             new TwigFunction('gtmGetVariantName', [$this, 'getVariantName']),
             new TwigFunction('gtmGetCalculatedProductPrice', [$this, 'getCalculatedProductPrice']),
+            new TwigFunction('gtmResolveItemId', [$this, 'resolveItemId']),
             new TwigFunction('gtmGetShopwareVersion', [$this, 'getShopwareVersion']),
             new TwigFunction('gtmIsPluginInstalled', [$this, 'isPluginInstalled']),
         ];
@@ -159,6 +163,38 @@ class TwigExtension extends AbstractExtension
         }
 
         return '';
+    }
+
+    /**
+     * since 6.4.13: resolves the configured item_id source (SKU, parent SKU, EAN,
+     * manufacturer number) for a storefront line item. Used for the hidden line items
+     * (data-dtgs-sku) which are read by the storefront JS. Falls back to the product
+     * number of the line item if resolution is not possible.
+     *
+     * @param mixed $lineItem
+     * @param SalesChannelContext|null $context
+     * @return mixed
+     */
+    public function resolveItemId($lineItem, $context = null): mixed
+    {
+        $fallback = null;
+        if(is_object($lineItem) && method_exists($lineItem, 'getPayload')) {
+            $payload = $lineItem->getPayload();
+            if(is_array($payload) && isset($payload['productNumber'])) {
+                $fallback = $payload['productNumber'];
+            }
+        }
+
+        if($this->ga4Service === null || !$context instanceof SalesChannelContext) {
+            return $fallback;
+        }
+
+        try {
+            $resolved = $this->ga4Service->resolveItemIdForLineItem($lineItem, $context);
+            return ($resolved !== null && $resolved !== '') ? $resolved : $fallback;
+        } catch (\Throwable $e) {
+            return $fallback;
+        }
     }
 
     /**

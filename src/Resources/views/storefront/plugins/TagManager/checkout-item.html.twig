@@ -3,7 +3,7 @@
 {% if gtmConfig.pluginActiveInSaleschannel %}
     <input type="hidden"
            name="dtgs-gtm-product-sku"
-           value="{{ lineItem.payload.productNumber }}">
+           value="{{ gtmResolveItemId(lineItem, context) }}">
     <input type="hidden"
            name="dtgs-gtm-product-name"
            value="{{ lineItem.label|trans|sw_sanitize }}">

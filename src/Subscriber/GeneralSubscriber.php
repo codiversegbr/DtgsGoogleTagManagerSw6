@@ -238,6 +238,14 @@ class GeneralSubscriber implements EventSubscriberInterface
                     $addToCartInfo->set('variantname', $ga4Tags['ecommerce']['items'][0]['item_variant']);
                 }
 
+                //optional parent_id / variant_id for variant products
+                if(isset($ga4Tags['ecommerce']['items'][0]['parent_id'])) {
+                    $addToCartInfo->set('parent_id', $ga4Tags['ecommerce']['items'][0]['parent_id']);
+                }
+                if(isset($ga4Tags['ecommerce']['items'][0]['variant_id'])) {
+                    $addToCartInfo->set('variant_id', $ga4Tags['ecommerce']['items'][0]['variant_id']);
+                }
+
                 if(isset($ga4Tags['ecommerce']['items'][0]['discount'])) {
                     $addToCartInfo->set('discount', $ga4Tags['ecommerce']['items'][0]['discount']);
                     $addToCartInfo->set('item_original_price', $ga4Tags['ecommerce']['items'][0]['item_original_price']);

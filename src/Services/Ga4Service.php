@@ -17,6 +17,7 @@ use Shopware\Core\Checkout\Customer\Aggregate\CustomerWishlist\CustomerWishlistE
 use Shopware\Core\Checkout\Order\OrderEntity;
 use Shopware\Core\Checkout\Promotion\Cart\PromotionProcessor;
 use Shopware\Core\Content\Category\CategoryEntity;
+use Shopware\Core\Content\Product\ProductEntity;
 use Shopware\Core\Content\Product\SalesChannel\Listing\ProductListingResult;
 use Shopware\Core\Content\Product\SalesChannel\SalesChannelProductEntity;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\EntitySearchResult;
@@ -144,6 +145,152 @@ class Ga4Service implements Ga4ServiceInterface
     }
 
     /**
+     * Source of the item_id value (productNumber, parentProductNumber, ean, manufacturerNumber).
+     *
+     * @param $salesChannelId
+     * @return string
+     */
+    public function getItemIdSource($salesChannelId): string {
+
+        $tagManagerConfig = $this->getGtmConfig($salesChannelId);
+
+        if(isset($tagManagerConfig['itemIdSource']) && $tagManagerConfig['itemIdSource']) {
+            return $tagManagerConfig['itemIdSource'];
+        }
+
+        return 'productNumber';
+
+    }
+
+    /**
+     * @param $salesChannelId
+     * @return bool
+     */
+    public function showParentId($salesChannelId): bool {
+
+        $tagManagerConfig = $this->getGtmConfig($salesChannelId);
+
+        if(isset($tagManagerConfig['eeShowParentId'])) {
+            return (bool) $tagManagerConfig['eeShowParentId'];
+        }
+
+        return false;
+
+    }
+
+    /**
+     * @param $salesChannelId
+     * @return bool
+     */
+    public function showVariantId($salesChannelId): bool {
+
+        $tagManagerConfig = $this->getGtmConfig($salesChannelId);
+
+        if(isset($tagManagerConfig['eeShowVariantId'])) {
+            return (bool) $tagManagerConfig['eeShowVariantId'];
+        }
+
+        return false;
+
+    }
+
+    /**
+     * Resolves the item_id for a product entity based on the configured source.
+     *
+     * @param SalesChannelProductEntity $product
+     * @param SalesChannelContext $context
+     * @return string
+     */
+    private function resolveItemId(ProductEntity $product, SalesChannelContext $context): string {
+
+        $source = $this->getItemIdSource($context->getSalesChannel()->getId());
+
+        switch ($source) {
+            case 'parentProductNumber':
+                if($product->getParentId() !== null) {
+                    $parentNumber = $this->productHelper->getProductNumberById($product->getParentId(), $context);
+                    if(!empty($parentNumber)) {
+                        return $parentNumber;
+                    }
+                }
+                return $product->getProductNumber();
+            case 'ean':
+                return !empty($product->getEan()) ? $product->getEan() : $product->getProductNumber();
+            case 'manufacturerNumber':
+                return !empty($product->getManufacturerNumber()) ? $product->getManufacturerNumber() : $product->getProductNumber();
+            default:
+                return $product->getProductNumber();
+        }
+
+    }
+
+    /**
+     * Resolves the configured item_id for a storefront line item (cart or order line item).
+     * Used e.g. for the hidden line items (data-dtgs-sku) which are read by the storefront JS.
+     * Falls back to the line item product number if the real product entity cannot be loaded.
+     *
+     * @param mixed $lineItem
+     * @param SalesChannelContext $context
+     * @return string|null
+     */
+    public function resolveItemIdForLineItem($lineItem, SalesChannelContext $context): ?string {
+
+        $payload = (is_object($lineItem) && method_exists($lineItem, 'getPayload')) ? $lineItem->getPayload() : [];
+        $fallback = (is_array($payload) && isset($payload['productNumber'])) ? $payload['productNumber'] : null;
+
+        // Default source does not require loading the product entity.
+        if($this->getItemIdSource($context->getSalesChannel()->getId()) === 'productNumber') {
+            return $fallback;
+        }
+
+        $referencedId = (is_object($lineItem) && method_exists($lineItem, 'getReferencedId')) ? $lineItem->getReferencedId() : null;
+        if(empty($referencedId) || !Uuid::isValid($referencedId)) {
+            return $fallback;
+        }
+
+        $product = $this->productHelper->getProductyById($referencedId, $context);
+        if(!$product instanceof ProductEntity) {
+            return $fallback;
+        }
+
+        $resolved = $this->resolveItemId($product, $context);
+
+        return !empty($resolved) ? $resolved : $fallback;
+
+    }
+
+    /**
+     * Adds parent_id / variant_id to the item array if enabled and the product is a variant.
+     *
+     * @param array $item
+     * @param SalesChannelProductEntity $product
+     * @param SalesChannelContext $context
+     * @return array
+     */
+    private function addParentAndVariantId(array $item, ProductEntity $product, SalesChannelContext $context): array {
+
+        if($product->getParentId() === null) {
+            return $item;
+        }
+
+        $salesChannelId = $context->getSalesChannel()->getId();
+
+        if($this->showParentId($salesChannelId)) {
+            $parentNumber = $this->productHelper->getProductNumberById($product->getParentId(), $context);
+            if(!empty($parentNumber)) {
+                $item['parent_id'] = $parentNumber;
+            }
+        }
+
+        if($this->showVariantId($salesChannelId)) {
+            $item['variant_id'] = $product->getProductNumber();
+        }
+
+        return $item;
+
+    }
+
+    /**
      * @param $ga4Tags
      * @return false|string
      */
@@ -204,12 +351,15 @@ class Ga4Service implements Ga4ServiceInterface
 
         $product_data = [
             'item_name'      =>  $product->getTranslation('name'),
-            'item_id'        =>  $product->getProductNumber(),
+            'item_id'        =>  $this->resolveItemId($product, $context),
             'price'          =>  $item_price,
             'index' => 0, //Index auf Detailseiten immer 0
             'item_list_name' => 'Category',
             'quantity' => 1,
         ];
+
+        //added: optional parent_id / variant_id for variant products
+        $product_data = $this->addParentAndVariantId($product_data, $product, $context);
 
         //added in 6.3.7 - CDVRS-0000022
         if($this->getVariantName($product->getVariation())) {
@@ -491,12 +641,15 @@ class Ga4Service implements Ga4ServiceInterface
 
             $item = array(
                 'item_name'      =>  $product->getTranslation('name'),
-                'item_id'        =>  $product->getProductNumber(),
+                'item_id'        =>  $this->resolveItemId($product, $context),
                 'price'          =>  (float) $this->priceHelper->getPrice($brutto_price, $tax, $context),
                 'item_brand'     =>  ($product->getManufacturer() !== null) ? $product->getManufacturer()->getTranslation('name') : '',
                 'index'          =>  $i++,
                 'quantity'       =>  1
             );
+
+            //added: optional parent_id / variant_id for variant products
+            $item = $this->addParentAndVariantId($item, $product, $context);
             if($listName) $item['item_list_name'] = $listName;
             if($category) $item['item_list_id'] = $category->getId();
             if($category) $item['item_category'] = $category->getTranslation('name');
@@ -551,8 +704,17 @@ class Ga4Service implements Ga4ServiceInterface
         $tags = array();
         if(empty($listing)) return $tags;
 
+        $salesChannelId = $context->getSalesChannel()->getId();
+        // We need to load the real product entities whenever category names are requested
+        // or the item_id / parent_id / variant_id configuration requires product data
+        // (EAN, manufacturer number or parent product number) that is not part of the line item payload.
+        $needsProductEntities = $addCategoryNames
+            || $this->getItemIdSource($salesChannelId) !== 'productNumber'
+            || $this->showParentId($salesChannelId)
+            || $this->showVariantId($salesChannelId);
+
         $realProductIds = [];
-        if ($addCategoryNames) {
+        if ($needsProductEntities) {
             foreach ($listing as $lineItem) {
                 /** @var LineItem $lineItem */
                 if ($lineItem->getReferencedId() && Uuid::isValid($lineItem->getReferencedId())) {
@@ -599,13 +761,30 @@ class Ga4Service implements Ga4ServiceInterface
                 continue;
             }
 
+            // Resolve the real product entity (if loaded) to apply the configured item_id source
+            // and the optional parent_id / variant_id for variants.
+            $realProduct = null;
+            if($realProducts && $product->getReferencedId() && $realProducts->has($product->getReferencedId())) {
+                $realProduct = $realProducts->get($product->getReferencedId());
+            }
+
+            $itemId = $productNumber;
+            if($realProduct !== null && $product->getType() !== 'promotion') {
+                $itemId = $this->resolveItemId($realProduct, $context);
+            }
+
             $item = array(
                 'item_name'      =>  $productName,
-                'item_id'        =>  $productNumber,
+                'item_id'        =>  $itemId,
                 'index'          =>  $i++,
                 'price'     =>  (float) $this->priceHelper->getPrice($product->getPrice()->getUnitPrice(), $tax, $context),
                 'quantity'  =>  $product->getQuantity(),
             );
+
+            //added: optional parent_id / variant_id for variant products
+            if($realProduct !== null && $product->getType() !== 'promotion') {
+                $item = $this->addParentAndVariantId($item, $realProduct, $context);
+            }
 
             //added in 6.3.7 - CDVRS-0000022
             if(isset($payload['options']) && $this->getVariantName($payload['options'])) {
