@@ -8,15 +8,27 @@ use Shopware\Core\Checkout\Customer\Aggregate\CustomerGroup\CustomerGroupCollect
 use Shopware\Core\Checkout\Customer\Aggregate\CustomerGroup\CustomerGroupEntity;
 use Shopware\Core\Checkout\Customer\CustomerCollection;
 use Shopware\Core\Checkout\Customer\CustomerEntity;
-use Shopware\Core\Checkout\Order\OrderCollection;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\Aggregation\Metric\CountAggregation;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\Aggregation\Metric\SumAggregation;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\AggregationResult\Metric\CountResult;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\AggregationResult\Metric\SumResult;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
+use Symfony\Contracts\Service\ResetInterface;
 
-class CustomerHelper
+class CustomerHelper implements ResetInterface
 {
+
+    /**
+     * Order statistics per customer id. The page subscriber asks for them on GenericPageLoadedEvent and again on the
+     * page-specific event of the same request.
+     *
+     * @var array<string, array{orderCount: int, orderSum: float}>
+     */
+    private array $orderStatistics = [];
 
     /**
      * @var EntityRepository
@@ -62,18 +74,29 @@ class CustomerHelper
      */
     public function getCustomerOrderStatisticsByCustomerId($customerId, $context): array
     {
-        $criteria = new Criteria();
-        $criteria->addAssociation('orderCustomer');
-        $criteria->addFilter(new EqualsFilter('orderCustomer.customerId', $customerId));
-        /** @var OrderCollection $orderCollection */
-        $orderCollection = $this->orderRepository->search($criteria, $context->getContext())->getEntities();
-
-        $sum = 0;
-        foreach ($orderCollection as $order) {
-            $sum += $order->getAmountTotal();
+        if (isset($this->orderStatistics[$customerId])) {
+            return $this->orderStatistics[$customerId];
         }
 
-        return ['orderCount' => $orderCollection->count(), 'orderSum' => (float)number_format($sum, 2, '.', '')];
+        // Count and sum in the database instead of loading every order of the customer as an entity on each page load.
+        $criteria = new Criteria();
+        $criteria->addFilter(new EqualsFilter('orderCustomer.customerId', $customerId));
+        $criteria->addAggregation(new CountAggregation('orderCount', 'id'));
+        $criteria->addAggregation(new SumAggregation('orderSum', 'amountTotal'));
+        $aggregations = $this->orderRepository->aggregate($criteria, $context->getContext());
+
+        $count = $aggregations->get('orderCount');
+        $sum = $aggregations->get('orderSum');
+
+        return $this->orderStatistics[$customerId] = [
+            'orderCount' => $count instanceof CountResult ? $count->getCount() : 0,
+            'orderSum' => (float)number_format($sum instanceof SumResult ? $sum->getSum() : 0, 2, '.', ''),
+        ];
+    }
+
+    public function reset(): void
+    {
+        $this->orderStatistics = [];
     }
 
     /**
