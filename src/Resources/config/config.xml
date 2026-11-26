@@ -434,6 +434,17 @@
         </input-field>
 
         <input-field type="bool">
+            <name>addPurchasePrice</name>
+            <label lang="de-DE">Einkaufspreis der Produkte im Datalayer ausgeben?</label>
+            <label lang="nl-NL">Inkoopprijs van producten in de datalayer uitvoeren?</label>
+            <label>Add purchase price of products to datalayer?</label>
+            <defaultValue>false</defaultValue>
+            <helpText lang="de-DE">Fügt den Einkaufspreis (purchase_price) der Produkte zu den transactionProducts im Datalayer auf den Checkout-/Bestellabschluss-Seiten hinzu.</helpText>
+            <helpText lang="nl-NL">Voegt de inkoopprijs (purchase_price) van de producten toe aan de transactionProducts in de datalayer op de checkout-/bestelafrondingspagina's.</helpText>
+            <helpText>Adds the purchase price (purchase_price) of products to the transactionProducts in the datalayer on checkout/finish pages.</helpText>
+        </input-field>
+
+        <input-field type="bool">
             <name>delayCodeInsertion</name>
             <label lang="de-DE">GTM Code verzögert einfügen?</label>
             <label lang="nl-NL">GTM-code vertraagd invoegen?</label>

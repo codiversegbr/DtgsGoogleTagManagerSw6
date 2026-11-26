@@ -392,7 +392,8 @@ class DatalayerService implements DatalayerServiceInterface
                 }
                 try {
                     //GTM-GH-52 - purchase price
-                    if($product && $product->getPurchasePrices()) {
+                    $addPurchasePrice = isset($pluginConfig['addPurchasePrice']) && $pluginConfig['addPurchasePrice'];
+                    if($addPurchasePrice && $product && $product->getPurchasePrices()) {
                         $purchasePrice = $product->getPurchasePrices()->first()?->getGross();
                         if (is_float($purchasePrice) && $purchasePrice > 0) {
                             $transactionProduct['purchase_price'] = $this->priceHelper->getPrice($purchasePrice, $tax, $context);
