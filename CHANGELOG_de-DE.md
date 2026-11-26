@@ -1,3 +1,10 @@
+# 6.4.14
+- Neu: Abbildung des Einkaufspreises im Datalayer kann nun abgeschaltet werden (GTM-GH-97)
+- Neu: Quelle der item_id kann nun konfiguriert werden (variant id, parent product id, ean, supplier number) (GTM-GH-92)
+- Verbesserung: Breadcrumb in item_category wurde vereinheitlicht (GTM-GH-91)
+- Verbesserung: Unterkategorien werden nun in add_to_cart abgebildet (GTM-GH-93)
+- Verbesserung: Bestellstatistiken werden nun optimiert geladen (Danke an @M-arcus!)
+
 # 6.4.13
 - Neuerung: Option zum Verschieben der Google Consent Flags aus dem Bereich "Statistics" in den Bereich "Marketing" hinzugefügt (GTM-GH-89)
 

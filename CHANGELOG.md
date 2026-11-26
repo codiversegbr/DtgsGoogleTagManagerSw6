@@ -1,3 +1,11 @@
+# 6.4.14
+- New: Make purchase price in datalayer a configurable option (GTM-GH-97)
+- New: Make source of item_id a configurable option (variant id, parent product id, ean, supplier number) (GTM-GH-92)
+- Improvement: Keep breadcrumb in item_category consistent (GTM-GH-91)
+- Improvement: Make subcategories available in add_to_cart event (GTM-GH-93)
+- Improvement: Aggregate and memoize customer order statistics (thanks to @M-arcus!)
+
+
 # 6.4.13
 - New: Add option to move Google Consent Flags except analytics_storage from statistics to marketing (GTM-GH-89)
 
