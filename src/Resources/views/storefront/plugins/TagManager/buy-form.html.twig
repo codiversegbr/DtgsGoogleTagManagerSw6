@@ -20,6 +20,16 @@
                name="dtgs-gtm-product-variantname"
                value="{{ page.extensions.GtmAddToCartInfo.variantname }}">
     {%  endif %}
+    {% if(page.extensions.GtmAddToCartInfo.parent_id) %}
+        <input type="hidden"
+               name="dtgs-gtm-product-parent-id"
+               value="{{ page.extensions.GtmAddToCartInfo.parent_id }}">
+    {%  endif %}
+    {% if(page.extensions.GtmAddToCartInfo.variant_id) %}
+        <input type="hidden"
+               name="dtgs-gtm-product-variant-id"
+               value="{{ page.extensions.GtmAddToCartInfo.variant_id }}">
+    {%  endif %}
     {% if(page.extensions.GtmAddToCartInfo.discount) %}
         <input type="hidden"
                name="dtgs-gtm-product-discount"

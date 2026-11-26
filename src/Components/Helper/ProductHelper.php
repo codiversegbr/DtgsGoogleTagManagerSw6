@@ -15,6 +15,11 @@ use Shopware\Core\System\SalesChannel\SalesChannelContext;
 
 class ProductHelper
 {
+    /**
+     * @var array<string, string|null>
+     */
+    private array $productNumberCache = [];
+
     public function __construct(
         private EntityRepository $productRepository,
         private CategoryBreadcrumbBuilder $breadcrumbBuilder,
@@ -34,6 +39,35 @@ class ProductHelper
         /** @var ProductCollection $productCollection */
         $productCollection = $this->productRepository->search($criteria, $context->getContext())->getEntities();
         return $productCollection->get($productId);
+    }
+
+    /**
+     * Returns the product number (SKU) of a product by its id.
+     * Used to resolve the parent product number for variants.
+     *
+     * @param string $productId
+     * @param SalesChannelContext $context
+     * @return string|null
+     */
+    public function getProductNumberById($productId, $context): ?string
+    {
+        if(empty($productId)) {
+            return null;
+        }
+
+        if(isset($this->productNumberCache[$productId])) {
+            return $this->productNumberCache[$productId];
+        }
+
+        $criteria = new Criteria([$productId]);
+        /** @var ProductCollection $productCollection */
+        $productCollection = $this->productRepository->search($criteria, $context->getContext())->getEntities();
+        $product = $productCollection->get($productId);
+
+        $productNumber = ($product !== null) ? $product->getProductNumber() : null;
+        $this->productNumberCache[$productId] = $productNumber;
+
+        return $productNumber;
     }
 
     public function getProductsById($productIds, $context): ProductCollection

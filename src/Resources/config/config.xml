@@ -222,6 +222,65 @@
             <helpText>Having a lot of products in your impressions-array can cause the datalayer to get to big for further processing. This options helps to limit the amount of products.</helpText>
         </input-field>
 
+        <input-field type="single-select">
+            <name>itemIdSource</name>
+            <options>
+                <option>
+                    <id>productNumber</id>
+                    <name lang="de-DE">immer aktuelle Produktnummer (SKU), auch bei Varianten</name>
+                    <name lang="nl-NL">altijd actueel productnummer (SKU), ook bij varianten</name>
+                    <name>always current product number (SKU), also for variants</name>
+                </option>
+                <option>
+                    <id>parentProductNumber</id>
+                    <name lang="de-DE">immer Produktnummer des Parentprodukts</name>
+                    <name lang="nl-NL">altijd productnummer van het hoofdproduct</name>
+                    <name>always product number of the parent product</name>
+                </option>
+                <option>
+                    <id>ean</id>
+                    <name lang="de-DE">EAN</name>
+                    <name lang="nl-NL">EAN</name>
+                    <name>EAN</name>
+                </option>
+                <option>
+                    <id>manufacturerNumber</id>
+                    <name lang="de-DE">Herstellernummer</name>
+                    <name lang="nl-NL">fabrikantnummer</name>
+                    <name>manufacturer number</name>
+                </option>
+            </options>
+            <defaultValue>productNumber</defaultValue>
+            <label lang="de-DE">Quelle der item_id</label>
+            <label lang="nl-NL">Bron van de item_id</label>
+            <label>Source of the item_id</label>
+            <helpText lang="de-DE">Legt fest, welcher Wert als item_id in den GA4 Events übergeben wird. Wenn EAN oder Herstellernummer nicht gepflegt sind, wird als Fallback die aktuelle Produktnummer verwendet.</helpText>
+            <helpText lang="nl-NL">Bepaalt welke waarde als item_id in de GA4-events wordt doorgegeven. Als EAN of fabrikantnummer niet zijn ingevuld, wordt het huidige productnummer als fallback gebruikt.</helpText>
+            <helpText>Defines which value is passed as item_id in the GA4 events. If EAN or manufacturer number is not maintained, the current product number is used as a fallback.</helpText>
+        </input-field>
+
+        <input-field type="bool">
+            <name>eeShowParentId</name>
+            <label lang="de-DE">parent_id im item-Array ausgeben (bei Varianten)</label>
+            <label lang="nl-NL">parent_id in de item-array weergeven (bij varianten)</label>
+            <label>Output parent_id in item array (for variants)</label>
+            <defaultValue>false</defaultValue>
+            <helpText lang="de-DE">Wenn aktiviert, wird bei Varianten zusätzlich die Produktnummer des Parentprodukts als "parent_id" im item-Array ausgegeben.</helpText>
+            <helpText lang="nl-NL">Indien ingeschakeld, wordt bij varianten ook het productnummer van het hoofdproduct als "parent_id" in de item-array weergegeven.</helpText>
+            <helpText>When enabled, the product number of the parent product is added as "parent_id" to the item array for variants.</helpText>
+        </input-field>
+
+        <input-field type="bool">
+            <name>eeShowVariantId</name>
+            <label lang="de-DE">variant_id im item-Array ausgeben (bei Varianten)</label>
+            <label lang="nl-NL">variant_id in de item-array weergeven (bij varianten)</label>
+            <label>Output variant_id in item array (for variants)</label>
+            <defaultValue>false</defaultValue>
+            <helpText lang="de-DE">Wenn aktiviert, wird bei Varianten zusätzlich die Produktnummer der Variante als "variant_id" im item-Array ausgegeben.</helpText>
+            <helpText lang="nl-NL">Indien ingeschakeld, wordt bij varianten ook het productnummer van de variant als "variant_id" in de item-array weergegeven.</helpText>
+            <helpText>When enabled, the product number of the variant is added as "variant_id" to the item array for variants.</helpText>
+        </input-field>
+
         <input-field type="bool">
             <name>usercentricsEnabled</name>
             <label lang="de-DE">UserCentrics Kompatibiltät aktivieren?</label>
