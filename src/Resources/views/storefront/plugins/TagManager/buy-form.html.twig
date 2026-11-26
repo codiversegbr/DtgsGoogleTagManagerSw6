@@ -10,7 +10,15 @@
     <input type="hidden"
            name="dtgs-gtm-product-sku"
            value="{{ page.extensions.GtmAddToCartInfo.sku }}">
-    {% if(page.extensions.GtmAddToCartInfo.category) %}
+    {% if(page.extensions.GtmAddToCartInfo.categories) %}
+        {% for categoryName, categoryValue in page.extensions.GtmAddToCartInfo.categories %}
+            {% if categoryValue %}
+                <input type="hidden"
+                       name="dtgs-gtm-product-{{ categoryName }}"
+                       value="{{ categoryValue }}">
+            {%  endif %}
+        {% endfor %}
+    {% elseif(page.extensions.GtmAddToCartInfo.category) %}
         <input type="hidden"
                name="dtgs-gtm-product-category"
                value="{{ page.extensions.GtmAddToCartInfo.category }}">
