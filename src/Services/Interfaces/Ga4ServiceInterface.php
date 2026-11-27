@@ -113,4 +113,23 @@ interface Ga4ServiceInterface
      * @return string|null
      */
     public function resolveItemIdForLineItem($lineItem, SalesChannelContext $context): ?string;
+
+    /**
+     * Resolves the configured item_id for a product entity (e.g. product listing cards).
+     *
+     * @param \Shopware\Core\Content\Product\ProductEntity $product
+     * @param SalesChannelContext $context
+     * @return string|null
+     */
+    public function resolveItemIdForProduct(\Shopware\Core\Content\Product\ProductEntity $product, SalesChannelContext $context): ?string;
+
+    /**
+     * Returns the configured parent_id / variant_id for a product entity (if enabled and
+     * the product is a variant).
+     *
+     * @param \Shopware\Core\Content\Product\ProductEntity $product
+     * @param SalesChannelContext $context
+     * @return array
+     */
+    public function getParentAndVariantId(\Shopware\Core\Content\Product\ProductEntity $product, SalesChannelContext $context): array;
 }

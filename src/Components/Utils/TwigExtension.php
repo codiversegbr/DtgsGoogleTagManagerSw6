@@ -7,6 +7,7 @@ namespace Dtgs\GoogleTagManager\Components\Utils;
 use Composer\InstalledVersions;
 use Dtgs\GoogleTagManager\Services\Interfaces\Ga4ServiceInterface;
 use OutOfBoundsException;
+use Shopware\Core\Content\Product\ProductEntity;
 use Shopware\Core\Content\Product\SalesChannel\SalesChannelProductEntity;
 use Shopware\Core\Framework\Plugin\KernelPluginCollection;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
@@ -34,6 +35,8 @@ class TwigExtension extends AbstractExtension
             new TwigFunction('gtmGetVariantName', [$this, 'getVariantName']),
             new TwigFunction('gtmGetCalculatedProductPrice', [$this, 'getCalculatedProductPrice']),
             new TwigFunction('gtmResolveItemId', [$this, 'resolveItemId']),
+            new TwigFunction('gtmResolveItemIdForProduct', [$this, 'resolveItemIdForProduct']),
+            new TwigFunction('gtmGetParentAndVariantId', [$this, 'getParentAndVariantId']),
             new TwigFunction('gtmGetShopwareVersion', [$this, 'getShopwareVersion']),
             new TwigFunction('gtmIsPluginInstalled', [$this, 'isPluginInstalled']),
         ];
@@ -194,6 +197,53 @@ class TwigExtension extends AbstractExtension
             return ($resolved !== null && $resolved !== '') ? $resolved : $fallback;
         } catch (\Throwable $e) {
             return $fallback;
+        }
+    }
+
+    /**
+     * since 6.4.13: resolves the configured item_id source (SKU, parent SKU, EAN,
+     * manufacturer number) for a product entity (e.g. product listing cards).
+     * Falls back to the product number if resolution is not possible.
+     *
+     * @param mixed $product
+     * @param SalesChannelContext|null $context
+     * @return mixed
+     */
+    public function resolveItemIdForProduct($product, $context = null): mixed
+    {
+        $fallback = (is_object($product) && method_exists($product, 'getProductNumber')) ? $product->getProductNumber() : null;
+
+        if($this->ga4Service === null || !$context instanceof SalesChannelContext || !$product instanceof ProductEntity) {
+            return $fallback;
+        }
+
+        try {
+            $resolved = $this->ga4Service->resolveItemIdForProduct($product, $context);
+            return ($resolved !== null && $resolved !== '') ? $resolved : $fallback;
+        } catch (\Throwable $e) {
+            return $fallback;
+        }
+    }
+
+    /**
+     * since 6.4.13: returns the configured parent_id / variant_id for a product entity
+     * (if enabled and the product is a variant). Used by the product card template to
+     * expose the values as hidden inputs read by the storefront JS.
+     *
+     * @param mixed $product
+     * @param SalesChannelContext|null $context
+     * @return array
+     */
+    public function getParentAndVariantId($product, $context = null): array
+    {
+        if($this->ga4Service === null || !$context instanceof SalesChannelContext || !$product instanceof ProductEntity) {
+            return [];
+        }
+
+        try {
+            return $this->ga4Service->getParentAndVariantId($product, $context);
+        } catch (\Throwable $e) {
+            return [];
         }
     }
 
