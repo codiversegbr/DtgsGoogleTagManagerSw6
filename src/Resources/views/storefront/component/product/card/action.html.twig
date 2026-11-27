@@ -25,7 +25,7 @@
     {% if gtmConfig.pluginActiveInSaleschannel %}
         <input type="hidden"
                name="dtgs-gtm-product-sku"
-               value="{{ product.productNumber }}">
+               value="{{ gtmResolveItemIdForProduct(product, context) ?: product.productNumber }}">
     {%  endif %}
     {%  if gtmIsPluginInstalled('SwagCommercial') %}
         <input type="hidden"

@@ -260,6 +260,44 @@ class Ga4Service implements Ga4ServiceInterface
     }
 
     /**
+     * Resolves the configured item_id for a product entity (e.g. product listing cards).
+     * Falls back to the product number if resolution is not possible.
+     *
+     * @param ProductEntity $product
+     * @param SalesChannelContext $context
+     * @return string|null
+     */
+    public function resolveItemIdForProduct(ProductEntity $product, SalesChannelContext $context): ?string {
+
+        try {
+            $resolved = $this->resolveItemId($product, $context);
+            return !empty($resolved) ? $resolved : $product->getProductNumber();
+        } catch (\Throwable $e) {
+            return $product->getProductNumber();
+        }
+
+    }
+
+    /**
+     * Returns the configured parent_id / variant_id for a product entity (if enabled and
+     * the product is a variant). Used by the storefront templates (product cards) to expose
+     * the values as hidden inputs which are read by the storefront JS.
+     *
+     * @param ProductEntity $product
+     * @param SalesChannelContext $context
+     * @return array
+     */
+    public function getParentAndVariantId(ProductEntity $product, SalesChannelContext $context): array {
+
+        try {
+            return $this->addParentAndVariantId([], $product, $context);
+        } catch (\Throwable $e) {
+            return [];
+        }
+
+    }
+
+    /**
      * Adds parent_id / variant_id to the item array if enabled and the product is a variant.
      *
      * @param array $item

@@ -4,6 +4,9 @@
 {% set gtmCalculatedProductPrice = gtmGetCalculatedProductPrice(product, ga4Tags, cmsGa4Tags) %}
 {% set gtmConfig = config('DtgsGoogleTagManagerSw6.config') %}
 
+{% set gtmItemId = gtmResolveItemIdForProduct(product, context) %}
+{% set gtmParentAndVariantId = gtmGetParentAndVariantId(product, context) %}
+
 {% if gtmConfig.pluginActiveInSaleschannel %}
     <input type="hidden"
            name="dtgs-gtm-currency-code"
@@ -13,7 +16,17 @@
            value="{{ gtmCalculatedProductPrice }}">
     <input type="hidden"
            name="dtgs-gtm-product-sku"
-           value="{{ product.productNumber }}">
+           value="{{ gtmItemId ?: product.productNumber }}">
+    {% if(gtmParentAndVariantId.parent_id) %}
+        <input type="hidden"
+               name="dtgs-gtm-product-parent-id"
+               value="{{ gtmParentAndVariantId.parent_id }}">
+    {%  endif %}
+    {% if(gtmParentAndVariantId.variant_id) %}
+        <input type="hidden"
+               name="dtgs-gtm-product-variant-id"
+               value="{{ gtmParentAndVariantId.variant_id }}">
+    {%  endif %}
     {% if product.manufacturer %}
         <input type="hidden"
                name="dtgs-gtm-product-brand"
