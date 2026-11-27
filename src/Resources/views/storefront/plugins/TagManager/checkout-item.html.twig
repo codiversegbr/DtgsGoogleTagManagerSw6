@@ -1,9 +1,21 @@
 {% set gtmConfig = config('DtgsGoogleTagManagerSw6.config') %}
 
+{% set gtmParentAndVariantId = gtmGetParentAndVariantId(lineItem, context) %}
+
 {% if gtmConfig.pluginActiveInSaleschannel %}
     <input type="hidden"
            name="dtgs-gtm-product-sku"
            value="{{ gtmResolveItemId(lineItem, context) }}">
+    {% if(gtmParentAndVariantId.parent_id) %}
+        <input type="hidden"
+               name="dtgs-gtm-product-parent-id"
+               value="{{ gtmParentAndVariantId.parent_id }}">
+    {%  endif %}
+    {% if(gtmParentAndVariantId.variant_id) %}
+        <input type="hidden"
+               name="dtgs-gtm-product-variant-id"
+               value="{{ gtmParentAndVariantId.variant_id }}">
+    {%  endif %}
     <input type="hidden"
            name="dtgs-gtm-product-name"
            value="{{ lineItem.label|trans|sw_sanitize }}">

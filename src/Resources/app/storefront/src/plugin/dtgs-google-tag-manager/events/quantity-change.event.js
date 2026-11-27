@@ -181,6 +181,16 @@ export default class GtmQuantityChangeEvent extends AnalyticsEvent
             'index': 0
         };
 
+        // Add optional parent_id / variant_id for variant products
+        const parentId = DomAccessHelper.querySelector(commonFormData.removeForm, 'input[name="dtgs-gtm-product-parent-id"]', false);
+        if (parentId && parentId.value && parentId.value !== '') {
+            itemData.parent_id = parentId.value;
+        }
+        const variantId = DomAccessHelper.querySelector(commonFormData.removeForm, 'input[name="dtgs-gtm-product-variant-id"]', false);
+        if (variantId && variantId.value && variantId.value !== '') {
+            itemData.variant_id = variantId.value;
+        }
+
         return {
             currency: commonFormData.currency,
             value: commonFormData.price * quantityChange,
@@ -198,6 +208,16 @@ export default class GtmQuantityChangeEvent extends AnalyticsEvent
         const dbId = DomAccessHelper.querySelector(removeForm, 'input[name="dtgs-gtm-product-db-id"]', false);
         if (dbId && dbId.value && dbId.value !== '') {
             itemData.item_db_id = dbId.value;
+        }
+
+        // Add optional parent_id / variant_id for variant products
+        const parentId = DomAccessHelper.querySelector(removeForm, 'input[name="dtgs-gtm-product-parent-id"]', false);
+        if (parentId && parentId.value && parentId.value !== '') {
+            itemData.parent_id = parentId.value;
+        }
+        const variantId = DomAccessHelper.querySelector(removeForm, 'input[name="dtgs-gtm-product-variant-id"]', false);
+        if (variantId && variantId.value && variantId.value !== '') {
+            itemData.variant_id = variantId.value;
         }
 
         // Add discount fields if available

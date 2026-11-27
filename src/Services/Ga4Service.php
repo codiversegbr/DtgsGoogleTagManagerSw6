@@ -298,6 +298,42 @@ class Ga4Service implements Ga4ServiceInterface
     }
 
     /**
+     * Returns the configured parent_id / variant_id for a storefront line item (cart or order
+     * line item), if enabled and the referenced product is a variant. Loads the real product
+     * entity via the referenced id. Returns an empty array if resolution is not possible.
+     *
+     * @param mixed $lineItem
+     * @param SalesChannelContext $context
+     * @return array
+     */
+    public function getParentAndVariantIdForLineItem($lineItem, SalesChannelContext $context): array {
+
+        try {
+            $salesChannelId = $context->getSalesChannel()->getId();
+
+            // Nothing to do if neither parent_id nor variant_id is enabled.
+            if(!$this->showParentId($salesChannelId) && !$this->showVariantId($salesChannelId)) {
+                return [];
+            }
+
+            $referencedId = (is_object($lineItem) && method_exists($lineItem, 'getReferencedId')) ? $lineItem->getReferencedId() : null;
+            if(empty($referencedId) || !Uuid::isValid($referencedId)) {
+                return [];
+            }
+
+            $product = $this->productHelper->getProductyById($referencedId, $context);
+            if(!$product instanceof ProductEntity) {
+                return [];
+            }
+
+            return $this->addParentAndVariantId([], $product, $context);
+        } catch (\Throwable $e) {
+            return [];
+        }
+
+    }
+
+    /**
      * Adds parent_id / variant_id to the item array if enabled and the product is a variant.
      *
      * @param array $item
