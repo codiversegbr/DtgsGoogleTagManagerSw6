@@ -132,4 +132,14 @@ interface Ga4ServiceInterface
      * @return array
      */
     public function getParentAndVariantId(\Shopware\Core\Content\Product\ProductEntity $product, SalesChannelContext $context): array;
+
+    /**
+     * Returns the configured parent_id / variant_id for a storefront line item (cart or order
+     * line item), if enabled and the referenced product is a variant.
+     *
+     * @param mixed $lineItem
+     * @param SalesChannelContext $context
+     * @return array
+     */
+    public function getParentAndVariantIdForLineItem($lineItem, SalesChannelContext $context): array;
 }

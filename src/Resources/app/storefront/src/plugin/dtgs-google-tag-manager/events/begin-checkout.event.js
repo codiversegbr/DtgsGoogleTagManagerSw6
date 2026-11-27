@@ -64,6 +64,12 @@ export default class GtmBeginCheckoutEvent extends AnalyticsEvent
             if (DomAccessHelper.getDataAttribute(itemEl, 'data-dtgs-db-id', false) !== undefined) {
                 item['item_db_id'] = DomAccessHelper.getDataAttribute(itemEl, 'id');
             }
+            if (DomAccessHelper.getDataAttribute(itemEl, 'data-dtgs-parent-id', false) !== undefined) {
+                item['parent_id'] = DomAccessHelper.getDataAttribute(itemEl, 'data-dtgs-parent-id');
+            }
+            if (DomAccessHelper.getDataAttribute(itemEl, 'data-dtgs-variant-id', false) !== undefined) {
+                item['variant_id'] = DomAccessHelper.getDataAttribute(itemEl, 'data-dtgs-variant-id');
+            }
             lineItems.push(item);
         });
 

@@ -32,6 +32,24 @@ export default class GtmRemoveFromCart extends AnalyticsEvent
         const quantity = DomAccessHelper.querySelector(event.target.closest('.line-item-remove'), 'input[name=dtgs-gtm-product-quantity]');
         const currencyCode = DomAccessHelper.querySelector(event.target.closest('.line-item-remove'), 'input[name=dtgs-gtm-currency-code]');
 
+        const item = {
+            'item_id': hiddenInput.value,
+            'item_name': itemName.value,
+            'quantity': Number(quantity.value),
+            'price': Number(productPrice.value),
+            'index': 0
+        };
+
+        // Add optional parent_id / variant_id for variant products
+        const parentId = DomAccessHelper.querySelector(event.target.closest('.line-item-remove'), 'input[name="dtgs-gtm-product-parent-id"]', false);
+        if (parentId && parentId.value && parentId.value !== '') {
+            item['parent_id'] = parentId.value;
+        }
+        const variantId = DomAccessHelper.querySelector(event.target.closest('.line-item-remove'), 'input[name="dtgs-gtm-product-variant-id"]', false);
+        if (variantId && variantId.value && variantId.value !== '') {
+            item['variant_id'] = variantId.value;
+        }
+
         // Clear the previous ecommerce object
         dataLayer.push({ ecommerce: null });
         dataLayer.push({
@@ -39,13 +57,7 @@ export default class GtmRemoveFromCart extends AnalyticsEvent
             'ecommerce': {
                 'currency': currencyCode.value,
                 'value': Number(totalPrice.value),
-                'items': [{
-                    'item_id': hiddenInput.value,
-                    'item_name': itemName.value,
-                    'quantity': Number(quantity.value),
-                    'price': Number(productPrice.value),
-                    'index': 0
-                }]
+                'items': [item]
             }
         });
     }

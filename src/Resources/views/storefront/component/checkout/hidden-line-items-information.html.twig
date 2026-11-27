@@ -7,6 +7,8 @@
 
     {% set gtmConfig = config('DtgsGoogleTagManagerSw6.config') %}
 
+    {% set gtmParentAndVariantId = gtmGetParentAndVariantId(lineItem, context) %}
+
     {% if gtmConfig.pluginActiveInSaleschannel %}
 
         <span class="hidden-line-item"
@@ -15,6 +17,8 @@
               data-quantity="{{ lineItem.quantity }}"
               data-price="{{ gaPrice }}"
               data-dtgs-sku="{{ gtmResolveItemId(lineItem, context) }}"
+              {% if(gtmParentAndVariantId.parent_id) %}data-dtgs-parent-id="{{ gtmParentAndVariantId.parent_id }}"{% endif %}
+              {% if(gtmParentAndVariantId.variant_id) %}data-dtgs-variant-id="{{ gtmParentAndVariantId.variant_id }}"{% endif %}
               data-dtgs-price="{{ gtmCalculatedProductPrice }}"
                 {% if(config('DtgsGoogleTagManagerSw6.config.addProductDatabaseIds')) %}
                     data-dtgs-db-id="{{ lineItem.id }}"

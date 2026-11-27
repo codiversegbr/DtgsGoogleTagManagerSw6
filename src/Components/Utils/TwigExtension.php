@@ -236,12 +236,21 @@ class TwigExtension extends AbstractExtension
      */
     public function getParentAndVariantId($product, $context = null): array
     {
-        if($this->ga4Service === null || !$context instanceof SalesChannelContext || !$product instanceof ProductEntity) {
+        if($this->ga4Service === null || !$context instanceof SalesChannelContext) {
             return [];
         }
 
         try {
-            return $this->ga4Service->getParentAndVariantId($product, $context);
+            if($product instanceof ProductEntity) {
+                return $this->ga4Service->getParentAndVariantId($product, $context);
+            }
+
+            // Storefront line items (cart / order line items) are resolved via the referenced product.
+            if(is_object($product) && method_exists($product, 'getReferencedId')) {
+                return $this->ga4Service->getParentAndVariantIdForLineItem($product, $context);
+            }
+
+            return [];
         } catch (\Throwable $e) {
             return [];
         }
